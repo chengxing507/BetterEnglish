@@ -1,0 +1,160 @@
+{
+  "title": "Unit 6 On the farm (在农场) 单词默写",
+  "questions": [
+    {
+      "chinese": "农场",
+      "answer": "farm",
+      "type": "word"
+    },
+    {
+      "chinese": "奶牛",
+      "answer": "cow",
+      "type": "word"
+    },
+    {
+      "chinese": "羊，绵羊",
+      "answer": "sheep",
+      "type": "word"
+    },
+    {
+      "chinese": "兔子",
+      "answer": "rabbit",
+      "type": "word"
+    },
+    {
+      "chinese": "鸡",
+      "answer": "chicken",
+      "type": "word"
+    },
+    {
+      "chinese": "胡萝卜",
+      "answer": "carrot",
+      "type": "word"
+    },
+    {
+      "chinese": "猪",
+      "answer": "pig",
+      "type": "word"
+    },
+    {
+      "chinese": "家，住所",
+      "answer": "home",
+      "type": "word"
+    },
+    {
+      "chinese": "这些",
+      "answer": "these",
+      "type": "word"
+    },
+    {
+      "chinese": "那些",
+      "answer": "those",
+      "type": "word"
+    },
+    {
+      "chinese": "帮助，协助",
+      "answer": "help",
+      "type": "word"
+    },
+    {
+      "chinese": "可爱的",
+      "answer": "cute",
+      "type": "word"
+    },
+    {
+      "chinese": "移动",
+      "answer": "move",
+      "type": "word"
+    },
+    {
+      "chinese": "不是",
+      "answer": "aren't",
+      "type": "word"
+    },
+    {
+      "chinese": "在农场上",
+      "answer": "on the farm",
+      "type": "phrase"
+    },
+    {
+      "chinese": "帮助我",
+      "answer": "help me",
+      "type": "phrase"
+    },
+    {
+      "chinese": "两只兔子",
+      "answer": "two rabbits",
+      "type": "phrase"
+    },
+    {
+      "chinese": "休息一下",
+      "answer": "have a rest",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一个猪的家",
+      "answer": "a home for pigs",
+      "type": "phrase"
+    },
+    {
+      "chinese": "欢迎来到我的家/农场",
+      "answer": "welcome to my home/farm",
+      "type": "phrase"
+    },
+    {
+      "chinese": "这些兔子",
+      "answer": "these rabbits",
+      "type": "phrase"
+    },
+    {
+      "chinese": "那些奶牛",
+      "answer": "those cows",
+      "type": "phrase"
+    },
+    {
+      "chinese": "欢迎来到我的家/农场。",
+      "answer": "Welcome to my home/farm.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这些是什么？——它们是胡萝卜。",
+      "answer": "— What are these? — They're carrots.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "那些也是胡萝卜吗？——是的，它们是。/ 不，它们不是。",
+      "answer": "— Are those carrots too? — Yes, they are. / No, they aren't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这是一个猪的家吗？——是的，它是。/ 不，它不是。",
+      "answer": "— Is this a home for pigs? — Yes, it is. / No, it isn't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "树下那些是什么？——它们是奶牛。",
+      "answer": "— What are those under the tree? — They're cows.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们是绵羊吗？——是的，它们是。/ 不，它们不是。",
+      "answer": "— Are they sheep? — Yes, they are. / No, they aren't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这些兔子非常可爱。",
+      "answer": "These rabbits are very cute.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们喜欢什么？——它们喜欢胡萝卜。",
+      "answer": "— What do they like? — They like carrots.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要动。",
+      "answer": "Don't move.",
+      "type": "sentence"
+    }
+  ]
+}

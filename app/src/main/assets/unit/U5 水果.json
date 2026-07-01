@@ -1,0 +1,235 @@
+{
+  "title": "Unit 5 (水果主题) 单词默写",
+  "questions": [
+    {
+      "chinese": "水果",
+      "answer": "fruit",
+      "type": "word"
+    },
+    {
+      "chinese": "橙子",
+      "answer": "orange",
+      "type": "word"
+    },
+    {
+      "chinese": "葡萄",
+      "answer": "grape",
+      "type": "word"
+    },
+    {
+      "chinese": "香蕉",
+      "answer": "banana",
+      "type": "word"
+    },
+    {
+      "chinese": "苹果",
+      "answer": "apple",
+      "type": "word"
+    },
+    {
+      "chinese": "芒果",
+      "answer": "mango",
+      "type": "word"
+    },
+    {
+      "chinese": "分享，共享",
+      "answer": "share",
+      "type": "word"
+    },
+    {
+      "chinese": "喜欢，喜爱",
+      "answer": "like",
+      "type": "word"
+    },
+    {
+      "chinese": "它们，他们，她们",
+      "answer": "they",
+      "type": "word"
+    },
+    {
+      "chinese": "甜的",
+      "answer": "sweet",
+      "type": "word"
+    },
+    {
+      "chinese": "做，制造",
+      "answer": "make",
+      "type": "word"
+    },
+    {
+      "chinese": "色拉，沙拉",
+      "answer": "salad",
+      "type": "word"
+    },
+    {
+      "chinese": "在一起，共同",
+      "answer": "together",
+      "type": "word"
+    },
+    {
+      "chinese": "喜欢苹果",
+      "answer": "like apples",
+      "type": "phrase"
+    },
+    {
+      "chinese": "又红又甜",
+      "answer": "red and sweet",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢香蕉",
+      "answer": "like bananas",
+      "type": "phrase"
+    },
+    {
+      "chinese": "许多水果",
+      "answer": "lots of fruit",
+      "type": "phrase"
+    },
+    {
+      "chinese": "有两个芒果",
+      "answer": "have two mangoes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢水果",
+      "answer": "like fruit",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一棵芒果树",
+      "answer": "a mango tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "分享芒果",
+      "answer": "share the mangoes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "多少个芒果",
+      "answer": "how many mangoes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "有一个橙子",
+      "answer": "have an orange",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一起做一份水果沙拉",
+      "answer": "make a fruit salad together",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一些葡萄",
+      "answer": "some grapes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "有两个苹果",
+      "answer": "have two apples",
+      "type": "phrase"
+    },
+    {
+      "chinese": "对……有好处",
+      "answer": "be good for",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我喜欢苹果。",
+      "answer": "I like apples.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我不喜欢芒果。",
+      "answer": "I don't like mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你有一个芒果/香蕉吗？——是的，我有。/ 不，我没有。",
+      "answer": "— Do you have a mango/banana? — Yes, I do. / No, I don't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们来分享芒果。",
+      "answer": "Let's share the mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我喜欢芒果。它们很甜。",
+      "answer": "I like mangoes. They're sweet.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我想要我的盘子里有很多水果。",
+      "answer": "I want lots of fruit on my plate.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我有两个芒果。",
+      "answer": "I have two mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我们分享了芒果。",
+      "answer": "We share the mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你喜欢什么水果？",
+      "answer": "What fruit do you like?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "看这棵芒果树。",
+      "answer": "Look at the mango tree.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你能看见多少个芒果？",
+      "answer": "How many mangoes can you see?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我爱芒果。",
+      "answer": "I love mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你呢？",
+      "answer": "How about you?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们一起来做一个水果沙拉吧。",
+      "answer": "Let's make a fruit salad together.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你有什么水果？",
+      "answer": "What fruit do you have?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我有一些葡萄。",
+      "answer": "I have some grapes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们来分享水果沙拉。",
+      "answer": "Let's share the fruit salad.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "真好看！",
+      "answer": "How nice!",
+      "type": "sentence"
+    },
+    {
+      "chinese": "水果对我们有好处。",
+      "answer": "Fruit is good for us.",
+      "type": "sentence"
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "title": "Unit 4 Have fun after class (课后玩得开心) 单词默写",
+  "questions": [
+    {
+      "chinese": "在……的后面",
+      "answer": "behind",
+      "type": "word"
+    },
+    {
+      "chinese": "树，树木",
+      "answer": "tree",
+      "type": "word"
+    },
+    {
+      "chinese": "在……旁边",
+      "answer": "by",
+      "type": "word"
+    },
+    {
+      "chinese": "在……下面",
+      "answer": "under",
+      "type": "word"
+    },
+    {
+      "chinese": "花，花朵",
+      "answer": "flower",
+      "type": "word"
+    },
+    {
+      "chinese": "玩耍",
+      "answer": "play",
+      "type": "word"
+    },
+    {
+      "chinese": "在外面",
+      "answer": "outside",
+      "type": "word"
+    },
+    {
+      "chinese": "准备好",
+      "answer": "ready",
+      "type": "word"
+    },
+    {
+      "chinese": "开始；移动",
+      "answer": "go",
+      "type": "word"
+    },
+    {
+      "chinese": "飞机",
+      "answer": "plane",
+      "type": "word"
+    },
+    {
+      "chinese": "很，非常",
+      "answer": "very",
+      "type": "word"
+    },
+    {
+      "chinese": "远",
+      "answer": "far",
+      "type": "word"
+    },
+    {
+      "chinese": "在哪里，到哪里",
+      "answer": "where",
+      "type": "word"
+    },
+    {
+      "chinese": "找到",
+      "answer": "find",
+      "type": "word"
+    },
+    {
+      "chinese": "结束",
+      "answer": "over",
+      "type": "word"
+    },
+    {
+      "chinese": "学生",
+      "answer": "student",
+      "type": "word"
+    },
+    {
+      "chinese": "花园，园圃",
+      "answer": "garden",
+      "type": "word"
+    },
+    {
+      "chinese": "极好的，美丽的",
+      "answer": "lovely",
+      "type": "word"
+    },
+    {
+      "chinese": "关于",
+      "answer": "of",
+      "type": "word"
+    },
+    {
+      "chinese": "美好的",
+      "answer": "nice",
+      "type": "word"
+    },
+    {
+      "chinese": "鸭子",
+      "answer": "duck",
+      "type": "word"
+    },
+    {
+      "chinese": "蝴蝶",
+      "answer": "butterfly",
+      "type": "word"
+    },
+    {
+      "chinese": "美丽的",
+      "answer": "beautiful",
+      "type": "word"
+    },
+    {
+      "chinese": "来自",
+      "answer": "from",
+      "type": "word"
+    },
+    {
+      "chinese": "玩得高兴",
+      "answer": "have fun",
+      "type": "phrase"
+    },
+    {
+      "chinese": "课后",
+      "answer": "after class",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在树后面",
+      "answer": "behind the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在树旁边",
+      "answer": "by the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在桌子上面",
+      "answer": "on the table",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在桌子下面",
+      "answer": "under the table",
+      "type": "phrase"
+    },
+    {
+      "chinese": "课间休息",
+      "answer": "break time",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在花丛里",
+      "answer": "in the flower",
+      "type": "phrase"
+    },
+    {
+      "chinese": "来自美术社团",
+      "answer": "from the Art Club",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我的纸飞机",
+      "answer": "my paper plane",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在外面玩",
+      "answer": "play outside",
+      "type": "phrase"
+    },
+    {
+      "chinese": "走得非常远",
+      "answer": "go very far",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在树上",
+      "answer": "in the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在鸭子上",
+      "answer": "on the duck",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在学校里画画",
+      "answer": "draw pictures in the school",
+      "type": "phrase"
+    },
+    {
+      "chinese": "想要画花朵",
+      "answer": "want to draw the flowers",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在花园里",
+      "answer": "in the garden",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在你后面",
+      "answer": "behind you",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一些好看的图画",
+      "answer": "some nice pictures",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一张你和蝴蝶的图画",
+      "answer": "a picture of you and the butterfly",
+      "type": "phrase"
+    },
+    {
+      "chinese": "让我们来玩捉迷藏吧。",
+      "answer": "Let's play hide-and-seek.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "谁在树后面？",
+      "answer": "Who's behind the tree?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你看到了吗？",
+      "answer": "Can you see?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "现在是休息时间。",
+      "answer": "It's break time.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们出去玩吧。",
+      "answer": "Let's play outside.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这些飞机走得非常远。",
+      "answer": "The planes go very far.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的飞机在桌子上。",
+      "answer": "My plane is on the table.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的飞机在花丛里。",
+      "answer": "My plane is in the flowers.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的飞机在哪里？我找不到它了。",
+      "answer": "Where's my plane? I can't find it.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它在树上。",
+      "answer": "It's in the tree.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "下课了。",
+      "answer": "Class is over.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们画一些好看的图画吧。",
+      "answer": "Let's draw some nice pictures.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我想要画花园里的花。",
+      "answer": "I want to draw the flowers in the garden.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "一只蝴蝶在树旁边。",
+      "answer": "A butterfly is by the tree.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它在你后面。",
+      "answer": "It's behind you.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它在鸭子上。",
+      "answer": "It's on the duck.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你画了什么？——一张你和蝴蝶的图画。",
+      "answer": "— What do you draw? — A picture of you and the butterfly.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "好漂亮/可爱！",
+      "answer": "How beautiful/lovely!",
+      "type": "sentence"
+    }
+  ]
+}

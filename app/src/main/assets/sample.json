@@ -1,0 +1,19 @@
+{
+  "title": "人教版七年级上册 Unit 1",
+  "questions": [
+    { "chinese": "苹果", "answer": "apple", "type": "word" },
+    { "chinese": "书", "answer": "book", "type": "word" },
+    { "chinese": "老师", "answer": "teacher", "type": "word" },
+    { "chinese": "学生", "answer": "student", "type": "word" },
+    { "chinese": "教室", "answer": "classroom", "type": "word" },
+    { "chinese": "铅笔", "answer": "pencil", "type": "word" },
+    { "chinese": "尺子", "answer": "ruler", "type": "word" },
+    { "chinese": "谢谢你", "answer": "thank you", "type": "phrase" },
+    { "chinese": "起床", "answer": "get up", "type": "phrase" },
+    { "chinese": "去上学", "answer": "go to school", "type": "phrase" },
+    { "chinese": "怎么了？", "answer": "what's wrong", "type": "phrase" },
+    { "chinese": "今天天气很好。", "answer": "It is a nice day today.", "type": "sentence" },
+    { "chinese": "你能帮助我吗？", "answer": "Can you help me?", "type": "sentence" },
+    { "chinese": "我的名字是李明。", "answer": "My name is Li Ming.", "type": "sentence" }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "title": "Unit 3 School rules (学校规则) 单词默写",
+  "questions": [
+    {
+      "chinese": "规则，规章",
+      "answer": "rule",
+      "type": "word"
+    },
+    {
+      "chinese": "图书馆",
+      "answer": "library",
+      "type": "word"
+    },
+    {
+      "chinese": "大声说，叫，嚷",
+      "answer": "shout",
+      "type": "word"
+    },
+    {
+      "chinese": "吃",
+      "answer": "eat",
+      "type": "word"
+    },
+    {
+      "chinese": "跑，奔跑",
+      "answer": "run",
+      "type": "word"
+    },
+    {
+      "chinese": "太太，夫人",
+      "answer": "Mrs",
+      "type": "word"
+    },
+    {
+      "chinese": "在……上面",
+      "answer": "on",
+      "type": "word"
+    },
+    {
+      "chinese": "安静的",
+      "answer": "quiet",
+      "type": "word"
+    },
+    {
+      "chinese": "有趣的",
+      "answer": "fun",
+      "type": "word"
+    },
+    {
+      "chinese": "遵循，听从",
+      "answer": "follow",
+      "type": "word"
+    },
+    {
+      "chinese": "糖果",
+      "answer": "sweet",
+      "type": "word"
+    },
+    {
+      "chinese": "不要",
+      "answer": "don't",
+      "type": "word"
+    },
+    {
+      "chinese": "说话，讲话",
+      "answer": "talk",
+      "type": "word"
+    },
+    {
+      "chinese": "迟的，晚的",
+      "answer": "late",
+      "type": "word"
+    },
+    {
+      "chinese": "不能",
+      "answer": "can't",
+      "type": "word"
+    },
+    {
+      "chinese": "我们的图书馆",
+      "answer": "our library",
+      "type": "phrase"
+    },
+    {
+      "chinese": "遵守规则",
+      "answer": "follow the rules",
+      "type": "phrase"
+    },
+    {
+      "chinese": "制定规则",
+      "answer": "make rules",
+      "type": "phrase"
+    },
+    {
+      "chinese": "坐下",
+      "answer": "sit down",
+      "type": "phrase"
+    },
+    {
+      "chinese": "看向窗外",
+      "answer": "look out of the window",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在你的桌子上画画",
+      "answer": "draw on your desk",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在这里画画",
+      "answer": "draw here",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在课堂上说话",
+      "answer": "talk in class",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在图书馆里",
+      "answer": "in the library",
+      "type": "phrase"
+    },
+    {
+      "chinese": "保持安静",
+      "answer": "keep quiet",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在这里吃",
+      "answer": "eat here",
+      "type": "phrase"
+    },
+    {
+      "chinese": "看，瞧",
+      "answer": "look at",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我们的学校规则",
+      "answer": "our school rules",
+      "type": "phrase"
+    },
+    {
+      "chinese": "制定班级规则",
+      "answer": "make class rules",
+      "type": "phrase"
+    },
+    {
+      "chinese": "不要喊叫/讲话/吃/跑。",
+      "answer": "Don't shout/talk/eat/run.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这是我们的图书馆。",
+      "answer": "This is our library.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "请遵守规则。",
+      "answer": "Please follow the rules.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "请坐下。",
+      "answer": "Sit down, please.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你迟到了。",
+      "answer": "You're late.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "下次不要再迟到了。",
+      "answer": "Don't be late again.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要往窗外看。",
+      "answer": "Don't look out of the window.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要在你的桌子上画画。",
+      "answer": "Don't draw on your desk.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你可以在这里画画。",
+      "answer": "You can draw here.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "请保持安静。",
+      "answer": "Keep quiet.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你想要一颗糖吗？——是的，谢谢。/ 不用了，谢谢。",
+      "answer": "Would you like a sweet? — Yes, please. / No, thank you.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "看这里的规则。",
+      "answer": "Look at the rules here.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要紧。",
+      "answer": "That's all right.",
+      "type": "sentence"
+    }
+  ]
+}

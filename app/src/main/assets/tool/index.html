@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BE格式转换工具</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f0f4f8;color:#1a2332;min-height:100vh}
+.header{background:linear-gradient(135deg,#1a73e8,#4285f4);color:#fff;padding:20px 24px;text-align:center}
+.header h1{font-size:24px;letter-spacing:2px}
+.header p{font-size:13px;opacity:.85;margin-top:4px}
+.container{max-width:720px;margin:0 auto;padding:20px 16px}
+
+.card{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);padding:24px;margin-bottom:16px}
+.card-title{font-size:16px;font-weight:700;margin-bottom:14px;color:#1a2332;display:flex;align-items:center;gap:8px}
+
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#495057;margin-bottom:4px}
+.form-group input,.form-group textarea{width:100%;padding:10px 14px;border:2px solid #dee2e6;border-radius:10px;font-size:14px;outline:none;transition:border-color .2s;font-family:inherit}
+.form-group input:focus,.form-group textarea:focus{border-color:#4285f4;box-shadow:0 0 0 3px rgba(66,133,244,.15)}
+.form-group textarea{resize:vertical;font-family:Consolas,monospace;font-size:13px;line-height:1.6}
+
+.form-row{display:flex;gap:12px;flex-wrap:wrap}
+.form-row .form-group{flex:1;min-width:200px}
+
+.btn{border:none;padding:10px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:#1a73e8;color:#fff}
+.btn-primary:hover{background:#1557b0}
+.btn-primary:disabled{background:#adb5bd;cursor:not-allowed}
+.btn-success{background:#2d6a4f;color:#fff}
+.btn-success:hover{background:#1b4332}
+.btn-danger{background:#dc3545;color:#fff}
+.btn-danger:hover{background:#b02a37}
+.btn-outline{background:transparent;border:2px solid #1a73e8;color:#1a73e8}
+.btn-outline:hover{background:#e8f0fe}
+.btn-secondary{background:#e9ecef;color:#495057}
+.btn-secondary:hover{background:#dee2e6}
+.btn-block{width:100%;display:block}
+.btn-sm{padding:6px 16px;font-size:12px}
+
+.config-box{background:#f8f9fa;border-radius:12px;padding:16px;margin-bottom:16px}
+.config-box.hidden{display:none}
+
+.tabs{display:flex;gap:0;margin-bottom:16px;background:#e9ecef;border-radius:10px;overflow:hidden}
+.tab{flex:1;text-align:center;padding:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;background:transparent;color:#6c757d}
+.tab.active{background:#fff;color:#1a73e8;box-shadow:0 2px 8px rgba(0,0,0,.08);border-radius:10px}
+
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+.status-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:12px;min-height:42px}
+.status-bar.info{background:#e8f0fe;color:#1a73e8}
+.status-bar.success{background:#d4edda;color:#155724}
+.status-bar.error{background:#f8d7da;color:#721c24}
+.status-bar.loading{background:#fff3cd;color:#856404}
+.status-bar .spinner{display:inline-block;width:16px;height:16px;border:2px solid #856404;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.output-box{background:#1a2332;border-radius:12px;padding:16px;position:relative;margin-top:12px}
+.output-box pre{color:#e6db74;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:400px;overflow-y:auto;font-family:Consolas,monospace}
+.output-actions{position:absolute;top:12px;right:12px;display:flex;gap:6px}
+.output-actions .btn{background:rgba(255,255,255,.15);color:#fff;padding:6px 14px;font-size:12px;border-radius:6px}
+.output-actions .btn:hover{background:rgba(255,255,255,.25)}
+.output-box .empty-hint{color:#888;font-style:italic;font-size:13px;text-align:center;padding:20px 0}
+
+.history-list{max-height:300px;overflow-y:auto}
+.history-item{padding:12px;border-radius:10px;background:#f8f9fa;margin-bottom:8px;cursor:pointer;transition:background .2s;border-left:3px solid #1a73e8}
+.history-item:hover{background:#e9ecef}
+.history-item .hi-title{font-weight:600;font-size:14px}
+.history-item .hi-meta{font-size:12px;color:#888;margin-top:2px}
+.history-item .hi-count{font-size:12px;color:#1a73e8;margin-top:2px}
+
+.copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a2332;color:#fff;padding:10px 24px;border-radius:10px;font-size:14px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.copy-toast.show{opacity:1}
+
+/* ===== Image Upload ===== */
+.img-upload-zone{border:2px dashed #dee2e6;border-radius:12px;padding:30px 20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:#fafbfc}
+.img-upload-zone:hover,.img-upload-zone.dragover{border-color:#4285f4;background:#e8f0fe}
+.img-upload-zone.has-image{border-style:solid;border-color:#2d6a4f;background:#f0fff4;padding:16px}
+.img-upload-zone .upload-icon{font-size:40px;display:block;margin-bottom:8px}
+.img-upload-zone .upload-text{font-size:14px;color:#495057;font-weight:600}
+.img-upload-zone .upload-hint{font-size:12px;color:#888;margin-top:4px}
+.img-upload-zone input[type=file]{display:none}
+.img-preview-wrap{position:relative;display:inline-block;max-width:100%}
+.img-preview-wrap img{max-height:260px;max-width:100%;border-radius:10px;display:block;margin:0 auto}
+.img-preview-wrap .img-remove{position:absolute;top:-8px;right:-8px;width:28px;height:28px;border-radius:50%;background:#dc3545;color:#fff;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);transition:transform .2s}
+.img-preview-wrap .img-remove:hover{transform:scale(1.1)}
+.img-info{font-size:12px;color:#888;margin-top:6px;text-align:center}
+.img-actions{margin-top:12px}
+.vision-badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;background:#fff3cd;color:#856404;margin-bottom:8px}
+
+@media(max-width:480px){
+  .container{padding:16px 12px}
+  .card{padding:18px}
+  .form-row .form-group{min-width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔧 BE格式转换工具</h1>
+  <p>文本 / 图片 → BE 项目标准 JSON 格式</p>
+</div>
+
+<div class="container">
+
+<!-- ===== 模型配置 ===== -->
+<div class="card" id="configCard">
+  <div class="card-title">⚙️ 模型配置</div>
+
+  <!-- 语言模型 -->
+  <div style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-weight:600;font-size:14px;color:#1a2332">📄 语言模型 <span style="font-weight:400;color:#888;font-size:12px;margin-left:4px">文本→JSON</span></div>
+      <button class="btn btn-secondary btn-sm" id="langToggleBtn" onclick="toggleLangConfig()" style="display:none">展开</button>
+    </div>
+    <div class="config-box" id="langConfigBox">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Base URL</label>
+          <input type="url" id="langBaseUrl" placeholder="https://api.openai.com/v1">
+        </div>
+        <div class="form-group">
+          <label>API Key</label>
+          <input type="password" id="langApiKey" placeholder="sk-...">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:2">
+          <label>模型名称</label>
+          <input type="text" id="langModel" placeholder="gpt-4o, deepseek-chat, claude-3-haiku...">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>温度</label>
+          <input type="number" id="langTemperature" value="0.3" step="0.1" min="0" max="2">
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="toggleLangConfig()">收起</button>
+      <button class="btn btn-secondary btn-sm" onclick="testLangConnection()" style="margin-left:6px">测试连接</button>
+    </div>
+    <div class="status-bar info" id="langConfigStatus">💡 请填写语言模型配置</div>
+  </div>
+
+  <!-- 图片模型 -->
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-weight:600;font-size:14px;color:#1a2332">🖼️ 图片模型 <span style="font-weight:400;color:#888;font-size:12px;margin-left:4px">图片→JSON（需视觉能力）</span></div>
+      <button class="btn btn-secondary btn-sm" id="visionToggleBtn" onclick="toggleVisionConfig()" style="display:none">展开</button>
+    </div>
+    <div class="config-box" id="visionConfigBox">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Base URL</label>
+          <input type="url" id="visionBaseUrl" placeholder="https://api.openai.com/v1">
+        </div>
+        <div class="form-group">
+          <label>API Key</label>
+          <input type="password" id="visionApiKey" placeholder="sk-...">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:2">
+          <label>模型名称</label>
+          <input type="text" id="visionModel" placeholder="gpt-4o, gemini-pro-vision, claude-3-sonnet...">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>温度</label>
+          <input type="number" id="visionTemperature" value="0.3" step="0.1" min="0" max="2">
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="toggleVisionConfig()">收起</button>
+      <button class="btn btn-secondary btn-sm" onclick="testVisionConnection()" style="margin-left:6px">测试连接</button>
+    </div>
+    <div class="status-bar info" id="visionConfigStatus">💡 请填写图片模型配置</div>
+  </div>
+</div>
+
+<!-- ===== 输入区 ===== -->
+<div class="card">
+  <div class="card-title">📝 输入内容</div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="tabText" onclick="switchTab('tabText')">📄 文本</button>
+    <button class="tab" data-tab="tabImage" onclick="switchTab('tabImage')">🖼️ 图片</button>
+    <button class="tab" data-tab="tabRaw" onclick="switchTab('tabRaw')">🔧 手动JSON</button>
+    <button class="tab" data-tab="tabHistory" onclick="switchTab('tabHistory');loadHistory()">📋 历史</button>
+  </div>
+
+  <!-- 文本输入 -->
+  <div class="tab-content active" id="tabText">
+    <div class="form-group">
+      <label>输入要转换的内容 <span style="font-weight:400;color:#888;font-size:12px">（中英文对照、单词列表等任意文本）</span></label>
+      <textarea id="inputText" rows="8" placeholder='示例格式（支持多种）：&#10;&#10;苹果 - apple&#10;书 - book&#10;老师 - teacher&#10;&#10;或者：&#10;苹果 apple&#10;书 book&#10;&#10;或者直接写一段文字：&#10;"苹果的英文是apple，书的英文是book..."&#10;&#10;AI 会自动提取并转换为 BE 标准格式'></textarea>
+    </div>
+    <div class="form-group">
+      <label>标题（可选）</label>
+      <input type="text" id="inputTitle" placeholder="如：人教版七年级上册 Unit 1">
+    </div>
+    <button class="btn btn-primary btn-block" id="convertBtn" onclick="convertWithLLM()">🤖 AI 转换</button>
+  </div>
+
+  <!-- 图片输入 -->
+  <div class="tab-content" id="tabImage">
+    <div class="vision-badge">👁️ 需要模型支持视觉能力（如 gpt-4o, gemini-pro-vision, claude-3-sonnet 等）</div>
+    <div class="img-upload-zone" id="imgUploadZone" onclick="document.getElementById('imgFileInput').click()">
+      <span class="upload-icon">📸</span>
+      <div class="upload-text">点击上传图片</div>
+      <div class="upload-hint">支持 JPG / PNG / WebP，建议单张图片</div>
+      <input type="file" id="imgFileInput" accept="image/jpeg,image/png,image/webp,image/gif">
+      <div id="imgPreviewArea" style="display:none">
+        <div class="img-preview-wrap">
+          <img id="imgPreview" alt="预览">
+          <button class="img-remove" onclick="event.stopPropagation();removeImage()">✕</button>
+        </div>
+        <div class="img-info" id="imgInfo"></div>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label>额外提示（可选）</label>
+      <input type="text" id="visionPrompt" placeholder="如：请识别图片中的英文单词列表">
+    </div>
+    <button class="btn btn-primary btn-block" id="visionBtn" onclick="convertWithVision()" disabled>🖼️ AI 识别图片并转换</button>
+  </div>
+
+  <!-- 手动JSON -->
+  <div class="tab-content" id="tabRaw">
+    <div class="form-group">
+      <label>直接编辑 JSON</label>
+      <textarea id="rawJson" rows="10" placeholder='{"title":"标题","questions":[{"chinese":"苹果","answer":"apple","type":"word"}]}'></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="parseRawJson()">✅ 解析并应用</button>
+  </div>
+
+  <!-- 历史 -->
+  <div class="tab-content" id="tabHistory">
+    <div id="historyList" class="history-list">
+      <div style="text-align:center;color:#999;padding:30px 0">暂无历史记录</div>
+    </div>
+    <button class="btn btn-danger btn-sm btn-block" onclick="clearHistory()" style="margin-top:10px">🗑️ 清除历史</button>
+  </div>
+</div>
+
+<!-- ===== 输出区 ===== -->
+<div class="card">
+  <div class="card-title">📤 输出 JSON</div>
+  <div id="outputStatus" class="status-bar info" style="display:none"></div>
+
+  <div class="output-box">
+    <div class="output-actions">
+      <button class="btn" onclick="copyOutput()" title="复制">📋 复制</button>
+      <button class="btn" onclick="downloadOutput()" title="下载">⬇️ 下载</button>
+    </div>
+    <pre id="outputJson" class="empty-hint">等待转换...</pre>
+  </div>
+</div>
+
+<!-- ===== 预览卡片 ===== -->
+<div class="card" id="previewCard" style="display:none">
+  <div class="card-title">👁️ 数据预览</div>
+  <div id="previewContent"></div>
+  <button class="btn btn-success btn-block" onclick="saveToLocal()" style="margin-top:12px">💾 保存到本地存储</button>
+</div>
+
+</div>
+
+<!-- Copy Toast -->
+<div class="copy-toast" id="copyToast">✅ 已复制到剪贴板</div>
+
+<script>
+// ========== 状态 ==========
+let currentData = null; // 当前解析后的JSON数据
+
+// ========== 初始化配置 ==========
+function loadConfig() {
+  // 语言模型
+  const lang = JSON.parse(localStorage.getItem('beLangConfig') || '{}');
+  if (lang.baseUrl) document.getElementById('langBaseUrl').value = lang.baseUrl;
+  if (lang.apiKey) document.getElementById('langApiKey').value = lang.apiKey;
+  if (lang.model) document.getElementById('langModel').value = lang.model;
+  if (lang.temperature !== undefined) document.getElementById('langTemperature').value = lang.temperature;
+  // 图片模型
+  const vis = JSON.parse(localStorage.getItem('beVisionConfig') || '{}');
+  if (vis.baseUrl) document.getElementById('visionBaseUrl').value = vis.baseUrl;
+  if (vis.apiKey) document.getElementById('visionApiKey').value = vis.apiKey;
+  if (vis.model) document.getElementById('visionModel').value = vis.model;
+  if (vis.temperature !== undefined) document.getElementById('visionTemperature').value = vis.temperature;
+
+  updateLangStatus();
+  updateVisionStatus();
+}
+
+function saveLangConfig() {
+  const cfg = {
+    baseUrl: document.getElementById('langBaseUrl').value.trim(),
+    apiKey: document.getElementById('langApiKey').value.trim(),
+    model: document.getElementById('langModel').value.trim(),
+    temperature: parseFloat(document.getElementById('langTemperature').value) || 0.3
+  };
+  localStorage.setItem('beLangConfig', JSON.stringify(cfg));
+  updateLangStatus();
+}
+
+function saveVisionConfig() {
+  const cfg = {
+    baseUrl: document.getElementById('visionBaseUrl').value.trim(),
+    apiKey: document.getElementById('visionApiKey').value.trim(),
+    model: document.getElementById('visionModel').value.trim(),
+    temperature: parseFloat(document.getElementById('visionTemperature').value) || 0.3
+  };
+  localStorage.setItem('beVisionConfig', JSON.stringify(cfg));
+  updateVisionStatus();
+}
+
+function updateLangStatus() {
+  const baseUrl = document.getElementById('langBaseUrl').value.trim();
+  const apiKey = document.getElementById('langApiKey').value.trim();
+  const status = document.getElementById('langConfigStatus');
+  const box = document.getElementById('langConfigBox');
+  const btn = document.getElementById('langToggleBtn');
+  if (baseUrl && apiKey) {
+    status.className = 'status-bar success';
+    status.innerHTML = '✅ 语言模型已配置 <span style="cursor:pointer;text-decoration:underline;margin-left:8px" onclick="toggleLangConfig()">✏️ 修改</span>';
+    // 折叠时显示展开按钮
+    if (box.classList.contains('hidden')) {
+      btn.style.display = 'inline-flex';
+    } else {
+      btn.style.display = 'none';
+    }
+  } else {
+    status.className = 'status-bar info';
+    status.innerHTML = '💡 请填写语言模型配置';
+    if (box.classList.contains('hidden')) {
+      btn.style.display = 'inline-flex';
+    }
+  }
+}
+
+function updateVisionStatus() {
+  const baseUrl = document.getElementById('visionBaseUrl').value.trim();
+  const apiKey = document.getElementById('visionApiKey').value.trim();
+  const status = document.getElementById('visionConfigStatus');
+  const box = document.getElementById('visionConfigBox');
+  const btn = document.getElementById('visionToggleBtn');
+  if (baseUrl && apiKey) {
+    status.className = 'status-bar success';
+    status.innerHTML = '✅ 图片模型已配置 <span style="cursor:pointer;text-decoration:underline;margin-left:8px" onclick="toggleVisionConfig()">✏️ 修改</span>';
+    if (box.classList.contains('hidden')) {
+      btn.style.display = 'inline-flex';
+    } else {
+      btn.style.display = 'none';
+    }
+  } else {
+    status.className = 'status-bar info';
+    status.innerHTML = '💡 请填写图片模型配置';
+    if (box.classList.contains('hidden')) {
+      btn.style.display = 'inline-flex';
+    }
+  }
+}
+
+function toggleLangConfig() {
+  const box = document.getElementById('langConfigBox');
+  const btn = document.getElementById('langToggleBtn');
+  if (box.classList.contains('hidden')) {
+    box.classList.remove('hidden');
+    btn.style.display = 'none';
+    document.getElementById('langConfigStatus').scrollIntoView({behavior:'smooth', block:'center'});
+  } else {
+    box.classList.add('hidden');
+    btn.style.display = 'inline-flex';
+  }
+}
+
+function toggleVisionConfig() {
+  const box = document.getElementById('visionConfigBox');
+  const btn = document.getElementById('visionToggleBtn');
+  if (box.classList.contains('hidden')) {
+    box.classList.remove('hidden');
+    btn.style.display = 'none';
+    document.getElementById('visionConfigStatus').scrollIntoView({behavior:'smooth', block:'center'});
+  } else {
+    box.classList.add('hidden');
+    btn.style.display = 'inline-flex';
+  }
+}
+
+// ========== 测试连接 ==========
+async function testLangConnection() {
+  saveLangConfig();
+  const baseUrl = document.getElementById('langBaseUrl').value.trim();
+  const apiKey = document.getElementById('langApiKey').value.trim();
+  const model = document.getElementById('langModel').value.trim() || 'gpt-4o-mini';
+  if (!baseUrl || !apiKey) {
+    showStatus('langConfigStatus', '❌ 请先填写语言模型的 Base URL 和 API Key', 'error');
+    return;
+  }
+  showStatus('langConfigStatus', '⏳ 测试语言模型连接...', 'loading');
+  try {
+    const url = baseUrl.replace(/\/+$/, '') + '/chat/completions';
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+      body: JSON.stringify({model:model, messages:[{role:'user', content:'Hi'}], max_tokens:5})
+    });
+    if (resp.ok) showStatus('langConfigStatus', '✅ 语言模型连接成功！', 'success');
+    else {
+      const err = await resp.text();
+      showStatus('langConfigStatus', '❌ 连接失败: ' + (err.slice(0,100) || resp.status), 'error');
+    }
+  } catch(e) {
+    showStatus('langConfigStatus', '❌ 连接失败: ' + e.message, 'error');
+  }
+}
+
+async function testVisionConnection() {
+  saveVisionConfig();
+  const baseUrl = document.getElementById('visionBaseUrl').value.trim();
+  const apiKey = document.getElementById('visionApiKey').value.trim();
+  const model = document.getElementById('visionModel').value.trim() || 'gpt-4o';
+  if (!baseUrl || !apiKey) {
+    showStatus('visionConfigStatus', '❌ 请先填写图片模型的 Base URL 和 API Key', 'error');
+    return;
+  }
+  showStatus('visionConfigStatus', '⏳ 测试图片模型连接...', 'loading');
+  try {
+    const url = baseUrl.replace(/\/+$/, '') + '/chat/completions';
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+      body: JSON.stringify({model:model, messages:[{role:'user', content:'Hi'}], max_tokens:5})
+    });
+    if (resp.ok) showStatus('visionConfigStatus', '✅ 图片模型连接成功！', 'success');
+    else {
+      const err = await resp.text();
+      showStatus('visionConfigStatus', '❌ 连接失败: ' + (err.slice(0,100) || resp.status), 'error');
+    }
+  } catch(e) {
+    showStatus('visionConfigStatus', '❌ 连接失败: ' + e.message, 'error');
+  }
+}
+
+// ========== 标签切换 ==========
+function switchTab(tabId) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// ========== LLM 转换 ==========
+async function convertWithLLM() {
+  const inputText = document.getElementById('inputText').value.trim();
+  const inputTitle = document.getElementById('inputTitle').value.trim();
+
+  if (!inputText) {
+    showStatus('outputStatus', '❌ 请输入要转换的内容', 'error');
+    return;
+  }
+
+  saveLangConfig();
+  const baseUrl = document.getElementById('langBaseUrl').value.trim();
+  const apiKey = document.getElementById('langApiKey').value.trim();
+  const model = document.getElementById('langModel').value.trim() || 'gpt-4o-mini';
+  const temperature = parseFloat(document.getElementById('langTemperature').value) || 0.3;
+
+  if (!baseUrl || !apiKey) {
+    showStatus('outputStatus', '❌ 请先配置语言模型的 Base URL 和 API Key', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('convertBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 转换中...';
+  showStatus('outputStatus', '⏳ 语言模型正在分析并转换...', 'loading');
+
+  const systemPrompt = `你是一个数据格式转换助手。请将用户提供的文本内容，转换为符合BE项目标准的JSON格式。
+
+BE标准JSON格式如下：
+{
+  "title": "标题（根据内容自动生成）",
+  "questions": [
+    {
+      "chinese": "中文/提示",
+      "answer": "英文答案",
+      "type": "word"  // word-单词, phrase-词组, sentence-句子
+    }
+  ]
+}
+
+规则：
+1. 从用户输入中提取所有中英文对照信息
+2. chinese字段填写中文或提示语
+3. answer字段填写英文答案
+4. type根据内容长度和性质判断：单个单词用"word"，短语用"phrase"，完整句子用"sentence"
+5. 如果用户提供了标题，使用用户提供的标题
+6. 如果输入中没有明确的中英文对照，请尽力推断和提取
+7. 只输出JSON代码，不要包含其他解释文字
+8. 确保JSON格式合法`;
+
+  const userPrompt = `标题：${inputTitle || '（自动生成）'}\n\n内容：\n${inputText}\n\n请转换为BE标准JSON格式。`;
+
+  try {
+    const url = baseUrl.replace(/\/+$/, '') + '/chat/completions';
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {role: 'user', content: userPrompt}
+        ],
+        temperature: temperature,
+        max_tokens: 4096
+      })
+    });
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      throw new Error('API 错误 (' + resp.status + '): ' + errText.slice(0,200));
+    }
+
+    const data = await resp.json();
+    let content = data.choices?.[0]?.message?.content || '';
+
+    // 提取JSON
+    content = extractJson(content);
+
+    if (!content) {
+      throw new Error('AI 返回内容中未找到合法JSON');
+    }
+
+    const parsed = JSON.parse(content);
+
+    // 确保格式符合BE标准
+    if (!parsed.questions || !Array.isArray(parsed.questions)) {
+      throw new Error('返回数据格式不正确，缺少 questions 数组');
+    }
+
+    // 规范化
+    const normalized = normalizeBeJson(parsed);
+    currentData = normalized;
+
+    // 显示输出
+    const jsonStr = JSON.stringify(normalized, null, 2);
+    const outputEl = document.getElementById('outputJson');
+    outputEl.textContent = jsonStr;
+    outputEl.className = '';
+
+    // 保存到历史
+    saveHistory({
+      title: normalized.title || '未命名',
+      source: inputText.slice(0, 100) + (inputText.length > 100 ? '...' : ''),
+      data: normalized,
+      count: normalized.questions.length,
+      date: new Date().toLocaleString('zh-CN')
+    });
+
+    showStatus('outputStatus', '✅ 转换成功！共 ' + normalized.questions.length + ' 题', 'success');
+    showPreview(normalized);
+
+  } catch(e) {
+    showStatus('outputStatus', '❌ ' + e.message, 'error');
+    document.getElementById('outputJson').textContent = '// 错误：' + e.message;
+    document.getElementById('outputJson').className = '';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🤖 AI 转换';
+  }
+}
+
+// ========== 提取JSON ==========
+function extractJson(text) {
+  // 尝试找 ```json ... ``` 块
+  const match = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (match) return match[1].trim();
+  // 尝试找 { ... } 包裹的最外层
+  const start = text.indexOf('{');
+  if (start === -1) return null;
+  let depth = 0;
+  let end = -1;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}') {
+      depth--;
+      if (depth === 0) { end = i; break; }
+    }
+  }
+  if (end > start) return text.slice(start, end + 1);
+  return null;
+}
+
+// ========== 规范化BE JSON ==========
+function normalizeBeJson(data) {
+  const result = {
+    title: data.title || '未命名',
+    questions: []
+  };
+  for (const q of data.questions) {
+    if (q && q.chinese && q.answer) {
+      let type = q.type || 'word';
+      if (type !== 'word' && type !== 'phrase' && type !== 'sentence') {
+        const ans = String(q.answer);
+        if (ans.split(' ').length >= 4 || ans.includes('.') || ans.includes('?')) type = 'sentence';
+        else if (ans.split(' ').length >= 2) type = 'phrase';
+        else type = 'word';
+      }
+      result.questions.push({
+        chinese: String(q.chinese).trim(),
+        answer: String(q.answer).trim(),
+        type: type
+      });
+    }
+  }
+  return result;
+}
+
+// ========== 解析手动JSON ==========
+function parseRawJson() {
+  const text = document.getElementById('rawJson').value.trim();
+  if (!text) {
+    showStatus('outputStatus', '❌ 请输入 JSON', 'error');
+    return;
+  }
+  try {
+    const data = JSON.parse(text);
+    const normalized = normalizeBeJson(data);
+    currentData = normalized;
+    document.getElementById('outputJson').textContent = JSON.stringify(normalized, null, 2);
+    document.getElementById('outputJson').className = '';
+    showStatus('outputStatus', '✅ 解析成功！共 ' + normalized.questions.length + ' 题', 'success');
+    showPreview(normalized);
+
+    saveHistory({
+      title: normalized.title || '未命名',
+      source: '[手动编辑]',
+      data: normalized,
+      count: normalized.questions.length,
+      date: new Date().toLocaleString('zh-CN')
+    });
+  } catch(e) {
+    showStatus('outputStatus', '❌ JSON 解析错误: ' + e.message, 'error');
+  }
+}
+
+// ========== 预览 ==========
+function showPreview(data) {
+  const card = document.getElementById('previewCard');
+  card.style.display = 'block';
+  const container = document.getElementById('previewContent');
+
+  const types = {word:0, phrase:0, sentence:0};
+  data.questions.forEach(q => types[q.type]++);
+
+  let html = '<div style="margin-bottom:12px">';
+  html += '<span style="font-weight:600;font-size:15px">📌 ' + escHtml(data.title) + '</span>';
+  html += '<span style="color:#888;font-size:13px;margin-left:10px">共 ' + data.questions.length + ' 题</span>';
+  html += '</div>';
+
+  html += '<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">';
+  html += '<span style="background:#d4edda;color:#155724;padding:2px 10px;border-radius:12px;font-size:12px">📖 单词 ' + types.word + '</span>';
+  html += '<span style="background:#cce5ff;color:#004085;padding:2px 10px;border-radius:12px;font-size:12px">📝 词组 ' + types.phrase + '</span>';
+  html += '<span style="background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:12px;font-size:12px">💬 句子 ' + types.sentence + '</span>';
+  html += '</div>';
+
+  // 前5题预览
+  const previewItems = data.questions.slice(0, 5);
+  html += '<div style="background:#f8f9fa;border-radius:10px;padding:12px;max-height:200px;overflow-y:auto">';
+  previewItems.forEach((q, i) => {
+    const typeMap = {word:'📖', phrase:'📝', sentence:'💬'};
+    html += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid #eee">';
+    html += '<span>' + (i+1) + '. ' + escHtml(q.chinese) + '</span>';
+    html += '<span style="color:#1a73e8">' + escHtml(q.answer) + ' <span style="color:#888;font-size:11px">' + typeMap[q.type] + '</span></span>';
+    html += '</div>';
+  });
+  if (data.questions.length > 5) {
+    html += '<div style="text-align:center;color:#888;font-size:12px;padding-top:6px">... 还有 ' + (data.questions.length - 5) + ' 题</div>';
+  }
+  html += '</div>';
+
+  container.innerHTML = html;
+}
+
+// ========== 复制 ==========
+function copyOutput() {
+  const text = document.getElementById('outputJson').textContent;
+  if (!text || text === '等待转换...') {
+    showToast('⚠️ 没有可复制的内容');
+    return;
+  }
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('✅ 已复制到剪贴板');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 已复制到剪贴板');
+  });
+}
+
+// ========== 下载 ==========
+function downloadOutput() {
+  const text = document.getElementById('outputJson').textContent;
+  if (!text || text === '等待转换...') {
+    showToast('⚠️ 没有可下载的内容');
+    return;
+  }
+  let filename = 'be_data.json';
+  if (currentData && currentData.title) {
+    filename = currentData.title.replace(/[\\/:*?"<>|]/g, '_') + '.json';
+  }
+  const blob = new Blob([text], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ 已下载 ' + filename);
+}
+
+// ========== 保存到本地存储 ==========
+function saveToLocal() {
+  if (!currentData) {
+    showToast('⚠️ 没有数据可保存');
+    return;
+  }
+  const key = 'be_saved_' + Date.now();
+  const item = {
+    data: currentData,
+    savedAt: new Date().toLocaleString('zh-CN')
+  };
+  localStorage.setItem(key, JSON.stringify(item));
+  showToast('✅ 已保存到本地存储 (key: ' + key + ')');
+}
+
+// ========== 历史记录 ==========
+function saveHistory(entry) {
+  let history = JSON.parse(localStorage.getItem('beToolHistory') || '[]');
+  history.unshift(entry);
+  if (history.length > 50) history = history.slice(0, 50);
+  localStorage.setItem('beToolHistory', JSON.stringify(history));
+}
+
+function loadHistory() {
+  const list = document.getElementById('historyList');
+  const history = JSON.parse(localStorage.getItem('beToolHistory') || '[]');
+  if (!history.length) {
+    list.innerHTML = '<div style="text-align:center;color:#999;padding:30px 0">暂无历史记录</div>';
+    return;
+  }
+  let html = '';
+  history.forEach((h, idx) => {
+    html += '<div class="history-item" onclick="loadFromHistory(' + idx + ')">';
+    html += '<div class="hi-title">' + escHtml(h.title || '未命名') + '</div>';
+    html += '<div class="hi-count">📊 ' + (h.count || 0) + ' 题</div>';
+    html += '<div class="hi-meta">🕐 ' + (h.date || '') + ' | 来源: ' + escHtml((h.source || '').slice(0, 40)) + '</div>';
+    html += '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function loadFromHistory(idx) {
+  const history = JSON.parse(localStorage.getItem('beToolHistory') || '[]');
+  const entry = history[idx];
+  if (!entry || !entry.data) {
+    showToast('⚠️ 历史数据无效');
+    return;
+  }
+  currentData = entry.data;
+  const jsonStr = JSON.stringify(currentData, null, 2);
+  document.getElementById('outputJson').textContent = jsonStr;
+  document.getElementById('outputJson').className = '';
+  showStatus('outputStatus', '✅ 已从历史加载：' + escHtml(entry.title), 'success');
+  showPreview(currentData);
+  document.getElementById('outputJson').scrollIntoView({behavior:'smooth'});
+}
+
+function clearHistory() {
+  if (!confirm('确定清除所有历史记录吗？')) return;
+  localStorage.removeItem('beToolHistory');
+  loadHistory();
+  showToast('🗑️ 历史记录已清除');
+}
+
+// ========== 图片上传 ==========
+let currentImageBase64 = null;
+const MAX_IMG_SIZE = 20 * 1024 * 1024; // 20MB
+
+document.getElementById('imgFileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  handleImageFile(file);
+});
+
+// 拖拽支持
+const zone = document.getElementById('imgUploadZone');
+zone.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  this.classList.add('dragover');
+});
+zone.addEventListener('dragleave', function(e) {
+  e.preventDefault();
+  this.classList.remove('dragover');
+});
+zone.addEventListener('drop', function(e) {
+  e.preventDefault();
+  this.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    handleImageFile(file);
+  } else {
+    showToast('⚠️ 请拖入图片文件');
+  }
+});
+
+function handleImageFile(file) {
+  if (file.size > MAX_IMG_SIZE) {
+    showToast('⚠️ 图片过大，请选择小于 20MB 的图片');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const base64 = ev.target.result;
+    // 压缩图片到合适大小
+    compressImage(base64, 2048, 0.8, function(compressed) {
+      currentImageBase64 = compressed;
+      showImagePreview(compressed, file.name, file.size);
+      document.getElementById('visionBtn').disabled = false;
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function compressImage(dataUrl, maxDim, quality, callback) {
+  const img = new Image();
+  img.onload = function() {
+    let w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) {
+      const ratio = Math.min(maxDim / w, maxDim / h);
+      w = Math.round(w * ratio);
+      h = Math.round(h * ratio);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    callback(canvas.toDataURL('image/jpeg', quality));
+  };
+  img.src = dataUrl;
+}
+
+function showImagePreview(base64, name, size) {
+  document.getElementById('imgPreview').src = base64;
+  document.getElementById('imgPreviewArea').style.display = 'block';
+  document.querySelector('#imgUploadZone .upload-icon').style.display = 'none';
+  document.querySelector('#imgUploadZone .upload-text').style.display = 'none';
+  document.querySelector('#imgUploadZone .upload-hint').style.display = 'none';
+  document.getElementById('imgUploadZone').classList.add('has-image');
+  const sizeStr = size > 1024 * 1024 ? (size / 1024 / 1024).toFixed(1) + 'MB' : (size / 1024).toFixed(0) + 'KB';
+  document.getElementById('imgInfo').textContent = name + ' (' + sizeStr + ')';
+}
+
+function removeImage() {
+  currentImageBase64 = null;
+  document.getElementById('imgPreviewArea').style.display = 'none';
+  document.querySelector('#imgUploadZone .upload-icon').style.display = 'block';
+  document.querySelector('#imgUploadZone .upload-text').style.display = 'block';
+  document.querySelector('#imgUploadZone .upload-hint').style.display = 'block';
+  document.getElementById('imgUploadZone').classList.remove('has-image');
+  document.getElementById('imgFileInput').value = '';
+  document.getElementById('visionBtn').disabled = true;
+}
+
+// ========== 识图转换 ==========
+async function convertWithVision() {
+  if (!currentImageBase64) {
+    showStatus('outputStatus', '❌ 请先上传图片', 'error');
+    return;
+  }
+
+  saveVisionConfig();
+  const baseUrl = document.getElementById('visionBaseUrl').value.trim();
+  const apiKey = document.getElementById('visionApiKey').value.trim();
+  const model = document.getElementById('visionModel').value.trim() || 'gpt-4o';
+  const temperature = parseFloat(document.getElementById('visionTemperature').value) || 0.3;
+  const extraPrompt = document.getElementById('visionPrompt').value.trim();
+
+  if (!baseUrl || !apiKey) {
+    showStatus('outputStatus', '❌ 请先配置图片模型的 Base URL 和 API Key', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('visionBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 识别中...';
+  showStatus('outputStatus', '⏳ 图片模型正在识别并转换...', 'loading');
+
+  const systemPrompt = '你是一个数据格式转换助手。请识别图片中的内容，将其转换为符合BE项目标准的JSON格式。\n\n'
+    + 'BE标准JSON格式如下：\n'
+    + '{\n'
+    + '  "title": "标题（根据图片内容自动生成）",\n'
+    + '  "questions": [\n'
+    + '    {\n'
+    + '      "chinese": "中文/提示",\n'
+    + '      "answer": "英文答案",\n'
+    + '      "type": "word"\n'
+    + '    }\n'
+    + '  ]\n'
+    + '}\n\n'
+    + '规则：\n'
+    + '1. 仔细识别图片中的中英文对照信息（如单词表、教科书内容、笔记等）\n'
+    + '2. chinese字段填写中文或提示语\n'
+    + '3. answer字段填写对应的英文答案\n'
+    + '4. type根据内容判断：单词用"word"，短语用"phrase"，句子用"sentence"\n'
+    + '5. 如果图片不是单词表/学习内容，请尽力提取其中的文字信息并转化为问答形式\n'
+    + '6. 只输出JSON代码，不要包含其他解释文字\n'
+    + '7. 确保JSON格式合法';
+
+  const userText = extraPrompt
+    ? '额外要求：' + extraPrompt + '\n\n请识别图片内容并转换为BE标准JSON格式。'
+    : '请识别图片内容并转换为BE标准JSON格式。';
+
+  try {
+    const url = baseUrl.replace(/\/+$/, '') + '/chat/completions';
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {
+            role: 'user',
+            content: [
+              {type: 'text', text: userText},
+              {type: 'image_url', image_url: {url: currentImageBase64}}
+            ]
+          }
+        ],
+        temperature: temperature,
+        max_tokens: 4096
+      })
+    });
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      throw new Error('API 错误 (' + resp.status + '): ' + errText.slice(0,200));
+    }
+
+    const data = await resp.json();
+    let content = data.choices?.[0]?.message?.content || '';
+
+    // 提取JSON
+    content = extractJson(content);
+    if (!content) throw new Error('AI 返回内容中未找到合法JSON');
+
+    const parsed = JSON.parse(content);
+    if (!parsed.questions || !Array.isArray(parsed.questions)) {
+      throw new Error('返回数据格式不正确，缺少 questions 数组');
+    }
+
+    const normalized = normalizeBeJson(parsed);
+    currentData = normalized;
+
+    const jsonStr = JSON.stringify(normalized, null, 2);
+    document.getElementById('outputJson').textContent = jsonStr;
+    document.getElementById('outputJson').className = '';
+
+    saveHistory({
+      title: normalized.title || '未命名',
+      source: '[图片识别] ' + (document.getElementById('imgInfo').textContent || ''),
+      data: normalized,
+      count: normalized.questions.length,
+      date: new Date().toLocaleString('zh-CN')
+    });
+
+    showStatus('outputStatus', '✅ 识别转换成功！共 ' + normalized.questions.length + ' 题', 'success');
+    showPreview(normalized);
+    // 切换到输出区
+    document.getElementById('outputJson').scrollIntoView({behavior:'smooth'});
+
+  } catch(e) {
+    showStatus('outputStatus', '❌ ' + e.message, 'error');
+    document.getElementById('outputJson').textContent = '// 错误：' + e.message;
+    document.getElementById('outputJson').className = '';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🖼️ AI 识别图片并转换';
+  }
+}
+
+// ========== 工具函数 ==========
+function showStatus(elId, msg, type) {
+  const el = document.getElementById(elId);
+  el.style.display = 'flex';
+  el.className = 'status-bar ' + type;
+  if (type === 'loading') {
+    el.innerHTML = '<span class="spinner"></span> ' + msg;
+  } else {
+    el.textContent = msg;
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('copyToast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function escHtml(s) {
+  if (s === null || s === undefined) return '';
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+// ========== 自动保存配置 ==========
+document.getElementById('langBaseUrl').addEventListener('input', saveLangConfig);
+document.getElementById('langApiKey').addEventListener('input', saveLangConfig);
+document.getElementById('langModel').addEventListener('input', saveLangConfig);
+document.getElementById('langTemperature').addEventListener('input', saveLangConfig);
+
+document.getElementById('visionBaseUrl').addEventListener('input', saveVisionConfig);
+document.getElementById('visionApiKey').addEventListener('input', saveVisionConfig);
+document.getElementById('visionModel').addEventListener('input', saveVisionConfig);
+document.getElementById('visionTemperature').addEventListener('input', saveVisionConfig);
+
+// ========== 初始化 ==========
+loadConfig();
+
+// 默认折叠已配置的模型，展开未配置的
+const langCfg = JSON.parse(localStorage.getItem('beLangConfig') || '{}');
+const visCfg = JSON.parse(localStorage.getItem('beVisionConfig') || '{}');
+if (langCfg.baseUrl && langCfg.apiKey) {
+  document.getElementById('langConfigBox').classList.add('hidden');
+  document.getElementById('langToggleBtn').style.display = 'inline-flex';
+}
+if (visCfg.baseUrl && visCfg.apiKey) {
+  document.getElementById('visionConfigBox').classList.add('hidden');
+  document.getElementById('visionToggleBtn').style.display = 'inline-flex';
+}
+</script>
+</body>
+</html>

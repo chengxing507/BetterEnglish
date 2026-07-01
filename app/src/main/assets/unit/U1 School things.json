@@ -1,0 +1,175 @@
+{
+  "title": "Unit 1 School things (学习用品) 单词默写",
+  "questions": [
+    {
+      "chinese": "学校",
+      "answer": "school",
+      "type": "word"
+    },
+    {
+      "chinese": "用品，用具",
+      "answer": "thing",
+      "type": "word"
+    },
+    {
+      "chinese": "铅笔",
+      "answer": "pencil",
+      "type": "word"
+    },
+    {
+      "chinese": "直尺",
+      "answer": "ruler",
+      "type": "word"
+    },
+    {
+      "chinese": "橡皮",
+      "answer": "rubber",
+      "type": "word"
+    },
+    {
+      "chinese": "书包",
+      "answer": "schoolbag",
+      "type": "word"
+    },
+    {
+      "chinese": "那，那个",
+      "answer": "that",
+      "type": "word"
+    },
+    {
+      "chinese": "放，安置",
+      "answer": "put",
+      "type": "word"
+    },
+    {
+      "chinese": "猜测，估计",
+      "answer": "guess",
+      "type": "word"
+    },
+    {
+      "chinese": "长的",
+      "answer": "long",
+      "type": "word"
+    },
+    {
+      "chinese": "铅笔袋，铅笔盒",
+      "answer": "pencil case",
+      "type": "word"
+    },
+    {
+      "chinese": "再一次，又一次",
+      "answer": "again",
+      "type": "word"
+    },
+    {
+      "chinese": "学习用品",
+      "answer": "school things",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我的橡皮",
+      "answer": "my rubber",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在你的书包里",
+      "answer": "in your schoolbag",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一本大的书",
+      "answer": "a big book",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在我的铅笔盒里",
+      "answer": "in my pencil case",
+      "type": "phrase"
+    },
+    {
+      "chinese": "钢笔和铅笔们",
+      "answer": "pens and pencils",
+      "type": "phrase"
+    },
+    {
+      "chinese": "你的短铅笔们",
+      "answer": "your short pencils",
+      "type": "phrase"
+    },
+    {
+      "chinese": "看一看",
+      "answer": "take a look",
+      "type": "phrase"
+    },
+    {
+      "chinese": "为我",
+      "answer": "for me",
+      "type": "phrase"
+    },
+    {
+      "chinese": "再猜一次",
+      "answer": "guess again",
+      "type": "phrase"
+    },
+    {
+      "chinese": "这是什么？——它是我的铅笔盒。",
+      "answer": "What's this? — It's my pencil case.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "那是什么？——它是我的橡皮。",
+      "answer": "What's that? — It's my rubber.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "把你的学习用品放进你的书包里。",
+      "answer": "Put your school things in your schoolbag.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的书包里有什么？看一看。",
+      "answer": "What's in my schoolbag? Take a look.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "一个铅笔盒和一本大书。",
+      "answer": "A pencil case and a big book.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的铅笔盒里有什么？你能看到吗？",
+      "answer": "What's in my pencil case? Can you see?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是一把尺吗？——不，它不是。",
+      "answer": "Is it a ruler? — No, it isn't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是一个铅笔盒吗？——是的，它是。",
+      "answer": "Is it a pencil case? — Yes, it is.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你是对的。",
+      "answer": "You're right.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "好主意！",
+      "answer": "Good idea!",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是给你的铅笔的。",
+      "answer": "It's for your pencil.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "现在你的铅笔是长的了。",
+      "answer": "Now your pencil is long.",
+      "type": "sentence"
+    }
+  ]
+}

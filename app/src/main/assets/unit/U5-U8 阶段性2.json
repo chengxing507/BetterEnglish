@@ -1,0 +1,755 @@
+{
+  "title": "U5-U8 阶段性测试 单词默写",
+  "questions": [
+    {
+      "chinese": "水果",
+      "answer": "fruit",
+      "type": "word"
+    },
+    {
+      "chinese": "橙子",
+      "answer": "orange",
+      "type": "word"
+    },
+    {
+      "chinese": "葡萄",
+      "answer": "grape",
+      "type": "word"
+    },
+    {
+      "chinese": "香蕉",
+      "answer": "banana",
+      "type": "word"
+    },
+    {
+      "chinese": "苹果",
+      "answer": "apple",
+      "type": "word"
+    },
+    {
+      "chinese": "芒果",
+      "answer": "mango",
+      "type": "word"
+    },
+    {
+      "chinese": "分享，共享",
+      "answer": "share",
+      "type": "word"
+    },
+    {
+      "chinese": "喜欢，喜爱",
+      "answer": "like",
+      "type": "word"
+    },
+    {
+      "chinese": "它们，他们，她们",
+      "answer": "they",
+      "type": "word"
+    },
+    {
+      "chinese": "甜的",
+      "answer": "sweet",
+      "type": "word"
+    },
+    {
+      "chinese": "做，制造",
+      "answer": "make",
+      "type": "word"
+    },
+    {
+      "chinese": "色拉，沙拉",
+      "answer": "salad",
+      "type": "word"
+    },
+    {
+      "chinese": "在一起，共同",
+      "answer": "together",
+      "type": "word"
+    },
+    {
+      "chinese": "喜欢苹果",
+      "answer": "like apples",
+      "type": "phrase"
+    },
+    {
+      "chinese": "又红又甜",
+      "answer": "red and sweet",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢香蕉",
+      "answer": "like bananas",
+      "type": "phrase"
+    },
+    {
+      "chinese": "许多水果",
+      "answer": "lots of fruit",
+      "type": "phrase"
+    },
+    {
+      "chinese": "有两个芒果",
+      "answer": "have two mangoes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢水果",
+      "answer": "like fruit",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一棵芒果树",
+      "answer": "a mango tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "分享芒果",
+      "answer": "share the mangoes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "多少个芒果",
+      "answer": "how many mangoes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "有一个橙子",
+      "answer": "have an orange",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一起做一份水果沙拉",
+      "answer": "make a fruit salad together",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一些葡萄",
+      "answer": "some grapes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "有两个苹果",
+      "answer": "have two apples",
+      "type": "phrase"
+    },
+    {
+      "chinese": "对……有好处",
+      "answer": "be good for",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我喜欢苹果。",
+      "answer": "I like apples.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我不喜欢芒果。",
+      "answer": "I don't like mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你有一个芒果/香蕉吗？——是的，我有。/ 不，我没有。",
+      "answer": "— Do you have a mango/banana? — Yes, I do. / No, I don't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们来分享芒果。",
+      "answer": "Let's share the mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我喜欢芒果。它们很甜。",
+      "answer": "I like mangoes. They're sweet.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我想要我的盘子里有很多水果。",
+      "answer": "I want lots of fruit on my plate.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我有两个芒果。",
+      "answer": "I have two mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我们分享了芒果。",
+      "answer": "We share the mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你喜欢什么水果？",
+      "answer": "What fruit do you like?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "看这棵芒果树。",
+      "answer": "Look at the mango tree.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你能看见多少个芒果？",
+      "answer": "How many mangoes can you see?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我爱芒果。",
+      "answer": "I love mangoes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你呢？",
+      "answer": "How about you?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们一起来做一个水果沙拉吧。",
+      "answer": "Let's make a fruit salad together.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你有什么水果？",
+      "answer": "What fruit do you have?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我有一些葡萄。",
+      "answer": "I have some grapes.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们来分享水果沙拉。",
+      "answer": "Let's share the fruit salad.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "真好看！",
+      "answer": "How nice!",
+      "type": "sentence"
+    },
+    {
+      "chinese": "水果对我们有好处。",
+      "answer": "Fruit is good for us.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "农场",
+      "answer": "farm",
+      "type": "word"
+    },
+    {
+      "chinese": "奶牛",
+      "answer": "cow",
+      "type": "word"
+    },
+    {
+      "chinese": "羊，绵羊",
+      "answer": "sheep",
+      "type": "word"
+    },
+    {
+      "chinese": "兔子",
+      "answer": "rabbit",
+      "type": "word"
+    },
+    {
+      "chinese": "鸡",
+      "answer": "chicken",
+      "type": "word"
+    },
+    {
+      "chinese": "胡萝卜",
+      "answer": "carrot",
+      "type": "word"
+    },
+    {
+      "chinese": "猪",
+      "answer": "pig",
+      "type": "word"
+    },
+    {
+      "chinese": "家，住所",
+      "answer": "home",
+      "type": "word"
+    },
+    {
+      "chinese": "这些",
+      "answer": "these",
+      "type": "word"
+    },
+    {
+      "chinese": "那些",
+      "answer": "those",
+      "type": "word"
+    },
+    {
+      "chinese": "帮助，协助",
+      "answer": "help",
+      "type": "word"
+    },
+    {
+      "chinese": "可爱的",
+      "answer": "cute",
+      "type": "word"
+    },
+    {
+      "chinese": "移动",
+      "answer": "move",
+      "type": "word"
+    },
+    {
+      "chinese": "不是",
+      "answer": "aren't",
+      "type": "word"
+    },
+    {
+      "chinese": "在农场上",
+      "answer": "on the farm",
+      "type": "phrase"
+    },
+    {
+      "chinese": "帮助我",
+      "answer": "help me",
+      "type": "phrase"
+    },
+    {
+      "chinese": "两只兔子",
+      "answer": "two rabbits",
+      "type": "phrase"
+    },
+    {
+      "chinese": "休息一下",
+      "answer": "have a rest",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一个猪的家",
+      "answer": "a home for pigs",
+      "type": "phrase"
+    },
+    {
+      "chinese": "欢迎来到我的家/农场",
+      "answer": "welcome to my home/farm",
+      "type": "phrase"
+    },
+    {
+      "chinese": "这些兔子",
+      "answer": "these rabbits",
+      "type": "phrase"
+    },
+    {
+      "chinese": "那些奶牛",
+      "answer": "those cows",
+      "type": "phrase"
+    },
+    {
+      "chinese": "欢迎来到我的家/农场。",
+      "answer": "Welcome to my home/farm.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这些是什么？——它们是胡萝卜。",
+      "answer": "— What are these? — They're carrots.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "那些也是胡萝卜吗？——是的，它们是。/ 不，它们不是。",
+      "answer": "— Are those carrots too? — Yes, they are. / No, they aren't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这是一个猪的家吗？——是的，它是。/ 不，它不是。",
+      "answer": "— Is this a home for pigs? — Yes, it is. / No, it isn't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "树下那些是什么？——它们是奶牛。",
+      "answer": "— What are those under the tree? — They're cows.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们是绵羊吗？——是的，它们是。/ 不，它们不是。",
+      "answer": "— Are they sheep? — Yes, they are. / No, they aren't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这些兔子非常可爱。",
+      "answer": "These rabbits are very cute.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们喜欢什么？——它们喜欢胡萝卜。",
+      "answer": "— What do they like? — They like carrots.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要动。",
+      "answer": "Don't move.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "动物",
+      "answer": "animal",
+      "type": "word"
+    },
+    {
+      "chinese": "猴子",
+      "answer": "monkey",
+      "type": "word"
+    },
+    {
+      "chinese": "狮子",
+      "answer": "lion",
+      "type": "word"
+    },
+    {
+      "chinese": "熊",
+      "answer": "bear",
+      "type": "word"
+    },
+    {
+      "chinese": "老虎",
+      "answer": "tiger",
+      "type": "word"
+    },
+    {
+      "chinese": "熊猫",
+      "answer": "panda",
+      "type": "word"
+    },
+    {
+      "chinese": "大象",
+      "answer": "elephant",
+      "type": "word"
+    },
+    {
+      "chinese": "午餐时间",
+      "answer": "lunchtime",
+      "type": "word"
+    },
+    {
+      "chinese": "鱼；鱼肉",
+      "answer": "fish",
+      "type": "word"
+    },
+    {
+      "chinese": "喂养",
+      "answer": "feed",
+      "type": "word"
+    },
+    {
+      "chinese": "动物园",
+      "answer": "zoo",
+      "type": "word"
+    },
+    {
+      "chinese": "去，走",
+      "answer": "go",
+      "type": "word"
+    },
+    {
+      "chinese": "在动物园",
+      "answer": "at the zoo",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢吃新鲜的竹子",
+      "answer": "love to eat fresh bamboo",
+      "type": "phrase"
+    },
+    {
+      "chinese": "睡觉和玩耍",
+      "answer": "sleep and play",
+      "type": "phrase"
+    },
+    {
+      "chinese": "看它们一整天",
+      "answer": "watch them all day",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢蛋糕",
+      "answer": "like cakes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢鱼",
+      "answer": "like fish",
+      "type": "phrase"
+    },
+    {
+      "chinese": "相互高举胳膊击掌",
+      "answer": "high five",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在动物园里",
+      "answer": "in the zoo",
+      "type": "phrase"
+    },
+    {
+      "chinese": "又可爱又酷",
+      "answer": "cute and cool",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢老虎/熊/猴子",
+      "answer": "like tigers/bears/monkeys",
+      "type": "phrase"
+    },
+    {
+      "chinese": "不喜欢狮子",
+      "answer": "don't like lions",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喂养动物",
+      "answer": "feed animals",
+      "type": "phrase"
+    },
+    {
+      "chinese": "去看熊猫",
+      "answer": "go to see the pandas",
+      "type": "phrase"
+    },
+    {
+      "chinese": "让我们在动物园里看熊猫。",
+      "answer": "Let's see the pandas at the zoo.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们喜爱吃新鲜的竹子。",
+      "answer": "They love to eat fresh bamboo.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我能看它们一整天。",
+      "answer": "I can watch them all day.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你喜欢蛋糕/香蕉/鱼吗？——是的，我喜欢。/ 不，我不喜欢。",
+      "answer": "— Do you like cakes/bananas/fish? — Yes, I do. / No, I don't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你喜欢池子里的大象吗？",
+      "answer": "Do you like elephants in the pool?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们很大，又可爱又酷。",
+      "answer": "They're large, cute and cool.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我喜欢老虎，它们很酷。",
+      "answer": "I like tigers. They're cool.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你想要一根香蕉吗？——好的，谢谢。/ 不用了，谢谢。",
+      "answer": "— Would you like a banana? — Yes, please. / No, thank you.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要在动物园里给动物喂食。",
+      "answer": "Don't feed animals in the zoo.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们去看熊猫吧。",
+      "answer": "Let's go to see the pandas.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "颜色，色彩",
+      "answer": "colour",
+      "type": "word"
+    },
+    {
+      "chinese": "黄色的",
+      "answer": "yellow",
+      "type": "word"
+    },
+    {
+      "chinese": "蓝色的",
+      "answer": "blue",
+      "type": "word"
+    },
+    {
+      "chinese": "红色的",
+      "answer": "red",
+      "type": "word"
+    },
+    {
+      "chinese": "橘黄色的",
+      "answer": "orange",
+      "type": "word"
+    },
+    {
+      "chinese": "粉红色的",
+      "answer": "pink",
+      "type": "word"
+    },
+    {
+      "chinese": "绿色的",
+      "answer": "green",
+      "type": "word"
+    },
+    {
+      "chinese": "棕色的",
+      "answer": "brown",
+      "type": "word"
+    },
+    {
+      "chinese": "黑色的",
+      "answer": "black",
+      "type": "word"
+    },
+    {
+      "chinese": "白色的",
+      "answer": "white",
+      "type": "word"
+    },
+    {
+      "chinese": "买",
+      "answer": "buy",
+      "type": "word"
+    },
+    {
+      "chinese": "气球",
+      "answer": "balloon",
+      "type": "word"
+    },
+    {
+      "chinese": "当然",
+      "answer": "sure",
+      "type": "word"
+    },
+    {
+      "chinese": "变色龙",
+      "answer": "chameleon",
+      "type": "word"
+    },
+    {
+      "chinese": "小的",
+      "answer": "little",
+      "type": "word"
+    },
+    {
+      "chinese": "买一个气球",
+      "answer": "buy a balloon",
+      "type": "phrase"
+    },
+    {
+      "chinese": "想要一个气球",
+      "answer": "want a balloon",
+      "type": "phrase"
+    },
+    {
+      "chinese": "什么颜色",
+      "answer": "what colour",
+      "type": "phrase"
+    },
+    {
+      "chinese": "为我摘一个苹果",
+      "answer": "pick an apple for me",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一个橙色的气球",
+      "answer": "an orange balloon",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在树上",
+      "answer": "on the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一个绿色的/红色的气球",
+      "answer": "a green/red balloon",
+      "type": "phrase"
+    },
+    {
+      "chinese": "想要一个来自树上的红苹果",
+      "answer": "want a red apple from the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我的小朋友",
+      "answer": "my little friend",
+      "type": "phrase"
+    },
+    {
+      "chinese": "红黄相间",
+      "answer": "yellow and red",
+      "type": "phrase"
+    },
+    {
+      "chinese": "非常酷",
+      "answer": "very cool",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在我们/你们周围",
+      "answer": "around us/you",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我可以买一个气球吗？——当然。",
+      "answer": "— Can I buy a balloon? — Sure.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我想要一个粉色的气球。",
+      "answer": "I want a pink balloon.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "那个气球是给你的。",
+      "answer": "That balloon is for you.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "在树上的是什么？",
+      "answer": "What's on the tree?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你能为我摘一个苹果吗？",
+      "answer": "Can you pick an apple for me?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是我的小朋友。",
+      "answer": "It's my little friend.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "现在它是什么颜色的？——它是棕色的。",
+      "answer": "— What colour is it now? — It's brown.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "现在它是红黄相间的。",
+      "answer": "It's yellow and red now.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的小朋友是一只变色龙。",
+      "answer": "My little friend is a chameleon.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它又变绿了。",
+      "answer": "It's green again.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "怎么回事？",
+      "answer": "How come?",
+      "type": "sentence"
+    }
+  ]
+}
