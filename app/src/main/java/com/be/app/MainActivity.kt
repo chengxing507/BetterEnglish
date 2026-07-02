@@ -8,12 +8,28 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private var uploadCallback: ValueCallback<Array<Uri>>? = null
+
+    // Activity Result API：文件选择器（兼容 Android 12+，不会闪退）
+    private val fileChooserLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val uris = if (result.resultCode == RESULT_OK && result.data != null) {
+            val data = result.data
+            data?.data?.let { arrayOf(it) }
+                ?: data?.clipData?.let { clip ->
+                    (0 until clip.itemCount).map { clip.getItemAt(it).uri }.toTypedArray()
+                }
+        } else null
+        uploadCallback?.onReceiveValue(uris)
+        uploadCallback = null
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,46 +61,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 支持文件上传
+        // 支持文件上传（使用 Activity Result API，兼容 Android 12+）
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
                 fileChooserParams: FileChooserParams?
             ): Boolean {
+                this@MainActivity.uploadCallback?.onReceiveValue(null)
+                this@MainActivity.uploadCallback = filePathCallback
+
                 val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "*/*"
                 }
-                uploadCallback = filePathCallback
-                startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE)
+                try {
+                    fileChooserLauncher.launch(Intent.createChooser(intent, "选择文件"))
+                } catch (e: Exception) {
+                    this@MainActivity.uploadCallback?.onReceiveValue(null)
+                    this@MainActivity.uploadCallback = null
+                    return false
+                }
                 return true
             }
         }
 
         // 从 assets 加载主页面
         webView.loadUrl("file:///android_asset/English_v1.4.2.html")
-    }
-
-    // 处理文件选择结果
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == FILE_CHOOSER_REQUEST_CODE) {
-            if (resultCode == RESULT_OK && data != null) {
-                val result = if (data.clipData != null) {
-                    val uris = Array(data.clipData!!.itemCount) { i -> data.clipData!!.getItemAt(i).uri }
-                    uris
-                } else {
-                    data.data?.let { arrayOf(it) }
-                }
-                uploadCallback?.onReceiveValue(result)
-            } else {
-                uploadCallback?.onReceiveValue(null)
-            }
-            uploadCallback = null
-            return
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     // 处理返回键
@@ -94,9 +97,5 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
-    }
-
-    companion object {
-        private const val FILE_CHOOSER_REQUEST_CODE = 1001
     }
 }
