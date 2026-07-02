@@ -372,7 +372,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
 <body>
 
 <div class="header">
-  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400;cursor:pointer" onclick="onVersionClick()" title="点击查看版本信息">v1.4.2</span></h1>
+  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400;cursor:pointer" onclick="onVersionClick()" title="点击查看版本信息">v1.4.3</span></h1>
   <p id="headerSub">导入数据，开始练习</p>
 </div>
 
@@ -527,6 +527,15 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
   <div class="r-wrong" id="wrongSection" style="display:none">
     <h3>📝 错题回顾</h3>
     <div class="w-list" id="wrongList"></div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)">
+      <div style="font-size:12px;color:var(--sub-text);margin-bottom:6px">📋 导出错题（点击自动复制）</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="exportWrong('cn')" style="background:#e8f5e9;color:#2d6a4f;border:none;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">🇨🇳 纯中文</button>
+        <button class="btn btn-sm" onclick="exportWrong('en')" style="background:#e3f2fd;color:#1565c0;border:none;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">🇬🇧 纯英文</button>
+        <button class="btn btn-sm" onclick="exportWrong('both')" style="background:#f3e8ff;color:#6f42c1;border:none;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">🌐 中英双语</button>
+        <span id="exportStatus" style="font-size:11px;color:#28a745;align-self:center;display:none">✅ 已复制</span>
+      </div>
+    </div>
   </div>
 
   <div class="r-marked" id="markedSection" style="display:none">
@@ -1100,7 +1109,18 @@ function submitAnswer() {
   var fb = document.getElementById('feedback');
   if (!userAns) { fb.textContent = '请输入答案'; fb.className = 'q-feedback wrong'; input.focus(); return; }
   state.attemptCount++;
-  var isCorrect = userAns.toLowerCase() === q.answer.toLowerCase();
+  // 是否区分标点符号（从管理面板配置）
+  var punctConfig = JSON.parse(localStorage.getItem('bePunctuationConfig') || '{}');
+  var ignorePunct = punctConfig.ignorePunctuation !== false; // 默认忽略标点
+  function normalizeText(t) {
+    var s = t.toLowerCase().trim();
+    if (ignorePunct) {
+      s = s.replace(/[.,!?;:'"()\[\]{}_\-—…·、，。！？；：""''（）【】《》\s]+/g, ' ');
+      s = s.replace(/\s+/g, ' ').trim();
+    }
+    return s;
+  }
+  var isCorrect = normalizeText(userAns) === normalizeText(q.answer);
   if (isCorrect) {
     input.className = 'correct'; fb.textContent = '正确！'; fb.className = 'q-feedback correct';
     lockQuestion(); setTimeout(function() { nextQuestion(); }, 600);
@@ -1999,6 +2019,9 @@ function openAdminPanel() {
   document.getElementById('adminTimerWord').value = tcfg.word;
   document.getElementById('adminTimerPhrase').value = tcfg.phrase;
   document.getElementById('adminTimerSentence').value = tcfg.sentence;
+  // 加载标点符号配置
+  var pcfg = JSON.parse(localStorage.getItem('bePunctuationConfig') || '{}');
+  document.getElementById('adminIgnorePunct').checked = pcfg.ignorePunctuation !== false;
   document.getElementById('adminStatus').textContent = '';
   document.getElementById('adminPanel').classList.add('show');
 }
@@ -2022,6 +2045,11 @@ function saveAdminConfig() {
     sentence: parseInt(document.getElementById('adminTimerSentence').value) || 70
   };
   localStorage.setItem('beTimerConfig', JSON.stringify(tcfg));
+  // 保存标点符号配置
+  var pcfg = {
+    ignorePunctuation: document.getElementById('adminIgnorePunct').checked
+  };
+  localStorage.setItem('bePunctuationConfig', JSON.stringify(pcfg));
   document.getElementById('adminStatus').textContent = '✅ 保存成功！';
   setTimeout(function() { document.getElementById('adminStatus').textContent = ''; }, 2000);
 }
@@ -2159,24 +2187,30 @@ function showDisputeError(m) {
   st.className = 'd-status error'; st.textContent = m;
 }
 
-// 刷新结果页面复核区（不重绘整个结果页）
+// 刷新结果页面复核区（重建按钮 + 更新剩余次数）
 function refreshDisputeSection() {
   var disputeSection = document.getElementById('disputeResultSection');
   if (!disputeSection) return;
-  // 只更新标题中的剩余次数
-  var titles = disputeSection.querySelectorAll('h3');
-  for (var ti = 0; ti < titles.length; ti++) {
-    var t = titles[ti];
-    if (t.textContent.indexOf('复核（剩余') !== -1) {
-      t.textContent = '复核（剩余' + (state.maxDisputes - state.disputeCount) + '次）';
-    }
-  }
-  // 如果次数已用尽，隐藏所有复核按钮
-  if (state.disputeCount >= state.maxDisputes) {
-    var btns = disputeSection.querySelectorAll('button');
-    for (var bi = 0; bi < btns.length; bi++) {
-      btns[bi].style.display = 'none';
-    }
+  // 重建复核按钮
+  disputeSection.innerHTML = '';
+  if (state.wrongRecords.length > 0 && state.disputeCount < state.maxDisputes) {
+    var dTitle = document.createElement('h3');
+    dTitle.textContent = '复核（剩余' + (state.maxDisputes - state.disputeCount) + '次）';
+    dTitle.style.cssText = 'font-size:14px;margin-bottom:8px;color:#6f42c1';
+    disputeSection.appendChild(dTitle);
+    // 按题目分组去重
+    var seen = {};
+    state.wrongRecords.forEach(function(r) {
+      if (!seen[r.index]) {
+        seen[r.index] = true;
+        var btn = document.createElement('button');
+        btn.className = 'btn btn-sm';
+        btn.style.cssText = 'border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#f3e8ff;color:#6f42c1;margin:0 6px 6px 0';
+        btn.textContent = r.chinese + ' 复核';
+        btn.onclick = function(idx) { return function() { prepareDispute(idx); }; }(r.index);
+        disputeSection.appendChild(btn);
+      }
+    });
   }
 }
 
@@ -2200,7 +2234,7 @@ function refreshResultStats() {
   document.getElementById('resultTitle').textContent = title;
 }
 
-/** 复核后刷新错题列表 */
+/** 复核后刷新错题列表 + 重建复核区按钮 */
 function refreshResultWrongList() {
   var ws = document.getElementById('wrongSection');
   var wl = document.getElementById('wrongList');
@@ -2226,6 +2260,41 @@ function refreshResultWrongList() {
   } else {
     ws.style.display = 'none';
   }
+}
+/** 导出错题：cn=纯中文, en=纯英文, both=中英双语 */
+function exportWrong(mode) {
+  var statusEl = document.getElementById('exportStatus');
+  if (!state.wrongRecords || state.wrongRecords.length === 0) {
+    statusEl.textContent = '⚠️ 没有错题'; statusEl.style.display = 'inline'; statusEl.style.color = '#dc3545';
+    setTimeout(function(){statusEl.style.display='none';}, 2000);
+    return;
+  }
+  // 去重（同一题只取一次）
+  var seen = {}, lines = [];
+  state.wrongRecords.forEach(function(r) {
+    if (seen[r.index]) return;
+    seen[r.index] = true;
+    if (mode === 'cn') lines.push(r.chinese);
+    else if (mode === 'en') lines.push(r.answer);
+    else lines.push(r.chinese + ' → ' + r.answer);
+  });
+  var text = lines.join('\n');
+  // 复制到剪贴板
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      statusEl.textContent = '✅ 已复制 ' + lines.length + ' 题'; statusEl.style.display = 'inline'; statusEl.style.color = '#28a745';
+      setTimeout(function(){statusEl.style.display='none';}, 2000);
+    }).catch(function() { fallbackCopy(text, statusEl); });
+  } else { fallbackCopy(text, statusEl); }
+}
+function fallbackCopy(text, statusEl) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); statusEl.textContent = '✅ 已复制'; statusEl.style.display = 'inline'; statusEl.style.color = '#28a745'; }
+  catch(e) { statusEl.textContent = '❌ 复制失败'; statusEl.style.display = 'inline'; statusEl.style.color = '#dc3545'; }
+  document.body.removeChild(ta);
+  setTimeout(function(){statusEl.style.display='none';}, 2000);
 }
 document.getElementById('disputeModal').addEventListener('click', function(e) { if (e.target === this) closeDisputeModal(); });
 
@@ -2464,6 +2533,14 @@ console.log('📝 英语默写 loaded');
       </div>
     </div>
     <div class="admin-hint">每道题的超时时间，超时自动判错进入下一题</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <div class="admin-check">
+      <input type="checkbox" id="adminIgnorePunct" checked>
+      <label for="adminIgnorePunct">🔄 自动忽略标点符号</label>
+    </div>
+    <div class="admin-hint" style="margin-left:24px">开启后判断答案时会忽略标点、空格和大小写差异（默认开启）</div>
 
     <div class="admin-status" id="adminStatus"></div>
 
