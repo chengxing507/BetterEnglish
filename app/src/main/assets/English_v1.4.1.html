@@ -1221,6 +1221,10 @@ function finishPractice() {
 function saveHistory(session) {
   var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
   session.date = new Date().toLocaleString('zh-CN');
+  // 额外保存题目列表和标记题目，便于历史记录回到结算页
+  session.questions = state.questions ? state.questions.slice() : [];
+  session.markedQuestions = state.markedQuestions ? state.markedQuestions.slice() : [];
+  session.totalOriginal = state.totalOriginal || session.total;
   h.unshift(session);
   if (h.length > 50) h = h.slice(0, 50);
   localStorage.setItem('dictHistory', JSON.stringify(h));
@@ -1267,21 +1271,110 @@ function clearAllHistory() {
 }
 
 function showHistoryDetail(idx) {
-  // 简单展示，点击历史项后弹详细
   var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
   var s = h[idx];
-  var detail = '📋 ' + escHtml(s.title || '未命名') + '\n';
-  detail += '📅 ' + s.date + '\n';
-  detail += '📊 正确率 ' + s.accuracy + '% | 共 ' + s.total + ' 题 | 错 ' + s.wrong + ' 题\n';
-  detail += '⏱ ' + s.duration + '\n';
-  detail += '🔀 切屏 ' + (s.switchCount || 0) + ' 次\n\n';
-  if (s.wrongRecords && s.wrongRecords.length) {
-    detail += '❌ 错题：\n';
-    s.wrongRecords.forEach(function(r) {
-      detail += '  ' + r.chinese + ' → 正确: ' + r.answer + ' (你答: ' + r.userInput + ")\n";
+  if (!s) return;
+
+  // 关闭历史弹窗
+  closeHistory();
+
+  // 用历史数据填充结果页
+  var accuracy = s.accuracy;
+  var total = s.total;
+  var wrongCount = s.wrong;
+  var correctCount = total - wrongCount;
+
+  var icon = '🎉', title = '练习完成！';
+  if (s.isEarlyEnd) { icon = '⏹️'; title = '已提前结束'; }
+  else if (accuracy === 100) { icon = '🏆'; title = '满分通关！太棒了！'; }
+  else if (accuracy >= 80) { icon = '🌟'; title = '做得很好！'; }
+  else if (accuracy >= 60) { icon = '👍'; title = '还不错，继续加油！'; }
+  else if (accuracy > 0) { icon = '💪'; title = '加油，多练练！'; }
+  else { icon = '😅'; title = '再试试吧！'; }
+
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultTitle').textContent = title + ' 📋 历史回顾';
+  document.getElementById('statAccuracy').textContent = accuracy + '%';
+  document.getElementById('statDuration').textContent = s.duration;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statWrong').textContent = wrongCount;
+  document.getElementById('statDone').textContent = (s.isEarlyEnd ? s.wrongRecords.length : total) + '/' + (s.totalOriginal || total);
+  document.getElementById('statSwitch').textContent = s.switchCount || 0;
+
+  // 错题列表
+  var ws = document.getElementById('wrongSection');
+  var wl = document.getElementById('wrongList');
+  wl.innerHTML = '';
+  var records = s.wrongRecords || [];
+  if (records.length > 0) {
+    ws.style.display = 'block';
+    var groups = {};
+    records.forEach(function(r) { if (!groups[r.index]) groups[r.index] = []; groups[r.index].push(r); });
+    Object.keys(groups).forEach(function(idx2) {
+      var attempts = groups[idx2];
+      var first = attempts[0];
+      var gd = document.createElement('div');
+      gd.className = 'w-group';
+      var badge = attempts.length > 1 ? ' <span style="font-size:11px;color:#888">尝试' + attempts.length + '次</span>' : '';
+      gd.innerHTML = '<div class="w-group-header">' +
+        '<span class="w-g-title">' + escHtml(first.chinese) + ' ' + escHtml(first.answer) + '</span>' + badge +
+        '<span class="w-g-arrow" style="font-size:11px;cursor:pointer" onclick="this.parentElement.classList.toggle(\'expanded\');this.parentElement.nextElementSibling.classList.toggle(\'show\')">▼</span></div>' +
+        '<div class="w-group-body">' +
+        attempts.map(function(a, i) { return '<div class="w-attempt"><span class="wa-label">' + (a.isSkip ? '跳过' : '第' + (i+1) + '次') + '</span> ' + escHtml(a.userInput) + '</div>'; }).join('') +
+        '</div>';
+      wl.appendChild(gd);
     });
+  } else { ws.style.display = 'none'; }
+
+  // 清除复核区（历史记录中不显示复核）
+  var disputeSection = document.getElementById('disputeResultSection');
+  if (disputeSection) disputeSection.innerHTML = '';
+
+  // 标记题目区
+  var markedSection = document.getElementById('markedSection');
+  var markedList = document.getElementById('markedList');
+  var batchBtn = document.getElementById('btnBatchReview');
+  markedList.innerHTML = '';
+  var mq = s.markedQuestions || [];
+  var qs = s.questions || [];
+  if (mq.length > 0 && qs.length > 0) {
+    markedSection.style.display = 'block';
+    batchBtn.disabled = false;
+    batchBtn.textContent = '🤖 一键复核全部标记题目（' + mq.length + '题）';
+    document.getElementById('batchReviewStatus').textContent = '';
+    document.getElementById('batchReviewResults').innerHTML = '';
+    mq.sort(function(a,b){return a-b;}).forEach(function(qIdx) {
+      var q = qs[qIdx];
+      if (!q) return;
+      var item = document.createElement('div');
+      item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--sub-bg,#f8f9fa);border-radius:6px;margin-bottom:4px;font-size:12px';
+      var userAnswer = '';
+      for (var ri = 0; ri < records.length; ri++) {
+        if (records[ri].index == qIdx) {
+          userAnswer = records[ri].userInput;
+          break;
+        }
+      }
+      item.innerHTML = '<span><strong>' + escHtml(q.chinese) + '</strong> → ' + escHtml(q.answer) + (userAnswer ? ' <span style="color:#888">| 你的答案: ' + escHtml(userAnswer) + '</span>' : '') + '</span>';
+      markedList.appendChild(item);
+    });
+  } else {
+    markedSection.style.display = 'none';
   }
-  alert(detail);
+
+  // 清除 AI 分析结果（让用户可重新点击分析）
+  document.getElementById('aiResult').innerHTML = '';
+
+  // 将历史数据临时赋给 state，以便 AI 分析、批量复核等功能正常工作
+  state.questions = qs;
+  state.markedQuestions = mq;
+  state.wrongRecords = records;
+  state.totalOriginal = s.totalOriginal || total;
+  state.isEarlyEnd = s.isEarlyEnd || false;
+  state.switchCount = s.switchCount || 0;
+  state.mode = s.mode || '';
+
+  showPage('pageResult');
 }
 
 function closeHistory() {
