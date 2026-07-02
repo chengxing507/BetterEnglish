@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         webView.webChromeClient = WebChromeClient()
 
         // 从 assets 加载主页面
-        webView.loadUrl("file:///android_asset/English_v1.4.1.html")
+        webView.loadUrl("file:///android_asset/English_v1.4.2.html")
     }
 
     // 处理返回键：如果有历史记录则回退
