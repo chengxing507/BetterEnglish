@@ -2134,8 +2134,17 @@ function submitDispute() {
         if (r2.is_correct !== undefined) {
           var idx = state._disputeTarget.index;
           state.disputeCount++; state._disputeTarget = null; closeDisputeModal();
-          alert('第' + (idx+1) + '题，经复核后确认' + (r2.is_correct ? '正确' : '错误'));
-          // 刷新结果页面的复核区显示剩余次数
+          if (r2.is_correct) {
+            // AI 判定正确：从错题中移除，更新统计
+            state.everWrong.delete(idx);
+            state.totalWrongCount = state.everWrong.size;
+            // 从 wrongRecords 中移除该题的所有记录
+            state.wrongRecords = state.wrongRecords.filter(function(r) { return r.index !== idx; });
+            // 刷新结果页面的统计
+            refreshResultStats();
+          }
+          // 刷新页面显示
+          refreshResultWrongList();
           refreshDisputeSection();
           return;
         }
@@ -2168,6 +2177,54 @@ function refreshDisputeSection() {
     for (var bi = 0; bi < btns.length; bi++) {
       btns[bi].style.display = 'none';
     }
+  }
+}
+
+/** 复核后刷新结果页面的统计数据 */
+function refreshResultStats() {
+  var total = state.questions.length;
+  var wrongCount = state.everWrong.size;
+  var correctCount = total - wrongCount;
+  var accuracy = total > 0 ? Math.round(correctCount / total * 100) : 0;
+  document.getElementById('statAccuracy').textContent = accuracy + '%';
+  document.getElementById('statWrong').textContent = wrongCount;
+  document.getElementById('statDone').textContent = (state.isEarlyEnd ? state.currentIdx : total) + '/' + (state.totalOriginal || total);
+  // 更新结果标题和图标
+  var icon = '🎉', title = '练习完成！';
+  if (accuracy === 100) { icon = '🏆'; title = '满分通关！太棒了！'; }
+  else if (accuracy >= 80) { icon = '🌟'; title = '做得很好！'; }
+  else if (accuracy >= 60) { icon = '👍'; title = '还不错，继续加油！'; }
+  else if (accuracy > 0) { icon = '💪'; title = '加油，多练练！'; }
+  else { icon = '😅'; title = '再试试吧！'; }
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultTitle').textContent = title;
+}
+
+/** 复核后刷新错题列表 */
+function refreshResultWrongList() {
+  var ws = document.getElementById('wrongSection');
+  var wl = document.getElementById('wrongList');
+  wl.innerHTML = '';
+  if (state.wrongRecords.length > 0) {
+    ws.style.display = 'block';
+    var groups = {};
+    state.wrongRecords.forEach(function(r) { if (!groups[r.index]) groups[r.index] = []; groups[r.index].push(r); });
+    Object.keys(groups).forEach(function(idx) {
+      var attempts = groups[idx];
+      var first = attempts[0];
+      var gd = document.createElement('div');
+      gd.className = 'w-group';
+      var badge = attempts.length > 1 ? ' <span style="font-size:11px;color:#888">尝试' + attempts.length + '次</span>' : '';
+      gd.innerHTML = '<div class="w-group-header">' +
+        '<span class="w-g-title">' + escHtml(first.chinese) + ' ' + escHtml(first.answer) + '</span>' + badge +
+        '<span class="w-g-arrow" style="font-size:11px;cursor:pointer" onclick="this.parentElement.classList.toggle(\'expanded\');this.parentElement.nextElementSibling.classList.toggle(\'show\')">▼</span></div>' +
+        '<div class="w-group-body">' +
+        attempts.map(function(a, i) { return '<div class="w-attempt"><span class="wa-label">' + (a.isSkip ? '跳过' : '第' + (i+1) + '次') + '</span> ' + escHtml(a.userInput) + '</div>'; }).join('') +
+        '</div>';
+      wl.appendChild(gd);
+    });
+  } else {
+    ws.style.display = 'none';
   }
 }
 document.getElementById('disputeModal').addEventListener('click', function(e) { if (e.target === this) closeDisputeModal(); });

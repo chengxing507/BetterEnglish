@@ -1,7 +1,10 @@
 package com.be.app
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -44,7 +47,52 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 支持文件上传
-        webView.webChromeClient = WebChromeClient()
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: FileChooserParams?
+            ): Boolean {
+                // 创建文件选择 Intent
+                val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "*/*"
+                }
+                // 使用 ActivityResultLauncher 方式（更现代）
+                // 但由于 WebView 的特殊性，使用传统的 startActivityForResult 方式
+                uploadCallback = filePathCallback
+                startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE)
+                return true
+            }
+        }
+
+    private var uploadCallback: ValueCallback<Array<Uri>>? = null
+
+    companion object {
+        private const val FILE_CHOOSER_REQUEST_CODE = 1001
+    }
+
+    // 处理文件选择结果
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == FILE_CHOOSER_REQUEST_CODE) {
+            if (resultCode == RESULT_OK && data != null) {
+                val result = if (data.clipData != null) {
+                    // 多文件选择
+                    val uris = Array(data.clipData!!.itemCount) { i -> data.clipData!!.getItemAt(i).uri }
+                    uris
+                } else {
+                    data.data?.let { arrayOf(it) }
+                }
+                uploadCallback?.onReceiveValue(result)
+            } else {
+                uploadCallback?.onReceiveValue(null)
+            }
+            uploadCallback = null
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 
         // 从 assets 加载主页面
         webView.loadUrl("file:///android_asset/English_v1.4.2.html")
