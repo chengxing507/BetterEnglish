@@ -112,13 +112,23 @@
       "type": "phrase"
     },
     {
-      "chinese": "这是什么？——它是我的铅笔盒。",
-      "answer": "What's this? — It's my pencil case.",
+      "chinese": "这是什么？",
+      "answer": "What's this?",
       "type": "sentence"
     },
     {
-      "chinese": "那是什么？——它是我的橡皮。",
-      "answer": "What's that? — It's my rubber.",
+      "chinese": "它是我的铅笔盒。",
+      "answer": "It's my pencil case.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "那是什么？",
+      "answer": "What's that?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是我的橡皮。",
+      "answer": "It's my rubber.",
       "type": "sentence"
     },
     {
@@ -142,13 +152,23 @@
       "type": "sentence"
     },
     {
-      "chinese": "它是一把尺吗？——不，它不是。",
-      "answer": "Is it a ruler? — No, it isn't.",
+      "chinese": "它是一把尺吗？",
+      "answer": "Is it a ruler?",
       "type": "sentence"
     },
     {
-      "chinese": "它是一个铅笔盒吗？——是的，它是。",
-      "answer": "Is it a pencil case? — Yes, it is.",
+      "chinese": "不，它不是。",
+      "answer": "No, it isn't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是一个铅笔盒吗？",
+      "answer": "Is it a pencil case?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，它是。",
+      "answer": "Yes, it is.",
       "type": "sentence"
     },
     {

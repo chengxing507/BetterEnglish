@@ -112,13 +112,23 @@
       "type": "phrase"
     },
     {
-      "chinese": "这是什么？——它是我的铅笔盒。",
-      "answer": "What's this? — It's my pencil case.",
+      "chinese": "这是什么？",
+      "answer": "What's this?",
       "type": "sentence"
     },
     {
-      "chinese": "那是什么？——它是我的橡皮。",
-      "answer": "What's that? — It's my rubber.",
+      "chinese": "它是我的铅笔盒。",
+      "answer": "It's my pencil case.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "那是什么？",
+      "answer": "What's that?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是我的橡皮。",
+      "answer": "It's my rubber.",
       "type": "sentence"
     },
     {
@@ -142,13 +152,23 @@
       "type": "sentence"
     },
     {
-      "chinese": "它是一把尺吗？——不，它不是。",
-      "answer": "Is it a ruler? — No, it isn't.",
+      "chinese": "它是一把尺吗？",
+      "answer": "Is it a ruler?",
       "type": "sentence"
     },
     {
-      "chinese": "它是一个铅笔盒吗？——是的，它是。",
-      "answer": "Is it a pencil case? — Yes, it is.",
+      "chinese": "不，它不是。",
+      "answer": "No, it isn't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是一个铅笔盒吗？",
+      "answer": "Is it a pencil case?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，它是。",
+      "answer": "Yes, it is.",
       "type": "sentence"
     },
     {
@@ -337,8 +357,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "我会擦黑板。——我也是！",
-      "answer": "I can clean the blackboard. — Me too!",
+      "chinese": "我会擦黑板。",
+      "answer": "I can clean the blackboard.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我也是！",
+      "answer": "Me too!",
       "type": "sentence"
     },
     {
@@ -547,8 +572,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你想要一颗糖吗？——是的，谢谢。/ 不用了，谢谢。",
-      "answer": "Would you like a sweet? — Yes, please. / No, thank you.",
+      "chinese": "你想要一颗糖吗？",
+      "answer": "Would you like a sweet?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，谢谢。/ 不用了，谢谢。",
+      "answer": "Yes, please. / No, thank you.",
       "type": "sentence"
     },
     {
@@ -862,8 +892,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你画了什么？——一张你和蝴蝶的图画。",
-      "answer": "— What do you draw? — A picture of you and the butterfly.",
+      "chinese": "你画了什么？",
+      "answer": "What do you draw?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "一张你和蝴蝶的图画。",
+      "answer": "A picture of you and the butterfly.",
       "type": "sentence"
     },
     {
@@ -1017,8 +1052,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你有一个芒果/香蕉吗？——是的，我有。/ 不，我没有。",
-      "answer": "— Do you have a mango/banana? — Yes, I do. / No, I don't.",
+      "chinese": "你有一个芒果/香蕉吗？",
+      "answer": "Do you have a mango/banana?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，我有。/ 不，我没有。",
+      "answer": "Yes, I do. / No, I don't.",
       "type": "sentence"
     },
     {
@@ -1217,28 +1257,53 @@
       "type": "sentence"
     },
     {
-      "chinese": "这些是什么？——它们是胡萝卜。",
-      "answer": "— What are these? — They're carrots.",
+      "chinese": "这些是什么？",
+      "answer": "What are these?",
       "type": "sentence"
     },
     {
-      "chinese": "那些也是胡萝卜吗？——是的，它们是。/ 不，它们不是。",
-      "answer": "— Are those carrots too? — Yes, they are. / No, they aren't.",
+      "chinese": "它们是胡萝卜。",
+      "answer": "They're carrots.",
       "type": "sentence"
     },
     {
-      "chinese": "这是一个猪的家吗？——是的，它是。/ 不，它不是。",
-      "answer": "— Is this a home for pigs? — Yes, it is. / No, it isn't.",
+      "chinese": "那些也是胡萝卜吗？",
+      "answer": "Are those carrots too?",
       "type": "sentence"
     },
     {
-      "chinese": "树下那些是什么？——它们是奶牛。",
-      "answer": "— What are those under the tree? — They're cows.",
+      "chinese": "是的，它们是。/ 不，它们不是。",
+      "answer": "Yes, they are. / No, they aren't.",
       "type": "sentence"
     },
     {
-      "chinese": "它们是绵羊吗？——是的，它们是。/ 不，它们不是。",
-      "answer": "— Are they sheep? — Yes, they are. / No, they aren't.",
+      "chinese": "这是一个猪的家吗？",
+      "answer": "Is this a home for pigs?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，它是。/ 不，它不是。",
+      "answer": "Yes, it is. / No, it isn't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "树下那些是什么？",
+      "answer": "What are those under the tree?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们是奶牛。",
+      "answer": "They're cows.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们是绵羊吗？",
+      "answer": "Are they sheep?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，它们是。/ 不，它们不是。",
+      "answer": "Yes, they are. / No, they aren't.",
       "type": "sentence"
     },
     {
@@ -1247,8 +1312,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "它们喜欢什么？——它们喜欢胡萝卜。",
-      "answer": "— What do they like? — They like carrots.",
+      "chinese": "它们喜欢什么？",
+      "answer": "What do they like?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们喜欢胡萝卜。",
+      "answer": "They like carrots.",
       "type": "sentence"
     },
     {
@@ -1397,8 +1467,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你喜欢蛋糕/香蕉/鱼吗？——是的，我喜欢。/ 不，我不喜欢。",
-      "answer": "— Do you like cakes/bananas/fish? — Yes, I do. / No, I don't.",
+      "chinese": "你喜欢蛋糕/香蕉/鱼吗？",
+      "answer": "Do you like cakes/bananas/fish?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，我喜欢。/ 不，我不喜欢。",
+      "answer": "Yes, I do. / No, I don't.",
       "type": "sentence"
     },
     {
@@ -1417,8 +1492,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你想要一根香蕉吗？——好的，谢谢。/ 不用了，谢谢。",
-      "answer": "— Would you like a banana? — Yes, please. / No, thank you.",
+      "chinese": "你想要一根香蕉吗？",
+      "answer": "Would you like a banana?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "好的，谢谢。/ 不用了，谢谢。",
+      "answer": "Yes, please. / No, thank you.",
       "type": "sentence"
     },
     {
@@ -1567,8 +1647,13 @@
       "type": "phrase"
     },
     {
-      "chinese": "我可以买一个气球吗？——当然。",
-      "answer": "— Can I buy a balloon? — Sure.",
+      "chinese": "我可以买一个气球吗？",
+      "answer": "Can I buy a balloon?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "当然。",
+      "answer": "Sure.",
       "type": "sentence"
     },
     {
@@ -1597,8 +1682,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "现在它是什么颜色的？——它是棕色的。",
-      "answer": "— What colour is it now? — It's brown.",
+      "chinese": "现在它是什么颜色的？",
+      "answer": "What colour is it now?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是棕色的。",
+      "answer": "It's brown.",
       "type": "sentence"
     },
     {

@@ -197,8 +197,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你想要一颗糖吗？——是的，谢谢。/ 不用了，谢谢。",
-      "answer": "Would you like a sweet? — Yes, please. / No, thank you.",
+      "chinese": "你想要一颗糖吗？",
+      "answer": "Would you like a sweet?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，谢谢。/ 不用了，谢谢。",
+      "answer": "Yes, please. / No, thank you.",
       "type": "sentence"
     },
     {

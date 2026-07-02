@@ -302,8 +302,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你画了什么？——一张你和蝴蝶的图画。",
-      "answer": "— What do you draw? — A picture of you and the butterfly.",
+      "chinese": "你画了什么？",
+      "answer": "What do you draw?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "一张你和蝴蝶的图画。",
+      "answer": "A picture of you and the butterfly.",
       "type": "sentence"
     },
     {

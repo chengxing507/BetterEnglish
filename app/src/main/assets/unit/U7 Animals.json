@@ -142,8 +142,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你喜欢蛋糕/香蕉/鱼吗？——是的，我喜欢。/ 不，我不喜欢。",
-      "answer": "— Do you like cakes/bananas/fish? — Yes, I do. / No, I don't.",
+      "chinese": "你喜欢蛋糕/香蕉/鱼吗？",
+      "answer": "Do you like cakes/bananas/fish?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，我喜欢。/ 不，我不喜欢。",
+      "answer": "Yes, I do. / No, I don't.",
       "type": "sentence"
     },
     {
@@ -162,8 +167,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你想要一根香蕉吗？——好的，谢谢。/ 不用了，谢谢。",
-      "answer": "— Would you like a banana? — Yes, please. / No, thank you.",
+      "chinese": "你想要一根香蕉吗？",
+      "answer": "Would you like a banana?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "好的，谢谢。/ 不用了，谢谢。",
+      "answer": "Yes, please. / No, thank you.",
       "type": "sentence"
     },
     {

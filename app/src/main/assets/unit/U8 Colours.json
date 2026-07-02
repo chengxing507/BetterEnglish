@@ -137,8 +137,13 @@
       "type": "phrase"
     },
     {
-      "chinese": "我可以买一个气球吗？——当然。",
-      "answer": "— Can I buy a balloon? — Sure.",
+      "chinese": "我可以买一个气球吗？",
+      "answer": "Can I buy a balloon?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "当然。",
+      "answer": "Sure.",
       "type": "sentence"
     },
     {
@@ -167,8 +172,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "现在它是什么颜色的？——它是棕色的。",
-      "answer": "— What colour is it now? — It's brown.",
+      "chinese": "现在它是什么颜色的？",
+      "answer": "What colour is it now?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是棕色的。",
+      "answer": "It's brown.",
       "type": "sentence"
     },
     {

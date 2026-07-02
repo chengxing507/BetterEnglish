@@ -167,8 +167,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "我会擦黑板。——我也是！",
-      "answer": "I can clean the blackboard. — Me too!",
+      "chinese": "我会擦黑板。",
+      "answer": "I can clean the blackboard.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我也是！",
+      "answer": "Me too!",
       "type": "sentence"
     },
     {

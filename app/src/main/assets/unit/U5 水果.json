@@ -147,8 +147,13 @@
       "type": "sentence"
     },
     {
-      "chinese": "你有一个芒果/香蕉吗？——是的，我有。/ 不，我没有。",
-      "answer": "— Do you have a mango/banana? — Yes, I do. / No, I don't.",
+      "chinese": "你有一个芒果/香蕉吗？",
+      "answer": "Do you have a mango/banana?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，我有。/ 不，我没有。",
+      "answer": "Yes, I do. / No, I don't.",
       "type": "sentence"
     },
     {
