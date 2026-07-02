@@ -516,13 +516,15 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
   <div class="r-title" id="resultTitle">练习完成！</div>
 
   <div class="r-stats">
-    <div class="r-stat"><div class="val accent" id="statAccuracy">0%</div><div class="lbl">正确率</div></div>
+    <div class="r-stat" style="cursor:pointer" onclick="toggleAccuracyDetail()" title="点击查看细分正确率"><div class="val accent" id="statAccuracy">0%</div><div class="lbl">正确率 ▾</div></div>
     <div class="r-stat"><div class="val" id="statDuration">0s</div><div class="lbl">用时</div></div>
     <div class="r-stat"><div class="val" id="statTotal">0</div><div class="lbl">总题数</div></div>
     <div class="r-stat"><div class="val red" id="statWrong">0</div><div class="lbl">错误题数</div></div>
     <div class="r-stat"><div class="val" id="statDone">0/0</div><div class="lbl">已完成</div></div>
     <div class="r-stat"><div class="val" id="statSwitch" style="color:#6f42c1">0</div><div class="lbl">切屏次数</div></div>
   </div>
+
+  <div id="accuracyDetail" style="display:none;margin-bottom:12px"></div>
 
   <div class="r-wrong" id="wrongSection" style="display:none">
     <h3>📝 错题回顾</h3>
@@ -1202,6 +1204,8 @@ function finishPractice() {
   document.getElementById('resultIcon').textContent = icon;
   document.getElementById('resultTitle').textContent = title;
   document.getElementById('statAccuracy').textContent = accuracy + '%';
+  state._typeStats = calcTypeStats(state.questions, state.everWrong);
+  updateAccuracyDetail();
   document.getElementById('statDuration').textContent = duration;
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statWrong').textContent = state.everWrong.size;
@@ -1378,6 +1382,10 @@ function showHistoryDetail(idx) {
   document.getElementById('resultIcon').textContent = icon;
   document.getElementById('resultTitle').textContent = title + ' 📋 历史回顾';
   document.getElementById('statAccuracy').textContent = accuracy + '%';
+  var hWrongSet = new Set();
+  (s.wrongRecords || []).forEach(function(r) { hWrongSet.add(r.index); });
+  state._typeStats = calcTypeStats(qs, hWrongSet);
+  updateAccuracyDetail();
   document.getElementById('statDuration').textContent = s.duration;
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statWrong').textContent = wrongCount;
@@ -2221,6 +2229,8 @@ function refreshResultStats() {
   var correctCount = total - wrongCount;
   var accuracy = total > 0 ? Math.round(correctCount / total * 100) : 0;
   document.getElementById('statAccuracy').textContent = accuracy + '%';
+  state._typeStats = calcTypeStats(state.questions, state.everWrong);
+  updateAccuracyDetail();
   document.getElementById('statWrong').textContent = wrongCount;
   document.getElementById('statDone').textContent = (state.isEarlyEnd ? state.currentIdx : total) + '/' + (state.totalOriginal || total);
   // 更新结果标题和图标
@@ -2261,6 +2271,48 @@ function refreshResultWrongList() {
     ws.style.display = 'none';
   }
 }
+
+/** 按类型统计正确率 */
+function toggleAccuracyDetail() {
+  var el = document.getElementById('accuracyDetail');
+  if (el.style.display === 'none') { updateAccuracyDetail(); el.style.display = 'block'; }
+  else { el.style.display = 'none'; }
+}
+
+function calcTypeStats(questions, wrongSet) {
+  var stats = {};
+  questions.forEach(function(q, idx) {
+    var t = q.type || 'word';
+    if (!stats[t]) stats[t] = {total: 0, wrong: 0, label: t === 'word' ? '📖 单词' : t === 'phrase' ? '📝 词组' : '💬 句子'};
+    stats[t].total++;
+    if (wrongSet && wrongSet.has(idx)) stats[t].wrong++;
+  });
+  return stats;
+}
+/** 更新正确率详情显示 */
+function updateAccuracyDetail() {
+  var el = document.getElementById('accuracyDetail');
+  if (!el) return;
+  var stats = state._typeStats;
+  if (!stats) { el.innerHTML = ''; el.style.display = 'none'; return; }
+  var html = '', count = 0;
+  var types = ['word', 'phrase', 'sentence'];
+  types.forEach(function(t) {
+    if (stats[t] && stats[t].total > 0) {
+      count++;
+      var s = stats[t];
+      var acc = s.total > 0 ? Math.round((s.total - s.wrong) / s.total * 100) : 0;
+      html += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px">' +
+        '<span>' + s.label + '</span>' +
+        '<span><strong>' + acc + '%</strong> <span style="color:#888;font-size:11px">(' + (s.total-s.wrong) + '/' + s.total + ')</span></span></div>';
+    }
+  });
+  if (count <= 1) { el.innerHTML = ''; el.style.display = 'none'; return; }
+  el.innerHTML = '<div style="background:var(--sub-bg,#f8f9fa);border-radius:8px;padding:8px 12px;margin-top:6px;font-size:12px;border:1px solid var(--border,#dee2e6)">' +
+    '<div style="font-weight:600;margin-bottom:4px;color:var(--sub-text,#888)">按类型细分</div>' + html + '</div>';
+  el.style.display = 'block';
+}
+
 /** 导出错题：cn=纯中文, en=纯英文, both=中英双语 */
 function exportWrong(mode) {
   var statusEl = document.getElementById('exportStatus');
