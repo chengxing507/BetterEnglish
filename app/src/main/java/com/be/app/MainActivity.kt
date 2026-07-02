@@ -71,12 +71,12 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity.uploadCallback?.onReceiveValue(null)
                 this@MainActivity.uploadCallback = filePathCallback
 
-                val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "*/*"
                 }
                 try {
-                    fileChooserLauncher.launch(Intent.createChooser(intent, "选择文件"))
+                    fileChooserLauncher.launch(Intent.createChooser(intent, "选择JSON文件"))
                 } catch (e: Exception) {
                     this@MainActivity.uploadCallback?.onReceiveValue(null)
                     this@MainActivity.uploadCallback = null
