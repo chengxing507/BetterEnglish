@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 从 assets 加载主页面
-        webView.loadUrl("file:///android_asset/English_v1.4.2.html")
+        webView.loadUrl("file:///android_asset/English_v1.4.4.html")
     }
 
     // 处理返回键
