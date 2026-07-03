@@ -1196,7 +1196,8 @@ function finishPractice() {
   var answered = total;
   var wrongCount = state.everWrong.size;
   var correctCount = answered - wrongCount;
-  var accuracy = answered > 0 ? Math.round(correctCount / answered * 100) : 0;
+  var accuracyRaw = answered > 0 ? (correctCount / answered * 100) : 0;
+  var accuracy = Math.round(accuracyRaw);
   var duration = formatDuration(Date.now() - state.startTime);
 
   var icon = '🎉', title = '练习完成！';
@@ -1209,7 +1210,7 @@ function finishPractice() {
 
   document.getElementById('resultIcon').textContent = icon;
   document.getElementById('resultTitle').textContent = title;
-  document.getElementById('statAccuracy').textContent = accuracy + '%';
+  document.getElementById('statAccuracy').textContent = accuracyRaw.toFixed(2) + '%';
   state._typeStats = calcTypeStats(state.questions, state.everWrong);
   updateAccuracyDetail();
   document.getElementById('statDuration').textContent = duration;
@@ -2288,8 +2289,9 @@ function refreshResultStats() {
   var total = state.questions.length;
   var wrongCount = state.everWrong.size;
   var correctCount = total - wrongCount;
-  var accuracy = total > 0 ? Math.round(correctCount / total * 100) : 0;
-  document.getElementById('statAccuracy').textContent = accuracy + '%';
+  var accuracyRaw = total > 0 ? (correctCount / total * 100) : 0;
+  var accuracy = Math.round(accuracyRaw);
+  document.getElementById('statAccuracy').textContent = accuracyRaw.toFixed(2) + '%';
   state._typeStats = calcTypeStats(state.questions, state.everWrong);
   updateAccuracyDetail();
   document.getElementById('statWrong').textContent = wrongCount;
@@ -2362,10 +2364,10 @@ function updateAccuracyDetail() {
     if (stats[t] && stats[t].total > 0) {
       count++;
       var s = stats[t];
-      var acc = s.total > 0 ? Math.round((s.total - s.wrong) / s.total * 100) : 0;
+      var acc = s.total > 0 ? ((s.total - s.wrong) / s.total * 100) : 0;
       html += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px">' +
         '<span>' + s.label + '</span>' +
-        '<span><strong>' + acc + '%</strong> <span style="color:#888;font-size:11px">(' + (s.total-s.wrong) + '/' + s.total + ')</span></span></div>';
+        '<span><strong>' + acc.toFixed(2) + '%</strong> <span style="color:#888;font-size:11px">(' + (s.total-s.wrong) + '/' + s.total + ')</span></span></div>';
     }
   });
   if (count <= 1) { el.innerHTML = ''; el.style.display = 'none'; return; }
@@ -2446,7 +2448,7 @@ function batchReviewMarked() {
       results.forEach(function(r) { if (r.correct) correctCount++; });
       var summary = document.createElement('div');
       summary.style.cssText = 'margin-top:8px;padding:8px 12px;background:#e8f5e9;border-radius:8px;font-size:13px';
-      summary.innerHTML = '📊 复核汇总：<strong>' + correctCount + '/' + results.length + '</strong> 题正确（' + Math.round(correctCount/results.length*100) + '%）';
+      summary.innerHTML = '📊 复核汇总：<strong>' + correctCount + '/' + results.length + '</strong> 题正确（' + (correctCount/results.length*100).toFixed(2) + '%）';
       resultsEl.appendChild(summary);
       return;
     }
