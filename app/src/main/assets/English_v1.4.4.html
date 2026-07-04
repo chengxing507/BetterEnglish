@@ -1294,7 +1294,7 @@ function finishPractice() {
     title: document.getElementById('headerSub').textContent,
     total: total,
     wrong: wrongCount,
-    accuracy: accuracy,
+    accuracy: parseFloat(accuracyRaw.toFixed(2)),
     duration: duration,
     wrongRecords: state.wrongRecords.slice(),
     mode: state.mode,
@@ -1332,7 +1332,7 @@ function showHistory() {
         '<div class="hi-left" onclick="showHistoryDetail(' + i + ')">' +
         '<div class="hi-title">' + escHtml(s.title || '未命名') + '</div>' +
         '<div class="hi-meta">' + escHtml(s.date) + '</div>' +
-        '<div class="hi-stats"><span style="color:#2d6a4f">正确率 ' + s.accuracy + '%</span>' +
+        '<div class="hi-stats"><span style="color:#2d6a4f">正确率 ' + (typeof s.accuracy === 'number' ? s.accuracy.toFixed(2) : s.accuracy) + '%</span>' +
         '<span style="color:#dc3545">错 ' + s.wrong + '/' + s.total + '</span>' +
         '<span>' + s.duration + '</span>' +
         '<span style="color:#6f42c1">切屏 ' + (s.switchCount || 0) + '</span></div></div>' +
@@ -1426,6 +1426,7 @@ function showHistoryDetail(idx) {
   var total = s.total;
   var wrongCount = s.wrong;
   var correctCount = total - wrongCount;
+  var qs = s.questions || [];
 
   var icon = '🎉', title = '练习完成！';
   if (s.isEarlyEnd) { icon = '⏹️'; title = '已提前结束'; }
@@ -1437,7 +1438,7 @@ function showHistoryDetail(idx) {
 
   document.getElementById('resultIcon').textContent = icon;
   document.getElementById('resultTitle').textContent = title + ' 📋 历史回顾';
-  document.getElementById('statAccuracy').textContent = accuracy + '%';
+  document.getElementById('statAccuracy').textContent = (typeof accuracy === 'number' ? accuracy.toFixed(2) : accuracy) + '%';
   var hWrongSet = new Set();
   (s.wrongRecords || []).forEach(function(r) { hWrongSet.add(r.index); });
   state._typeStats = calcTypeStats(qs, hWrongSet);
