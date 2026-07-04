@@ -1360,18 +1360,22 @@ function clearAllHistory() {
 
 // ===== 导出/导入历史记录 =====
 function exportHistory() {
-  var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
-  if (h.length === 0) { alert('暂无历史记录可导出'); return; }
-  var data = JSON.stringify(h, null, 2);
-  var blob = new Blob([data], {type: 'application/json'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'BetterEnglish_history_' + new Date().toISOString().slice(0,10) + '.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  try {
+    var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
+    if (h.length === 0) { alert('暂无历史记录可导出'); return; }
+    var data = JSON.stringify(h, null, 2);
+    // 使用 data URI + download 属性
+    var dataStr = 'data:application/json;charset=utf-8,' + encodeURIComponent(data);
+    var a = document.createElement('a');
+    a.href = dataStr;
+    a.download = 'BetterEnglish_history_' + new Date().toISOString().slice(0,10) + '.json';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch(e) {
+    alert('导出失败: ' + e.message);
+  }
 }
 
 function importHistory(event) {
@@ -2195,14 +2199,19 @@ function prepareDispute(idx) {
   showDisputeModal();
 }
 function showDisputeModal() {
-  document.getElementById('disputeStatus').style.display = 'none';
-  document.getElementById('disputeActions').style.display = 'flex';
-  document.getElementById('disputeModal').classList.add('show');
+  var statusEl = document.getElementById('disputeStatus');
+  var actionsEl = document.getElementById('disputeActions');
+  var modalEl = document.getElementById('disputeModal');
+  if (!modalEl) return;
+  if (statusEl) statusEl.style.display = 'none';
+  if (actionsEl) actionsEl.style.display = 'flex';
+  modalEl.classList.add('show');
 }
 function closeDisputeModal() { document.getElementById('disputeModal').classList.remove('show'); }
 function submitDispute() {
   var st = document.getElementById('disputeStatus');
   var ac = document.getElementById('disputeActions');
+  if (!st || !ac) return;
   st.style.display = 'block'; st.className = 'd-status loading'; st.textContent = 'AI复核中...';
   ac.style.display = 'none';
   var bu = localStorage.getItem('aiBaseUrl') || 'https://api.openai.com/v1';
@@ -2212,6 +2221,7 @@ function submitDispute() {
   if (!ak) { showDisputeError('请先配置AI API Key'); return; }
   if (bu.endsWith('/')) bu = bu.slice(0, -1);
   if (!bu.endsWith('/v1')) bu += '/v1';
+  if (!state._disputeTarget) { showDisputeError('复核目标数据丢失，请重新点击复核按钮'); return; }
   var prompt = '你是一位英语复核老师。\n题目：' + state._disputeTarget.chinese + '\n标准答案：' + state._disputeTarget.answer + '\n学生答案：' + state._disputeTarget.userInput + '\n请以JSON回复(is_correct true/false, explanation简短)。忽略大小写和标点后一致或拼写小疏漏但可识别应判正确。';
   fetch(bu + '/chat/completions', {
     method: 'POST',
@@ -2248,8 +2258,9 @@ function submitDispute() {
 }
 function showDisputeError(m) {
   var st = document.getElementById('disputeStatus');
-  document.getElementById('disputeActions').style.display = 'flex';
-  st.className = 'd-status error'; st.textContent = m;
+  var ac = document.getElementById('disputeActions');
+  if (ac) ac.style.display = 'flex';
+  if (st) { st.className = 'd-status error'; st.textContent = m; }
 }
 
 // 刷新结果页面复核区（重建按钮 + 更新剩余次数）
@@ -2406,7 +2417,18 @@ function fallbackCopy(text, statusEl) {
   document.body.removeChild(ta);
   setTimeout(function(){statusEl.style.display='none';}, 2000);
 }
-document.getElementById('disputeModal').addEventListener('click', function(e) { if (e.target === this) closeDisputeModal(); });
+// 绑定弹窗关闭事件（点击遮罩关闭）
+// 注意：disputeModal 在 HTML 中位于脚本之后，需要在 DOM 就绪后绑定
+function initDisputeModalClose() {
+  var el = document.getElementById('disputeModal');
+  if (el) el.addEventListener('click', function(e) { if (e.target === this) closeDisputeModal(); });
+}
+// 延迟绑定，确保 DOM 已加载
+if (document.readyState === 'complete') {
+  initDisputeModalClose();
+} else {
+  window.addEventListener('load', initDisputeModalClose);
+}
 
 // ===== 一键复核全部标记题目（带速率限制重试） =====
 function batchReviewMarked() {
