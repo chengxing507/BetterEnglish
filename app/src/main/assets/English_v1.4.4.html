@@ -412,12 +412,11 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
   </div>
   <div class="ai-panel" id="aiPanel">
     <label>Base URL</label>
-    <input type="text" id="aiBaseUrl" placeholder="https://api.openai.com/v1" oninput="detectAiProvider()">
+    <input type="text" id="aiBaseUrl" placeholder="https://api.openai.com/v1">
     <label>API Key</label>
-    <input type="password" id="aiApiKey" placeholder="sk-... / AIza... / sk-ant-...">
-    <label>Model <span id="aiModelAutoHint" style="color:#999;font-weight:400;font-size:11px"></span></label>
-    <input type="text" id="aiModel" placeholder="留空自动检测">
-    <div id="aiProviderDisplay" style="font-size:12px;margin-top:6px;padding:6px 10px;border-radius:6px;background:#e9ecef;text-align:center"></div>
+    <input type="password" id="aiApiKey" placeholder="sk-...">
+    <label>Model（可选）</label>
+    <input type="text" id="aiModel" placeholder="gpt-4o-mini">
     <label style="margin-top:12px">Prompt 模板 <span style="color:#999;font-weight:400;font-size:11px">支持 {title} {total} {accuracy} {duration} {wrongDetail}</span></label>
     <textarea id="aiPrompt" placeholder="不填则使用默认 prompt"></textarea>
     <button class="btn btn-secondary btn-block ai-save-btn" onclick="saveAiSettings()">💾 保存配置</button>
@@ -575,18 +574,17 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <div style="flex:2;min-width:140px">
           <label style="font-size:11px;color:#666;display:block;margin-bottom:2px">Base URL</label>
-          <input type="url" id="toolBaseUrl" placeholder="https://api.openai.com/v1" oninput="detectToolProvider()" style="width:100%;padding:7px 10px;border:1.5px solid #dee2e6;border-radius:8px;font-size:12px;outline:none">
+          <input type="url" id="toolBaseUrl" placeholder="https://api.openai.com/v1" style="width:100%;padding:7px 10px;border:1.5px solid #dee2e6;border-radius:8px;font-size:12px;outline:none">
         </div>
         <div style="flex:2;min-width:140px">
           <label style="font-size:11px;color:#666;display:block;margin-bottom:2px">API Key</label>
-          <input type="password" id="toolApiKey" placeholder="sk-... / AIza... / sk-ant-..." style="width:100%;padding:7px 10px;border:1.5px solid #dee2e6;border-radius:8px;font-size:12px;outline:none">
+          <input type="password" id="toolApiKey" placeholder="sk-..." style="width:100%;padding:7px 10px;border:1.5px solid #dee2e6;border-radius:8px;font-size:12px;outline:none">
         </div>
         <div style="flex:1;min-width:100px">
           <label style="font-size:11px;color:#666;display:block;margin-bottom:2px">模型</label>
-          <input type="text" id="toolModel" value="" placeholder="留空自动检测" style="width:100%;padding:7px 10px;border:1.5px solid #dee2e6;border-radius:8px;font-size:12px;outline:none">
+          <input type="text" id="toolModel" value="gpt-4o-mini" style="width:100%;padding:7px 10px;border:1.5px solid #dee2e6;border-radius:8px;font-size:12px;outline:none">
         </div>
       </div>
-      <div id="toolProviderDisplay" style="font-size:11px;margin-top:4px;padding:4px 8px;border-radius:4px;background:#e9ecef;text-align:center;min-height:20px"></div>
       <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
         <button class="btn" onclick="importHomeConfig()" style="background:#e9ecef;color:#495057;padding:5px 12px;font-size:11px;border:none;border-radius:6px;cursor:pointer">📥 从主页导入配置</button>
         <span style="font-size:11px;color:#888" id="importConfigStatus"></span>
@@ -1626,158 +1624,11 @@ document.getElementById('keyboard').addEventListener('touchstart', function(e) {
 
 // ===== AI 分析 =====
 function loadAiSettings() {
-  // ===== AI 配置与多Provider支持 =====
-function detectAiProvider() {
-  var url = document.getElementById('aiBaseUrl').value.trim();
-  var display = document.getElementById('aiProviderDisplay');
-  var modelHint = document.getElementById('aiModelAutoHint');
-  var provider = getProvider(url);
-  var providerNames = {openai: '🤖 OpenAI', google: '🔮 Google (Gemini)', anthropic: '🟣 Anthropic (Claude)'};
-  display.textContent = '检测到: ' + (providerNames[provider] || '🤖 OpenAI 兼容');
-  display.style.background = provider === 'google' ? '#e8f5e9' : provider === 'anthropic' ? '#f3e8ff' : '#e9ecef';
-  display.style.color = provider === 'google' ? '#2d6a4f' : provider === 'anthropic' ? '#6f42c1' : '#495057';
-  // 自动填充默认模型
-  var modelInput = document.getElementById('aiModel');
-  if (!modelInput.value || modelInput.dataset.autoFilled) {
-    var defaultModel = getDefaultModel(provider);
-    modelInput.value = defaultModel;
-    modelInput.dataset.autoFilled = 'true';
-    modelHint.textContent = '✨ 已自动选择 ' + defaultModel;
-  }
-}
-
-function detectToolProvider() {
-  var url = document.getElementById('toolBaseUrl').value.trim();
-  var display = document.getElementById('toolProviderDisplay');
-  if (!display) return;
-  var provider = getProvider(url);
-  var providerNames = {openai: '🤖 OpenAI', google: '🔮 Google (Gemini)', anthropic: '🟣 Anthropic (Claude)'};
-  display.textContent = providerNames[provider] || '🤖 OpenAI 兼容';
-  display.style.background = provider === 'google' ? '#e8f5e9' : provider === 'anthropic' ? '#f3e8ff' : '#e9ecef';
-  display.style.color = provider === 'google' ? '#2d6a4f' : provider === 'anthropic' ? '#6f42c1' : '#495057';
-  // 自动填充默认模型
-  var modelInput = document.getElementById('toolModel');
-  if (!modelInput.value) {
-    modelInput.value = getDefaultModel(provider);
-  }
-}
-
-function getProvider(baseUrl) {
-  if (!baseUrl) return 'openai';
-  var u = baseUrl.toLowerCase();
-  if (u.indexOf('googleapis.com') !== -1 || u.indexOf('generativelanguage') !== -1) return 'google';
-  if (u.indexOf('anthropic.com') !== -1) return 'anthropic';
-  return 'openai';
-}
-
-function getDefaultModel(provider) {
-  if (provider === 'google') return 'gemini-2.0-flash';
-  if (provider === 'anthropic') return 'claude-sonnet-4-20250514';
-  return 'gpt-4o-mini';
-}
-
-function normalizeBaseUrl(baseUrl, provider) {
-  if (!baseUrl) baseUrl = provider === 'google' ? 'https://generativelanguage.googleapis.com/v1beta' : provider === 'anthropic' ? 'https://api.anthropic.com/v1' : 'https://api.openai.com/v1';
-  baseUrl = baseUrl.replace(/\/+$/, '');
-  return baseUrl;
-}
-
-/** 统一AI API调用，返回响应文本的Promise */
-function callAiApi(baseUrl, apiKey, model, systemPrompt, userPrompt, options) {
-  options = options || {};
-  var provider = getProvider(baseUrl);
-  baseUrl = normalizeBaseUrl(baseUrl, provider);
-
-  if (!apiKey) return Promise.reject(new Error('请先配置 API Key'));
-
-  if (provider === 'google') {
-    // Google Gemini API
-    var url = baseUrl + '/models/' + model + ':generateContent';
-    if (options.stream) url += '?alt=sse';
-    var body = {
-      contents: [{role: 'user', parts: [{text: (systemPrompt ? systemPrompt + '\n\n' : '') + userPrompt}]}],
-      generationConfig: {temperature: options.temperature || 0.7, maxOutputTokens: options.maxTokens || 1000}
-    };
-    if (systemPrompt) body.systemInstruction = {parts: [{text: systemPrompt}]};
-    return fetch(url, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'x-goog-api-key': apiKey},
-      body: JSON.stringify(body)
-    }).then(function(r) {
-      if (!r.ok) return r.json().then(function(e) { throw new Error('Google API错误: ' + (e.error?.message || JSON.stringify(e))); });
-      return r.json();
-    }).then(function(d) {
-      if (d.candidates && d.candidates[0] && d.candidates[0].content) {
-        return d.candidates[0].content.parts.map(function(p) { return p.text; }).join('');
-      }
-      if (d.error) throw new Error('Google API错误: ' + d.error.message);
-      throw new Error('Google API返回格式异常');
-    });
-  }
-
-  if (provider === 'anthropic') {
-    // Anthropic Claude API
-    var url = baseUrl + '/messages';
-    var messages = [{role: 'user', content: userPrompt}];
-    var body = {model: model, messages: messages, max_tokens: options.maxTokens || 1000, temperature: options.temperature || 0.7};
-    if (systemPrompt) body.system = systemPrompt;
-    return fetch(url, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01'},
-      body: JSON.stringify(body)
-    }).then(function(r) {
-      if (!r.ok) return r.json().then(function(e) { throw new Error('Anthropic API错误: ' + (e.error?.message || JSON.stringify(e))); });
-      return r.json();
-    }).then(function(d) {
-      if (d.content && d.content[0] && d.content[0].text) return d.content[0].text;
-      if (d.error) throw new Error('Anthropic API错误: ' + d.error.message);
-      throw new Error('Anthropic API返回格式异常');
-    });
-  }
-
-  // OpenAI 兼容
-  var url = baseUrl + '/chat/completions';
-  var body = {
-    model: model,
-    messages: [
-      {role: 'system', content: systemPrompt || 'You are a helpful assistant.'},
-      {role: 'user', content: userPrompt}
-    ],
-    temperature: options.temperature || 0.7,
-    max_tokens: options.maxTokens || 1000
-  };
-  if (options.stream) body.stream = true;
-  return fetch(url, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey},
-    body: JSON.stringify(body)
-  }).then(function(r) {
-    if (!r.ok) return r.json().then(function(e) { throw new Error('API错误: ' + (e.error?.message || JSON.stringify(e))); });
-    return r.json();
-  }).then(function(d) {
-    if (d.choices && d.choices[0] && d.choices[0].message) return d.choices[0].message.content;
-    if (d.error) throw new Error('API错误: ' + d.error.message);
-    throw new Error('API返回格式异常');
-  });
-}
-
-/** 从localStorage统一获取AI配置 */
-function getAiConfig() {
-  var baseUrl = localStorage.getItem('aiBaseUrl') || '';
-  var apiKey = localStorage.getItem('aiApiKey') || '';
-  var model = localStorage.getItem('aiModel') || '';
-  var provider = getProvider(baseUrl);
-  if (!model) model = getDefaultModel(provider);
-  return {baseUrl: baseUrl, apiKey: apiKey, model: model, provider: provider};
-}
-
-function loadAiSettings() {
   document.getElementById('aiBaseUrl').value = localStorage.getItem('aiBaseUrl') || '';
   document.getElementById('aiApiKey').value = localStorage.getItem('aiApiKey') || '';
   document.getElementById('aiModel').value = localStorage.getItem('aiModel') || '';
   document.getElementById('aiPrompt').value = localStorage.getItem('aiPrompt') || '';
   document.getElementById('aiSettingsBtn').classList.toggle('on', !!localStorage.getItem('aiApiKey'));
-  detectAiProvider();
 }
 
 function toggleAiSettings() {
@@ -1833,28 +1684,107 @@ function buildPrompt() {
 }
 
 function requestAiAnalysis() {
-  var cfg = getAiConfig();
-  if (!cfg.apiKey) {
+  var baseUrl = localStorage.getItem('aiBaseUrl') || '';
+  var apiKey = localStorage.getItem('aiApiKey') || '';
+  var model = localStorage.getItem('aiModel') || 'gpt-4o-mini';
+
+  if (!apiKey) {
     alert('请先配置 API Key（点击首页的 ⚙️ AI 配置 按钮）');
     return;
   }
+  if (!baseUrl) baseUrl = 'https://api.openai.com/v1';
+  if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+  if (!baseUrl.endsWith('/v1')) baseUrl += '/v1';
+
   var resultDiv = document.getElementById('aiResult');
   resultDiv.className = 'ai-result show';
   resultDiv.innerHTML = '<div class="ai-loading"><div class="spinner"></div><br>AI 正在分析中...</div>';
   document.getElementById('btnAiAnalysis').disabled = true;
 
   var prompt = buildPrompt();
-  var systemPrompt = '你是一位耐心细致的英语学习辅导老师，擅长分析学习数据并给出实用建议。';
-  callAiApi(cfg.baseUrl, cfg.apiKey, cfg.model, systemPrompt, prompt, {temperature: 0.7, maxTokens: 1000})
-    .then(function(text) {
-      resultDiv.innerHTML = '<div class="ai-content">' + escHtml(text).replace(/\n/g, '<br>') + '</div>';
-      document.getElementById('btnAiAnalysis').disabled = false;
-    })
-    .catch(function(err) {
-      resultDiv.innerHTML = '<div class="ai-error">❌ ' + escHtml(err.message) + '</div>';
-      document.getElementById('btnAiAnalysis').disabled = false;
-    });
+  doAiRequest(baseUrl, apiKey, model, prompt, resultDiv, true);
 }
+
+function doAiRequest(baseUrl, apiKey, model, prompt, resultDiv, useStream) {
+  var url = baseUrl + '/chat/completions';
+  var body = JSON.stringify({
+    model: model,
+    messages: [
+      {role: 'system', content: '你是一位耐心细致的英语学习辅导老师，擅长分析学习数据并给出实用建议。'},
+      {role: 'user', content: prompt}
+    ],
+    temperature: 0.7,
+    max_tokens: 1000,
+    stream: useStream
+  });
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', url, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+  xhr.timeout = 60000;
+
+  var processedLen = 0;
+  var streamContent = '';
+  var isStreamDone = false;
+
+  if (useStream) {
+    xhr.onprogress = function() {
+      if (isStreamDone) return;
+      var full = xhr.responseText;
+      var searchFrom = processedLen;
+      while (searchFrom < full.length) {
+        var dn = full.indexOf('\n\n', searchFrom);
+        if (dn === -1) break;
+        var eventStr = full.substring(searchFrom, dn);
+        searchFrom = dn + 2;
+        eventStr.split('\n').forEach(function(line) {
+          if (line.startsWith('data: ')) {
+            var data = line.slice(6).trim();
+            if (data === '[DONE]') { isStreamDone = true; return; }
+            try {
+              var parsed = JSON.parse(data);
+              var delta = parsed.choices?.[0]?.delta?.content || '';
+              if (delta) streamContent += delta;
+            } catch(e) {}
+          }
+        });
+        processedLen = searchFrom;
+      }
+      if (streamContent) {
+        resultDiv.innerHTML = '<div class="ai-content">' + escHtml(streamContent).replace(/\n/g, '<br>') + '</div>';
+      }
+    };
+
+    xhr.onloadend = function() {
+      document.getElementById('btnAiAnalysis').disabled = false;
+      isStreamDone = true;
+      if (!streamContent) {
+        // 流式没出内容，回退到非流式
+        doAiRequest(baseUrl, apiKey, model, prompt, resultDiv, false);
+      }
+    };
+  } else {
+    xhr.onload = function() {
+      document.getElementById('btnAiAnalysis').disabled = false;
+      try {
+        var data = JSON.parse(xhr.responseText);
+        var text = data.choices?.[0]?.message?.content || 'AI 未返回有效内容';
+        resultDiv.innerHTML = '<div class="ai-content">' + escHtml(text).replace(/\n/g, '<br>') + '</div>';
+      } catch(e) {
+        resultDiv.innerHTML = '<div class="ai-error">❌ 解析响应失败: ' + e.message + '</div>';
+      }
+    };
+  }
+
+  xhr.onerror = function() {
+    document.getElementById('btnAiAnalysis').disabled = false;
+    resultDiv.innerHTML = '<div class="ai-error">❌ 网络请求失败，请检查网络连接和配置</div>';
+  };
+  xhr.ontimeout = function() {
+    document.getElementById('btnAiAnalysis').disabled = false;
+    resultDiv.innerHTML = '<div class="ai-error">❌ 请求超时，请稍后重试</div>';
+  };
 
   xhr.send(body);
 }
@@ -1886,35 +1816,33 @@ function loadToolConfig() {
   if (cfg.apiKey) document.getElementById('toolApiKey').value = cfg.apiKey;
   if (cfg.model) document.getElementById('toolModel').value = cfg.model;
   if (cfg.prompt) document.getElementById('toolPrompt').value = cfg.prompt;
-  detectToolProvider();
 }
 
 function saveToolConfig() {
-  var model = document.getElementById('toolModel').value.trim();
-  if (!model) model = getDefaultModel(getProvider(document.getElementById('toolBaseUrl').value.trim()));
   localStorage.setItem('beToolConfig', JSON.stringify({
     baseUrl: document.getElementById('toolBaseUrl').value.trim(),
     apiKey: document.getElementById('toolApiKey').value.trim(),
-    model: model,
+    model: document.getElementById('toolModel').value.trim() || 'gpt-4o-mini',
     prompt: document.getElementById('toolPrompt').value.trim()
   }));
 }
 
 function importHomeConfig() {
-  var cfg = getAiConfig();
+  var homeUrl = localStorage.getItem('aiBaseUrl') || '';
+  var homeKey = localStorage.getItem('aiApiKey') || '';
+  var homeModel = localStorage.getItem('aiModel') || '';
+  var homePrompt = localStorage.getItem('aiPrompt') || '';
   var status = document.getElementById('importConfigStatus');
-  if (!cfg.apiKey) {
+  if (!homeKey) {
     status.textContent = '⚠️ 主页未配置 AI，请先在主页设置';
     status.style.color = '#dc3545';
     return;
   }
-  document.getElementById('toolBaseUrl').value = cfg.baseUrl;
-  document.getElementById('toolApiKey').value = cfg.apiKey;
-  document.getElementById('toolModel').value = cfg.model;
-  var homePrompt = localStorage.getItem('aiPrompt') || '';
+  document.getElementById('toolBaseUrl').value = homeUrl;
+  document.getElementById('toolApiKey').value = homeKey;
+  document.getElementById('toolModel').value = homeModel || 'gpt-4o-mini';
   if (homePrompt) document.getElementById('toolPrompt').value = homePrompt;
   saveToolConfig();
-  detectToolProvider();
   status.textContent = '✅ 已导入主页配置';
   status.style.color = '#155724';
   setTimeout(function() { status.textContent = ''; }, 3000);
@@ -1933,8 +1861,7 @@ async function convertToolText() {
   saveToolConfig();
   var baseUrl = document.getElementById('toolBaseUrl').value.trim();
   var apiKey = document.getElementById('toolApiKey').value.trim();
-  var model = document.getElementById('toolModel').value.trim();
-  if (!model) model = getDefaultModel(getProvider(baseUrl));
+  var model = document.getElementById('toolModel').value.trim() || 'gpt-4o-mini';
   if (!baseUrl || !apiKey) { document.getElementById('toolStatus').textContent = '❌ 请填写 LLM 配置'; return; }
 
   var btn = document.getElementById('toolConvertBtn');
@@ -1947,7 +1874,22 @@ async function convertToolText() {
   var systemPrompt = customPrompt || getDefaultConvertPrompt(input);
 
   try {
-    var content = await callAiApi(baseUrl, apiKey, model, systemPrompt, '标题：' + (title || '自动生成') + '\n\n内容：\n' + input + '\n\n请转换为BE标准JSON格式。', {temperature: 0.3, maxTokens: 4096});
+    var resp = await fetch(baseUrl.replace(/\/+$/, '') + '/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          {role:'system', content: systemPrompt},
+          {role:'user', content: '标题：' + (title || '自动生成') + '\n\n内容：\n' + input + '\n\n请转换为BE标准JSON格式。'}
+        ],
+        temperature: 0.3,
+        max_tokens: 4096
+      })
+    });
+    if (!resp.ok) throw new Error('API错误 ('+resp.status+')');
+    var data = await resp.json();
+    var content = data.choices?.[0]?.message?.content || '';
     // 提取JSON
     var jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) content = jsonMatch[1].trim();
@@ -2268,35 +2210,46 @@ function submitDispute() {
   var ac = document.getElementById('disputeActions');
   st.style.display = 'block'; st.className = 'd-status loading'; st.textContent = 'AI复核中...';
   ac.style.display = 'none';
-  var cfg = getAiConfig();
+  var bu = localStorage.getItem('aiBaseUrl') || 'https://api.openai.com/v1';
+  var ak = localStorage.getItem('aiApiKey') || '';
+  var md = localStorage.getItem('aiModel') || 'gpt-4o-mini';
   if (state.disputeCount >= state.maxDisputes) { showDisputeError('复核次数已用尽'); return; }
-  if (!cfg.apiKey) { showDisputeError('请先配置AI API Key'); return; }
+  if (!ak) { showDisputeError('请先配置AI API Key'); return; }
+  if (bu.endsWith('/')) bu = bu.slice(0, -1);
+  if (!bu.endsWith('/v1')) bu += '/v1';
   var prompt = '你是一位英语复核老师。\n题目：' + state._disputeTarget.chinese + '\n标准答案：' + state._disputeTarget.answer + '\n学生答案：' + state._disputeTarget.userInput + '\n请以JSON回复(is_correct true/false, explanation简短)。忽略大小写和标点后一致或拼写小疏漏但可识别应判正确。';
-  var systemPrompt = '你只输出JSON，不输出其他内容。';
-  callAiApi(cfg.baseUrl, cfg.apiKey, cfg.model, systemPrompt, prompt, {temperature: 0.1, maxTokens: 500})
-    .then(function(txt) {
-      var m = txt.match(/{[\s\S]*?}/);
-      if (m) {
-        try {
-          var r2 = JSON.parse(m[0]);
-          if (r2.is_correct !== undefined) {
-            var idx = state._disputeTarget.index;
-            state.disputeCount++; state._disputeTarget = null; closeDisputeModal();
-            if (r2.is_correct) {
-              state.everWrong.delete(idx);
-              state.totalWrongCount = state.everWrong.size;
-              state.wrongRecords = state.wrongRecords.filter(function(r) { return r.index !== idx; });
-              refreshResultStats();
-            }
-            refreshResultWrongList();
-            refreshDisputeSection();
-            return;
+  fetch(bu + '/chat/completions', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer ' + ak},
+    body: JSON.stringify({model: md, messages: [{role:'system', content:'你只输出JSON，不输出其他内容。'},{role:'user', content:prompt}], temperature: 0.1, max_tokens: 500})
+  }).then(function(r){return r.json();}).then(function(d){
+    if (d.error) { showDisputeError('API错误: ' + (d.error.message || JSON.stringify(d.error))); return; }
+    var txt = d.choices?.[0]?.message?.content || '';
+    var m = txt.match(/{[\s\S]*?}/);
+    if (m) {
+      try {
+        var r2 = JSON.parse(m[0]);
+        if (r2.is_correct !== undefined) {
+          var idx = state._disputeTarget.index;
+          state.disputeCount++; state._disputeTarget = null; closeDisputeModal();
+          if (r2.is_correct) {
+            // AI 判定正确：从错题中移除，更新统计
+            state.everWrong.delete(idx);
+            state.totalWrongCount = state.everWrong.size;
+            // 从 wrongRecords 中移除该题的所有记录
+            state.wrongRecords = state.wrongRecords.filter(function(r) { return r.index !== idx; });
+            // 刷新结果页面的统计
+            refreshResultStats();
           }
-        } catch(e) {}
-      }
-      showDisputeError('AI回复格式异常: ' + txt.substring(0, 200));
-    })
-    .catch(function(e) { showDisputeError('请求失败: ' + e.message); });
+          // 刷新页面显示
+          refreshResultWrongList();
+          refreshDisputeSection();
+          return;
+        }
+      } catch(e) {}
+    }
+    showDisputeError('AI回复格式异常: ' + txt.substring(0, 200));
+  }).catch(function(e){showDisputeError('网络错误: ' + e.message);});
 }
 function showDisputeError(m) {
   var st = document.getElementById('disputeStatus');
@@ -2473,8 +2426,12 @@ function batchReviewMarked() {
   statusEl.textContent = '⏳ 正在逐题复核，共 ' + state.markedQuestions.length + ' 题...';
   resultsEl.innerHTML = '';
 
-  var cfg = getAiConfig();
-  if (!cfg.apiKey) { statusEl.textContent = '❌ 请先配置AI API Key'; btn.disabled = false; btn.textContent = '🤖 一键复核全部标记题目'; return; }
+  var bu = localStorage.getItem('aiBaseUrl') || 'https://api.openai.com/v1';
+  var ak = localStorage.getItem('aiApiKey') || '';
+  var md = localStorage.getItem('aiModel') || 'gpt-4o-mini';
+  if (!ak) { statusEl.textContent = '❌ 请先配置AI API Key'; btn.disabled = false; btn.textContent = '🤖 一键复核全部标记题目'; return; }
+  if (bu.endsWith('/')) bu = bu.slice(0, -1);
+  if (!bu.endsWith('/v1')) bu += '/v1';
 
   var sortedIdx = state.markedQuestions.slice().sort(function(a,b){return a-b;});
   var results = [];
@@ -2515,7 +2472,7 @@ function batchReviewMarked() {
     statusEl.textContent = '⏳ 正在复核第 ' + (i+1) + '/' + sortedIdx.length + ' 题（' + escHtml(q.chinese) + '）...';
 
     // 带重试的 fetch 调用
-    reviewWithRetry(cfg.baseUrl, cfg.apiKey, cfg.model, prompt, idx, q, i, function(correct, explanation, qIdx) {
+    reviewWithRetry(bu, ak, md, prompt, idx, q, i, function(correct, explanation, qIdx) {
       results.push({index: qIdx, correct: correct});
       done++;
 
@@ -2542,42 +2499,17 @@ function batchReviewMarked() {
 
 function reviewWithRetry(baseUrl, apiKey, model, prompt, qIdx, qData, seqIdx, onSuccess, onFail) {
   var maxRetries = 3;
-  var retryDelay = 1000;
-  var provider = getProvider(baseUrl);
-  baseUrl = normalizeBaseUrl(baseUrl, provider);
-
-  function buildRequest() {
-    if (provider === 'google') {
-      var url = baseUrl + '/models/' + model + ':generateContent';
-      var body = {contents: [{role: 'user', parts: [{text: '你只输出JSON，不输出其他内容。\n\n' + prompt}]}], generationConfig: {temperature: 0.1, maxOutputTokens: 500}};
-      return {url: url, headers: {'Content-Type': 'application/json', 'x-goog-api-key': apiKey}, body: JSON.stringify(body), parseResp: function(d) {
-        if (d.candidates && d.candidates[0] && d.candidates[0].content) return d.candidates[0].content.parts.map(function(p){return p.text;}).join('');
-        if (d.error) throw new Error(d.error.message);
-        throw new Error('格式异常');
-      }};
-    }
-    if (provider === 'anthropic') {
-      var url = baseUrl + '/messages';
-      var body = {model: model, messages: [{role: 'user', content: prompt}], system: '你只输出JSON，不输出其他内容。', max_tokens: 500, temperature: 0.1};
-      return {url: url, headers: {'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01'}, body: JSON.stringify(body), parseResp: function(d) {
-        if (d.content && d.content[0] && d.content[0].text) return d.content[0].text;
-        if (d.error) throw new Error(d.error.message);
-        throw new Error('格式异常');
-      }};
-    }
-    // OpenAI
-    var url = baseUrl + '/chat/completions';
-    var body = {model: model, messages: [{role:'system', content:'你只输出JSON，不输出其他内容。'},{role:'user', content: prompt}], temperature: 0.1, max_tokens: 500};
-    return {url: url, headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey}, body: JSON.stringify(body), parseResp: function(d) {
-      if (d.choices && d.choices[0] && d.choices[0].message) return d.choices[0].message.content;
-      if (d.error) throw new Error(d.error.message);
-      throw new Error('格式异常');
-    }};
-  }
+  var retryDelay = 1000; // 初始延迟1秒
 
   function attempt(remaining) {
-    var req = buildRequest();
-    fetch(req.url, {method: 'POST', headers: req.headers, body: req.body}).then(function(resp) {
+    var url = baseUrl.replace(/\/+$/, '');
+    if (!url.endsWith('/v1')) url += '/v1';
+    fetch(url + '/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer ' + apiKey},
+      body: JSON.stringify({model: model, messages: [{role:'system', content:'你只输出JSON，不输出其他内容。'},{role:'user', content: prompt}], temperature: 0.1, max_tokens: 500})
+    }).then(function(resp) {
+      // 处理速率限制 (429) 或服务器错误 (5xx)
       if (resp.status === 429 || resp.status === 503) {
         if (remaining > 0) {
           var delay = retryDelay * (maxRetries - remaining + 1);
@@ -2604,20 +2536,18 @@ function reviewWithRetry(baseUrl, apiKey, model, prompt, qIdx, qData, seqIdx, on
         onFail('API错误: ' + (d.error.message || JSON.stringify(d.error)), qIdx);
         return;
       }
-      try {
-        var txt = req.parseResp(d);
-        var m = txt.match(/{[\s\S]*?}/);
-        if (m) {
+      var txt = d.choices?.[0]?.message?.content || '';
+      var m = txt.match(/{[\s\S]*?}/);
+      if (m) {
+        try {
           var r2 = JSON.parse(m[0]);
           if (r2.is_correct !== undefined) {
             onSuccess(r2.is_correct, r2.explanation || '', qIdx);
             return;
           }
-        }
-        onFail('AI回复格式异常', qIdx);
-      } catch(e) {
-        onFail('解析错误: ' + e.message, qIdx);
+        } catch(e) {}
       }
+      onFail('AI回复格式异常', qIdx);
     }).catch(function(e) {
       if (remaining > 0) {
         var delay = retryDelay * (maxRetries - remaining + 1);
@@ -2635,20 +2565,32 @@ function reviewWithRetry(baseUrl, apiKey, model, prompt, qIdx, qData, seqIdx, on
 function testAIConnection() {
   var r = document.getElementById('aiTestResult');
   r.innerHTML = '测试中...'; r.style.color = '#6f42c1';
-  var cfg = getAiConfig();
-  if (!cfg.apiKey) { r.innerHTML = '请先配置API Key'; r.style.color = '#dc3545'; return; }
+  var bu = localStorage.getItem('aiBaseUrl') || 'https://api.openai.com/v1';
+  var ak = localStorage.getItem('aiApiKey') || '';
+  var md = localStorage.getItem('aiModel') || 'gpt-4o-mini';
+  if (!ak) { r.innerHTML = '请先配置API Key'; r.style.color = '#dc3545'; return; }
+  if (bu.endsWith('/')) bu = bu.slice(0, -1);
+  if (!bu.endsWith('/v1')) bu += '/v1';
   var ok1 = false, ok2 = false;
-  var test1 = callAiApi(cfg.baseUrl, cfg.apiKey, cfg.model, '', '用5个字说：天气很好', {temperature: 0.1, maxTokens: 50})
-    .then(function(txt) { ok1 = txt.length > 0; })
-    .catch(function(e) { r.innerHTML='总结测试失败: '+e.message; r.style.color='#dc3545'; });
-  var test2 = callAiApi(cfg.baseUrl, cfg.apiKey, cfg.model, '你只输出JSON', '只输出JSON: {"is_correct":true}', {temperature: 0.1, maxTokens: 100})
-    .then(function(txt) { ok2 = txt.indexOf('is_correct') >= 0; })
-    .catch(function(e) { r.innerHTML='复核测试失败: '+e.message; r.style.color='#dc3545'; });
-  Promise.all([test1, test2]).then(function() {
-    if(ok1 && ok2) { r.innerHTML = '✅ 总结和复核均可正常使用'; r.style.color = '#28a745'; }
-    else if(ok1 && !ok2) { r.innerHTML = '⚠️ 总结可用，复核异常（AI模型可能不支持JSON输出）'; r.style.color = '#856404'; }
-    else if(!ok1 && ok2) { r.innerHTML = '⚠️ 复核可用，总结异常'; r.style.color = '#856404'; }
-    else { r.innerHTML = '❌ 两项测试均失败'; r.style.color = '#dc3545'; }
+  var t1 = fetch(bu + '/chat/completions', {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+ak},
+    body:JSON.stringify({model:md, messages:[{role:'user', content:'用5个字说：天气很好'}], temperature:0.1, max_tokens:50})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.choices?.[0]?.message?.content) ok1 = true;
+    else { r.innerHTML='总结测试失败'; r.style.color='#dc3545'; }
+  }).catch(function(e){r.innerHTML='总结测试失败: '+e.message; r.style.color='#dc3545';});
+  var t2 = fetch(bu + '/chat/completions', {
+    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+ak},
+    body:JSON.stringify({model:md, messages:[{role:'user', content:'只输出JSON: {"is_correct":true}'}], temperature:0.1, max_tokens:100})
+  }).then(function(r){return r.json();}).then(function(d){
+    var txt = d.choices?.[0]?.message?.content || '';
+    if(txt.indexOf('is_correct')>=0) ok2 = true;
+    else { r.innerHTML='复核测试失败: AI未输出JSON'; r.style.color='#dc3545'; }
+  }).catch(function(e){r.innerHTML='复核测试失败: '+e.message; r.style.color='#dc3545';});
+  Promise.all([t1, t2]).then(function() {
+    if(ok1 && ok2) r.innerHTML = '总结和复核均可正常使用'; r.style.color = '#28a745';
+    if(ok1 && !ok2) r.innerHTML = '总结可用，复核异常。AI模型可能不支持JSON输出'; r.style.color = '#856404';
+    if(!ok1 && ok2) r.innerHTML = '复核可用，总结异常。AI模型可能有问题'; r.style.color = '#856404';
   });
 }
 
