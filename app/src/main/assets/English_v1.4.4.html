@@ -1097,12 +1097,6 @@ function renderQuestion() {
   // 让输入框获得焦点并显示光标，但阻止原生键盘弹出（使用 inputmode=none）
   input.readOnly = false;
   input.focus();
-  // 点击输入框时允许定位光标，不阻止
-  // 阻止输入框上的 touch/click 导致原生键盘弹出
-  input.addEventListener('touchstart', function(e) {
-    // 不阻止默认行为，让光标可以定位
-    // inputmode=none 会阻止键盘弹出
-  }, {passive: true});
   // 开始倒计时
   startTimer();
 }
@@ -1536,7 +1530,7 @@ function closeHistory() {
 
 // ===== 虚拟键盘 =====
 function kbGetCursor(input) {
-  return input.selectionStart || input.value.length;
+  return input.selectionStart !== null ? input.selectionStart : input.value.length;
 }
 
 function kbSetCursor(input, pos) {
