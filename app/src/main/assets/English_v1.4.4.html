@@ -2379,39 +2379,68 @@ function submitDispute() {
   if (!bu.endsWith('/v1')) bu += '/v1';
   if (!state._disputeTarget) { showDisputeError('复核目标数据丢失，请重新点击复核按钮'); return; }
   var target = state._disputeTarget;
-  var prompt = '你是一位英语复核老师。\\n题目：' + target.chinese + '\\n标准答案：' + target.answer + '\\n学生答案：' + target.userInput + '\\n请以JSON回复(is_correct true/false, explanation简短)。忽略大小写和标点后一致或拼写小疏漏但可识别应判正确。';
+  var prompt = '你是一位英语复核老师。题目：' + target.chinese + ' 标准答案：' + target.answer + ' 学生答案：' + target.userInput + ' 请严格只输出一个JSON对象，不要markdown格式，不要任何多余文字。格式: {"is_correct": true/false, "explanation": "简短说明"}。忽略大小写和标点后一致或拼写小疏漏但可识别应判正确。';
   fetch(bu + '/chat/completions', {
     method: 'POST',
     headers: {'Content-Type':'application/json','Authorization':'Bearer ' + ak},
-    body: JSON.stringify({model: md, messages: [{role:'system', content:'你只输出JSON，不输出其他内容。'},{role:'user', content:prompt}], temperature: 0.1, max_tokens: 500})
+    body: JSON.stringify({model: md, messages: [{role:'system', content:'你只输出纯JSON对象，不要markdown代码块，不要任何其他文字。'},{role:'user', content:prompt}], temperature: 0.1, max_tokens: 500})
   }).then(function(r){return r.json();}).then(function(d){
     if (d.error) { showDisputeError('API错误: ' + (d.error.message || JSON.stringify(d.error))); return; }
     var txt = d.choices?.[0]?.message?.content || '';
-    var m = txt.match(/{[\\s\\S]*?}/);
-    if (m) {
-      try {
-        var r2 = JSON.parse(m[0]);
-        if (r2.is_correct !== undefined) {
-          var idx = target.index;
-          var ch = target.chinese, ans = target.answer, uin = target.userInput;
-          state.disputeCount++; state._disputeTarget = null; closeDisputeModal();
-          if (r2.is_correct) {
-            state.everWrong.delete(idx);
-            state.totalWrongCount = state.everWrong.size;
-            state.wrongRecords = state.wrongRecords.filter(function(r) { return r.index !== idx; });
-            refreshResultStats();
-          }
-          refreshResultWrongList();
-          refreshDisputeSection();
-          // 弹窗显示复核结果
-          showDisputeResult(r2.is_correct, r2.explanation || '', ch, ans, uin);
-          return;
-        }
-      } catch(e) {}
+    // 健壮JSON提取：直接解析 → 去markdown → 正则提取
+    var r2 = parseAIJson(txt);
+    if (r2 && r2.is_correct !== undefined) {
+      var idx = target.index;
+      var ch = target.chinese, ans = target.answer, uin = target.userInput;
+      state.disputeCount++; state._disputeTarget = null; closeDisputeModal();
+      if (r2.is_correct) {
+        state.everWrong.delete(idx);
+        state.totalWrongCount = state.everWrong.size;
+        state.wrongRecords = state.wrongRecords.filter(function(r) { return r.index !== idx; });
+        refreshResultStats();
+      }
+      refreshResultWrongList();
+      refreshDisputeSection();
+      showDisputeResult(r2.is_correct, r2.explanation || '', ch, ans, uin);
+      return;
     }
-    showDisputeError('AI回复格式异常: ' + txt.substring(0, 200));
+    showDisputeError('AI回复格式异常: ' + txt.substring(0, 300));
   }).catch(function(e){showDisputeError('网络错误: ' + e.message);});
 }
+
+/** 从AI回复中健壮提取JSON对象 */
+function parseAIJson(text) {
+  if (!text) return null;
+  // 1) 直接解析
+  try { return JSON.parse(text); } catch(e) {}
+  // 2) 去掉可能的markdown代码块标记
+  var clean = text.replace(/```(?:json)?\s*/gi, '').replace(/\s*```/g, '');
+  try { return JSON.parse(clean); } catch(e) {}
+  // 3) 替换弯引号
+  clean = clean.replace(/[\u201C\u201D\u201E\u201F\u2033]/g, '"').replace(/[\u2018\u2019\u201A\u201B\u2032]/g, "'");
+  try { return JSON.parse(clean); } catch(e) {}
+  // 4) 贪婪匹配从第一个{到最后一个}
+  var m = clean.match(/{[\s\S]*}/);
+  if (m) { try { return JSON.parse(m[0]); } catch(e) {} }
+  // 5) 逐字符匹配括号找到完整JSON对象
+  var start = clean.indexOf('{');
+  if (start >= 0) {
+    var depth = 0, inStr = false, esc = false;
+    for (var i = start; i < clean.length; i++) {
+      var c = clean[i];
+      if (esc) { esc = false; continue; }
+      if (c === '\\') { esc = true; continue; }
+      if (c === '"' && !inStr) { inStr = true; continue; }
+      if (c === '"' && inStr) { inStr = false; continue; }
+      if (!inStr) {
+        if (c === '{') depth++;
+        else if (c === '}') { depth--; if (depth === 0) { try { return JSON.parse(clean.substring(start, i+1)); } catch(e2) { return null; } } }
+      }
+    }
+  }
+  return null;
+}
+
 function showDisputeError(m) {
   var st = document.getElementById('disputeStatus');
   var ac = document.getElementById('disputeActions');
