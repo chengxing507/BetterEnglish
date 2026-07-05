@@ -264,13 +264,8 @@ $body
     }
 
     private fun buildStatusPage(json: String): String {
-        // 对 JSON 进行 HTML 转义，嵌入到页面中
-        val escapedJson = json
-            .replace("&", "&amp;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace("'", "&#39;")
-            .replace("\"", "&quot;")
+        // 对 JSON 做 JS 安全转义（仅转义 </script> 即可），不做 HTML 转义因为是在 <script> 里
+        val safeJson = json.replace("</script>", "<\\/script>")
 
         return """
 <!DOCTYPE html>
@@ -319,7 +314,7 @@ h1{font-size:22px;margin-bottom:4px;color:#f1f5f9}
   <div class="auto-refresh" id="refreshStatus"></div>
 </div>
 <script>
-var DATA = $escapedJson;
+var DATA = $safeJson;
 // 解析数据
 function render() {
   var d = DATA;
