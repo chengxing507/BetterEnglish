@@ -71,6 +71,7 @@ body{
 .mode-chip.on.word{background:#d4edda;color:#155724;border-color:#28a745}
 .mode-chip.on.phrase{background:#cce5ff;color:#004085;border-color:#1a73e8}
 .mode-chip.on.sentence{background:#f8d7da;color:#721c24;border-color:#dc3545}
+.mode-chip.on.exam{background:#1a2332;color:#fff;border-color:#dc3545;box-shadow:0 0 0 1px rgba(220,53,69,.3)}
 .mode-hint{font-size:12px;color:#888;margin-top:4px;min-height:18px}
 /* ===== AI Settings ===== */
 .ai-settings{text-align:center;margin-bottom:12px}
@@ -372,7 +373,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
 <body>
 
 <div class="header">
-  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400;cursor:pointer" onclick="onVersionClick()" title="点击查看版本信息">v1.4.4</span></h1>
+  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400;cursor:pointer" onclick="onVersionClick()" title="点击查看版本信息">v1.5.0</span></h1>
   <p id="headerSub">导入数据，开始练习</p>
 </div>
 
@@ -399,6 +400,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
       <span class="mode-chip" data-mode="word" onclick="toggleMode('word')">📖 单词</span>
       <span class="mode-chip" data-mode="phrase" onclick="toggleMode('phrase')">📝 词组</span>
       <span class="mode-chip" data-mode="sentence" onclick="toggleMode('sentence')">💬 句子</span>
+      <span class="mode-chip" data-mode="exam" onclick="toggleMode('exam')" style="border-color:#dc3545;color:#dc3545">📝 测验模式</span>
     </div>
     <div class="mode-hint" id="modeHint">🔀 随机打乱所有题目</div>
 
@@ -460,7 +462,12 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
     <button class="btn btn-outline" id="btnDontKnow" onclick="showSkipModal()">😅 我不会</button>
     <button class="btn btn-outline" id="btnMark" onclick="toggleMark()" style="flex:0.6;padding:12px 8px;font-size:13px;border-color:#ffc107;color:#856404">🔖 标记</button>
   </div>
-  <div style="text-align:right;font-size:11px;color:#888;margin-top:2px" id="markCountDisplay"></div>
+  <div style="display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:4px;min-height:26px">
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <span id="markCountDisplay" style="font-size:11px;color:#888;cursor:pointer" onclick="showMarkListOverlay()" title="点击查看标记列表"></span>
+    </div>
+    <button class="btn btn-outline" id="btnMarkPrev" onclick="toggleMarkPrev()" style="display:none;padding:3px 10px;font-size:11px;border-color:#ffc107;color:#856404;border-radius:14px">↩ 标记上题</button>
+  </div>
 
   <!-- ===== Virtual Keyboard ===== -->
   <div class="kb-wrap" id="keyboard">
@@ -822,8 +829,12 @@ function validateInput() {
     var activeModes = [];
     var chips = document.querySelectorAll('.mode-chip.on');
     for (var ci = 0; ci < chips.length; ci++) { activeModes.push(chips[ci].dataset.mode); }
-    if (activeModes.length === 1 && activeModes[0] === 'random') modeStr = ' | 🔀 随机';
-    else modeStr = ' | 📌 ' + activeModes.join('+');
+    var hasExam = activeModes.indexOf('exam') !== -1;
+    var typeModes = activeModes.filter(function(m){return m !== 'exam' && m !== 'random';});
+    var isRandom = activeModes.indexOf('random') !== -1;
+    if (isRandom || typeModes.length === 0) modeStr = ' | 🔀 随机';
+    else modeStr = ' | 📌 ' + typeModes.join('+');
+    if (hasExam) modeStr += ' | 📝 测验模式';
     $importPreview.textContent = '✅ ' + result.questions.length + ' 题 | 单词 ' + types.word + ' 词组 ' + types.phrase + ' 句子 ' + types.sentence + modeStr;
     if (state._splitCount > 0) {
       $importPreview.textContent += ' | 🔗 已拆分 ' + state._splitCount + ' 段';
@@ -836,7 +847,7 @@ function validateInput() {
 }
 
 
-// ===== 模式选择（多选：单词/词组/句子可任意组合，随机独占） =====
+// ===== 模式选择（多选：单词/词组/句子可任意组合，随机独占；测验模式独立切换） =====
 function toggleMode(mode) {
   var chips = document.querySelectorAll('.mode-chip');
   var hint = document.getElementById('modeHint');
@@ -846,6 +857,11 @@ function toggleMode(mode) {
       else c.classList.remove('on');
     });
     hint.textContent = '🔀 随机打乱所有题目';
+  } else if (mode === 'exam') {
+    // 测验模式独立切换，不影响其他模式
+    document.querySelector('.mode-chip[data-mode="exam"]').classList.toggle('on');
+    // 更新提示
+    updateModeHint();
   } else {
     // 取消随机
     document.querySelector('.mode-chip[data-mode="random"]').classList.remove('on');
@@ -854,20 +870,32 @@ function toggleMode(mode) {
     // 如果没有任何类型选中，恢复随机
     var hasAny = false;
     chips.forEach(function(c) {
-      if (c.dataset.mode !== 'random' && c.classList.contains('on')) hasAny = true;
+      if (c.dataset.mode !== 'random' && c.dataset.mode !== 'exam' && c.classList.contains('on')) hasAny = true;
     });
     if (!hasAny) {
       document.querySelector('.mode-chip[data-mode="random"]').classList.add('on');
       hint.textContent = '🔀 随机打乱所有题目';
     } else {
-      var names = [], labels = {word:'单词',phrase:'词组',sentence:'句子'};
-      chips.forEach(function(c) {
-        if (c.dataset.mode !== 'random' && c.classList.contains('on')) names.push(labels[c.dataset.mode]);
-      });
-      hint.textContent = '📌 只练习：' + names.join(' + ');
+      updateModeHint();
     }
   }
 }
+
+function updateModeHint() {
+  var chips = document.querySelectorAll('.mode-chip');
+  var hint = document.getElementById('modeHint');
+  var names = [], labels = {word:'单词',phrase:'词组',sentence:'句子',exam:'测验模式'};
+  var hasExam = false;
+  chips.forEach(function(c) {
+    if (c.dataset.mode !== 'random' && c.classList.contains('on')) {
+      if (c.dataset.mode === 'exam') hasExam = true;
+      else names.push(labels[c.dataset.mode]);
+    }
+  });
+  var parts = [];
+  if (names.length > 0) parts.push('📌 ' + names.join(' + '));
+  if (hasExam) parts.push('📝 测验模式（仅1次机会，不展示正误）');
+  hint.textContent = parts.length > 0 ? parts.join(' | ') : '🔀 随机打乱所有题目';
 
 // ===== 示例 =====
 function loadSample() {
@@ -945,11 +973,13 @@ function doStartPractice(result) {
   state.lastWrong = null;
   state.disputeCount = 0;
   state.markedQuestions = [];  // 每次答题重置题目标记
+  // 检测测验模式
+  state.isExamMode = activeModes.indexOf('exam') !== -1;
   var scfg = getSwitchConfig();
-  state.maxAttempts = scfg.maxAttempts || 2;
+  state.maxAttempts = state.isExamMode ? 1 : (scfg.maxAttempts || 2);
   state.maxDisputes = Math.max(1, Math.floor(allQuestions.length * (scfg.disputeRatio || 20) / 100));
-
-  document.getElementById('headerSub').textContent = result.title || ('共 ' + result.questions.length + ' 题');
+  // 测验模式提示
+  document.getElementById('headerSub').textContent = (state.isExamMode ? '📝 测验模式 | ' : '') + (result.title || ('共 ' + result.questions.length + ' 题'));
   showPage('pagePractice');
   renderQuestion();
 }
@@ -998,6 +1028,7 @@ function onTimerExpire() {
   stopTimer();
   var q = state.questions[state.currentIdx];
   var fb = document.getElementById('feedback');
+  var showFb = shouldShowFeedback();
   // 不增加 attemptCount，视为超时直接判错
   state.wrongRecords.push({
     chinese: q.chinese,
@@ -1010,11 +1041,13 @@ function onTimerExpire() {
   state.totalWrongCount++;
   updateWrongDisplay();
   state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: '（超时）', index: state.currentIdx};
-  document.getElementById('answerInput').className = 'wrong';
-  fb.textContent = '⏱ 超时！正确答案：' + q.answer;
-  fb.className = 'q-feedback wrong';
+  if (showFb) {
+    document.getElementById('answerInput').className = 'wrong';
+    fb.textContent = '⏱ 超时！正确答案：' + q.answer;
+    fb.className = 'q-feedback wrong';
+  }
   lockQuestion();
-  setTimeout(function() { nextQuestion(); }, 1000);
+  setTimeout(function() { nextQuestion(); }, showFb ? 1000 : 200);
 }
 
 // ===== 标记题目 =====
@@ -1028,6 +1061,22 @@ function toggleMark() {
   }
   updateMarkButton();
   updateMarkCountDisplay();
+  updateMarkPrevButton();
+}
+
+/** 标记上一题 */
+function toggleMarkPrev() {
+  if (state.currentIdx <= 0) return;
+  var idx = state.currentIdx - 1;
+  var pos = state.markedQuestions.indexOf(idx);
+  if (pos === -1) {
+    state.markedQuestions.push(idx);
+  } else {
+    state.markedQuestions.splice(pos, 1);
+  }
+  updateMarkButton();
+  updateMarkCountDisplay();
+  updateMarkPrevButton();
 }
 
 function updateMarkButton() {
@@ -1046,12 +1095,70 @@ function updateMarkButton() {
   }
 }
 
+function updateMarkPrevButton() {
+  var btn = document.getElementById('btnMarkPrev');
+  if (!btn) return;
+  if (state.currentIdx <= 0) { btn.style.display = 'none'; return; }
+  var prevIdx = state.currentIdx - 1;
+  var isMarked = state.markedQuestions.indexOf(prevIdx) !== -1;
+  btn.style.display = '';
+  btn.textContent = isMarked ? '⭐ 上题已标' : '↩ 标记上题';
+  btn.style.background = isMarked ? '#fff3cd' : 'transparent';
+}
+
 function updateMarkCountDisplay() {
   var el = document.getElementById('markCountDisplay');
   if (el) {
     var cnt = state.markedQuestions.length;
-    el.textContent = cnt > 0 ? '⭐ 已标记 ' + cnt + ' 题' : '';
+    el.textContent = cnt > 0 ? '⭐ 已标记 ' + cnt + ' 题  📋' : '';
   }
+}
+
+// ===== 标记列表弹窗 =====
+function showMarkListOverlay() {
+  var overlay = document.getElementById('markListOverlay');
+  var list = document.getElementById('markListItems');
+  var totalEl = document.getElementById('markListTotal');
+  list.innerHTML = '';
+  var mq = state.markedQuestions.slice().sort(function(a,b){return a-b;});
+  if (mq.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px 0;color:#999;font-size:14px">暂无标记题目</div>';
+    if (totalEl) totalEl.textContent = '0';
+  } else {
+    if (totalEl) totalEl.textContent = mq.length;
+    mq.forEach(function(idx) {
+      var q = state.questions[idx];
+      if (!q) return;
+      var item = document.createElement('div');
+      item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--sub-bg,#f8f9fa);border-radius:8px;margin-bottom:6px;font-size:13px';
+      var num = document.createElement('span');
+      num.style.cssText = 'font-weight:700;color:var(--sub-text,#888);min-width:28px;font-size:11px';
+      num.textContent = '#' + (idx+1);
+      var text = document.createElement('span');
+      text.style.cssText = 'flex:1;color:var(--text,#1a2332)';
+      text.textContent = q.chinese + ' → ' + q.answer;
+      var delBtn = document.createElement('button');
+      delBtn.textContent = '✕ 取消标记';
+      delBtn.style.cssText = 'border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:#fee;color:#dc3545;white-space:nowrap';
+      delBtn.onclick = function(i) { return function() {
+        var p = state.markedQuestions.indexOf(i);
+        if (p !== -1) state.markedQuestions.splice(p, 1);
+        updateMarkButton();
+        updateMarkCountDisplay();
+        updateMarkPrevButton();
+        showMarkListOverlay(); // 刷新列表
+      }; }(idx);
+      item.appendChild(num);
+      item.appendChild(text);
+      item.appendChild(delBtn);
+      list.appendChild(item);
+    });
+  }
+  overlay.classList.add('show');
+}
+
+function closeMarkListOverlay() {
+  document.getElementById('markListOverlay').classList.remove('show');
 }
 
 // ===== 渲染题目 =====
@@ -1092,6 +1199,7 @@ function renderQuestion() {
   // 更新标记按钮
   updateMarkButton();
   updateMarkCountDisplay();
+  updateMarkPrevButton();
   document.getElementById('kbShift').textContent = '⇧';
   document.getElementById('kbShift').classList.remove('shift-on');
   // 让输入框获得焦点并显示光标，但阻止原生键盘弹出（使用 inputmode=none）
@@ -1102,14 +1210,28 @@ function renderQuestion() {
 }
 
 // ===== 提交答案 =====
+function shouldShowFeedback() {
+  // 测验模式不展示正误
+  if (state.isExamMode) return false;
+  // 管理面板配置：展示正误情况
+  var ecfg = JSON.parse(localStorage.getItem('beExamConfig') || '{}');
+  return ecfg.showFeedback !== false; // 默认展示
+}
+
 function submitAnswer() {
   if (state.locked) return;
-  stopTimer();
+  // 注意：不在开头停掉计时器 —— 如果答错还有机会，计时器继续走
+  // stopTimer() 移到具体的完成分支中处理
   var input = document.getElementById('answerInput');
   var userAns = input.value.trim();
   var q = state.questions[state.currentIdx];
   var fb = document.getElementById('feedback');
-  if (!userAns) { fb.textContent = '请输入答案'; fb.className = 'q-feedback wrong'; input.focus(); return; }
+  var showFb = shouldShowFeedback();
+  if (!userAns) {
+    if (showFb) { fb.textContent = '请输入答案'; fb.className = 'q-feedback wrong'; }
+    input.focus();
+    return;
+  }
   state.attemptCount++;
   // 是否区分标点符号（从管理面板配置）
   var punctConfig = JSON.parse(localStorage.getItem('bePunctuationConfig') || '{}');
@@ -1117,24 +1239,25 @@ function submitAnswer() {
   function normalizeText(t) {
     var s = t.toLowerCase().trim();
     if (ignorePunct) {
-      s = s.replace(/[.,!?;:'"()\[\]{}_\-—…·、，。！？；：""''（）【】《》\s]+/g, ' ');
-      s = s.replace(/\s+/g, ' ').trim();
+      s = s.replace(/[.,!?;:'\"()\\[\\]{}_\\-—…·、，。！？；：\"\"''（）【】《》\\s]+/g, ' ');
+      s = s.replace(/\\s+/g, ' ').trim();
     }
     return s;
   }
   var isCorrect = normalizeText(userAns) === normalizeText(q.answer);
   if (isCorrect) {
-    input.className = 'correct'; fb.textContent = '正确！'; fb.className = 'q-feedback correct';
-    lockQuestion(); setTimeout(function() { nextQuestion(); }, 600);
+    if (showFb) { input.className = 'correct'; fb.textContent = '正确！'; fb.className = 'q-feedback correct'; }
+    lockQuestion(); setTimeout(function() { nextQuestion(); }, showFb ? 600 : 200);
   } else if (state.attemptCount < state.maxAttempts) {
-    input.className = 'wrong'; fb.textContent = '不正确，还有第二次机会'; fb.className = 'q-feedback wrong'; input.focus();
+    if (showFb) { input.className = 'wrong'; fb.textContent = '不正确，还有第二次机会'; fb.className = 'q-feedback wrong'; }
+    input.focus();
   } else {
     state.wrongRecords.push({chinese:q.chinese, answer:q.answer, userInput:userAns, index:state.currentIdx, isSkip:false});
     state.everWrong.add(state.currentIdx); state.totalWrongCount++;
     updateWrongDisplay();
     state.lastWrong = {chinese:q.chinese, answer:q.answer, userInput:userAns, index:state.currentIdx};
-    input.className = 'wrong'; fb.textContent = '错误，进入下一题'; fb.className = 'q-feedback wrong';
-    lockQuestion(); setTimeout(function() { nextQuestion(); }, 800);
+    if (showFb) { input.className = 'wrong'; fb.textContent = '错误，进入下一题'; fb.className = 'q-feedback wrong'; }
+    lockQuestion(); setTimeout(function() { nextQuestion(); }, showFb ? 800 : 200);
   }
 }
 
@@ -2014,6 +2137,9 @@ document.getElementById('skipModal').addEventListener('click', function(e) {
 document.getElementById('historyOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeHistory();
 });
+document.getElementById('markListOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeMarkListOverlay();
+});
 
 loadAiSettings();
 loadToolConfig();
@@ -2091,6 +2217,9 @@ function openAdminPanel() {
   // 加载标点符号配置
   var pcfg = JSON.parse(localStorage.getItem('bePunctuationConfig') || '{}');
   document.getElementById('adminIgnorePunct').checked = pcfg.ignorePunctuation !== false;
+  // 加载展示正误配置
+  var ecfg = JSON.parse(localStorage.getItem('beExamConfig') || '{}');
+  document.getElementById('adminShowFeedback').checked = ecfg.showFeedback !== false;
   document.getElementById('adminStatus').textContent = '';
   document.getElementById('adminPanel').classList.add('show');
 }
@@ -2119,6 +2248,11 @@ function saveAdminConfig() {
     ignorePunctuation: document.getElementById('adminIgnorePunct').checked
   };
   localStorage.setItem('bePunctuationConfig', JSON.stringify(pcfg));
+  // 保存展示正误配置
+  var ecfg = {
+    showFeedback: document.getElementById('adminShowFeedback').checked
+  };
+  localStorage.setItem('beExamConfig', JSON.stringify(ecfg));
   document.getElementById('adminStatus').textContent = '✅ 保存成功！';
   setTimeout(function() { document.getElementById('adminStatus').textContent = ''; }, 2000);
 }
@@ -2674,6 +2808,12 @@ console.log('📝 英语默写 loaded');
     </div>
     <div class="admin-hint" style="margin-left:24px">开启后判断答案时会忽略标点、空格和大小写差异（默认开启）</div>
 
+    <div class="admin-check">
+      <input type="checkbox" id="adminShowFeedback" checked>
+      <label for="adminShowFeedback">👁️ 答题时展示正误情况</label>
+    </div>
+    <div class="admin-hint" style="margin-left:24px">关闭后答题过程中不显示正确/错误反馈（测验模式自动关闭）</div>
+
     <div class="admin-status" id="adminStatus"></div>
 
     <div class="admin-actions">
@@ -2685,6 +2825,20 @@ console.log('📝 英语默写 loaded');
 
 <!-- ===== Switch Toast ===== -->
 <div class="switch-toast" id="switchToast"></div>
+
+<!-- ===== Mark List Overlay ===== -->
+<div class="overlay" id="markListOverlay">
+  <div class="overlay-box" style="max-width:460px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 style="margin:0;font-size:18px">⭐ 标记列表</h2>
+      <button class="btn btn-sm btn-secondary" onclick="closeMarkListOverlay()" style="padding:4px 12px;font-size:12px">✕ 关闭</button>
+    </div>
+    <div id="markListItems"></div>
+    <div style="margin-top:12px;font-size:12px;color:var(--sub-text,#888);text-align:center">
+      共 <span id="markListTotal">0</span> 题标记
+    </div>
+  </div>
+</div>
 
 <!-- ===== Dispute Modal ===== -->
 <div class="modal-overlay dispute-modal" id="disputeModal">
