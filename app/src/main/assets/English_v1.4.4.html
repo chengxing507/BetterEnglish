@@ -427,6 +427,22 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
     <button onclick="showHistory()">📋 历史记录</button>
     <button onclick="showPage('pageConvert')" style="background:#1a73e8;margin-left:8px">🔧 格式转换</button>
   </div>
+
+  <!-- ===== 局域网监看 ===== -->
+  <div class="card" style="margin-top:12px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span style="font-size:16px">📡</span>
+      <span style="font-weight:700;font-size:14px">局域网监看</span>
+      <span style="font-size:11px;color:var(--sub-text,#888)">在另一设备浏览器查看实时进度</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:13px;color:var(--sub-text,#888)">端口</span>
+      <input type="number" id="lanPort" value="8080" min="1024" max="65535" style="width:80px;padding:6px 8px;border:2px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:var(--input-bg);color:var(--text)">
+      <button class="btn btn-sm" id="lanStartBtn" onclick="startLanMonitor()" style="background:#3b82f6;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">▶ 启动</button>
+      <button class="btn btn-sm" id="lanStopBtn" onclick="stopLanMonitor()" style="display:none;background:#ef4444;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">⏹ 停止</button>
+    </div>
+    <div id="lanStatus" style="font-size:12px;color:var(--sub-text,#888);margin-top:8px;min-height:18px"></div>
+  </div>
 </div>
 
 <!-- ==================== PAGE 2: 练习 ==================== -->
@@ -2795,6 +2811,90 @@ function testAIConnection() {
     if(!ok1 && ok2) r.innerHTML = '复核可用，总结异常。AI模型可能有问题'; r.style.color = '#856404';
   });
 }
+
+// ===== 局域网监看 =====
+var _lanSnapshotInterval = null;
+
+/** 是否支持 Native 桥接 */
+function hasLanSupport() {
+  return typeof BEAndroid !== 'undefined' && BEAndroid !== null;
+}
+
+/** 推送当前状态快照给 Native HTTP 服务器 */
+function pushLanSnapshot() {
+  if (!hasLanSupport()) return;
+  try {
+    var isPractice = document.getElementById('pagePractice').classList.contains('active');
+    var snap = {
+      active: isPractice && state.questions && state.questions.length > 0,
+      sessionTitle: document.getElementById('headerSub').textContent,
+      total: state.questions ? state.questions.length : 0,
+      currentIdx: state.currentIdx || 0,
+      done: state.isEarlyEnd ? (state.currentIdx || 0) : (state.questions ? state.questions.length : 0),
+      wrong: state.totalWrongCount || 0,
+      currentQuestion: state.questions && state.questions[state.currentIdx] ? state.questions[state.currentIdx].chinese : '',
+      currentType: state.questions && state.questions[state.currentIdx] ? state.questions[state.currentIdx].type : '',
+      wrongRecords: state.wrongRecords || [],
+      isExamMode: state.isExamMode || false
+    };
+    BEAndroid.updateSnapshot(JSON.stringify(snap));
+  } catch(e) {
+    // 桥接调用失败时静默忽略
+  }
+}
+
+function startLanMonitor() {
+  if (!hasLanSupport()) {
+    document.getElementById('lanStatus').textContent = '❌ 当前环境不支持（需在 Android App 内运行）';
+    document.getElementById('lanStatus').style.color = '#dc3545';
+    return;
+  }
+  var port = parseInt(document.getElementById('lanPort').value) || 8080;
+  if (port < 1024 || port > 65535) {
+    document.getElementById('lanStatus').textContent = '❌ 端口号范围 1024-65535';
+    document.getElementById('lanStatus').style.color = '#dc3545';
+    return;
+  }
+  try {
+    var result = BEAndroid.startServer(port);
+    if (result && result.startsWith('OK:')) {
+      var ip = BEAndroid.getLocalIp();
+      var p = result.split(':')[1];
+      document.getElementById('lanStatus').innerHTML = '✅ 监看地址: <strong>http://' + ip + ':' + p + '</strong><br><span style="font-size:11px;color:#94a3b8">在局域网内另一设备浏览器打开此地址</span>';
+      document.getElementById('lanStatus').style.color = '#155724';
+      document.getElementById('lanStartBtn').style.display = 'none';
+      document.getElementById('lanStopBtn').style.display = '';
+      // 开始定期推送快照
+      pushLanSnapshot();
+      _lanSnapshotInterval = setInterval(pushLanSnapshot, 1500);
+    } else {
+      document.getElementById('lanStatus').textContent = '❌ 启动失败: ' + (result || '未知');
+      document.getElementById('lanStatus').style.color = '#dc3545';
+    }
+  } catch(e) {
+    document.getElementById('lanStatus').textContent = '❌ 启动异常: ' + e.message;
+    document.getElementById('lanStatus').style.color = '#dc3545';
+  }
+}
+
+function stopLanMonitor() {
+  if (_lanSnapshotInterval) {
+    clearInterval(_lanSnapshotInterval);
+    _lanSnapshotInterval = null;
+  }
+  try {
+    if (hasLanSupport()) BEAndroid.stopServer();
+  } catch(e) {}
+  document.getElementById('lanStatus').textContent = '⏹️ 已停止';
+  document.getElementById('lanStatus').style.color = '#6c757d';
+  document.getElementById('lanStartBtn').style.display = '';
+  document.getElementById('lanStopBtn').style.display = 'none';
+}
+
+// 页面关闭或导航时停止监看
+window.addEventListener('beforeunload', function() {
+  stopLanMonitor();
+});
 
 console.log('📝 英语默写 loaded');
 </script>
