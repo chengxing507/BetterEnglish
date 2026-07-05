@@ -896,6 +896,7 @@ function updateModeHint() {
   if (names.length > 0) parts.push('📌 ' + names.join(' + '));
   if (hasExam) parts.push('📝 测验模式（仅1次机会，不展示正误）');
   hint.textContent = parts.length > 0 ? parts.join(' | ') : '🔀 随机打乱所有题目';
+}
 
 // ===== 示例 =====
 function loadSample() {
