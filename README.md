@@ -29,6 +29,7 @@
 | 📈 **练习统计** | Practice Statistics | 正确率、错题分布等数据可视化 |
 | 📋 **历史记录导出/导入** | History Export/Import | 支持备份和恢复所有练习记录 |
 | 🔖 **题目标记** | Question Marking | 支持标记题目，结束后集中复核 |
+| 📡 **局域网监看** | LAN Monitor | 在局域网内另一设备浏览器实时查看练习进度 |
 
 ---
 
@@ -129,6 +130,19 @@ Built-in question banks are in `assets/unit/`. You can also import custom questi
 - 支持「错题重练」模式 / Supports "Retry Wrong Questions" mode
 - 错题记录包含：正确答案、你的答案、错误次数 / Records include: correct answer, your answer, error count
 
+### 5. 局域网监看 · LAN Monitor
+
+练习过程中，可通过局域网内另一台设备的浏览器实时查看进度：  
+Monitor practice progress in real-time from another device on the same LAN:
+
+1. 在 App 首页底部「📡 局域网监看」区域，点击 **▶ 启动** / Tap **▶ Start** at the bottom of the home page
+2. 记下显示的监看地址 `http://192.168.x.x:8080` / Note the monitor address shown
+3. 在局域网内另一设备的浏览器中打开该地址 / Open the address in another device's browser on the same LAN
+4. 页面每 2 秒自动刷新显示实时进度 / The page auto-refreshes every 2 seconds
+
+> 💡 监看页面显示：练习模式、进度条、当前题目、正确率、错误数、错题列表
+> 💡 The monitor page shows: practice mode, progress bar, current question, accuracy, wrong count, wrong answer list
+
 ### 4. 高级设置 · Advanced Settings
 
 点击首页版本号 **7 次** 进入管理面板（密码：`password`），可设置：  
@@ -170,7 +184,7 @@ GitHub Actions workflow at `.github/workflows/build.yml` auto-builds APK on ever
 
 | 版本 Version | 日期 Date | 更新内容 Changes |
 |-------------|-----------|-----------------|
-| v1.5.0 | 2026-07 | 新增 📝 测验模式（仅1次机会、不展示正误）、标记上一题功能、答题中查看标记列表、管理面板「展示正误情况」配置项、修复倒计时在多次机会失效的问题 / Added Exam Mode (1 attempt, no feedback), mark previous question, mark list overlay during practice, admin "show feedback" toggle, fixed timer hiding on wrong answer with retries |
+| v1.5.0 | 2026-07 | 新增 📝 测验模式、🔖 标记上题、📡 局域网监看、管理面板「展示正误情况」配置项；修复倒计时失效、页面卡死、导出兼容性、AI复核格式误判 / Added Exam Mode, mark previous question, LAN monitor, admin "show feedback" toggle; fixed timer, page freeze, export, AI format parsing |
 | v1.4.4 | 2026-07 | 新增历史记录导出/导入功能、每次答题重置题目标记、更新说明文档为双语 / Added history export/import, reset marked questions per session, bilingual README |
 | v1.4.3 | 2026-07 | 正确率细分（单词/词组/句子）、修复复核正确后错题不移除、新增忽略标点符号开关、错题导出、历史记录回到结算页 / Accuracy breakdown by type, fix review bugs, punctuation toggle, wrong question export |
 | v1.4.2 | 2026-07 | 答题光标支持、AI配置一键导入、格式转换提示词可编辑、JSON句子自动拆分、文件上传修复 / Input cursor support, AI config import, editable prompts, JSON sentence splitting, file upload fix |
