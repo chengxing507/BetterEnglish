@@ -11,8 +11,8 @@ android {
         applicationId = "com.be.app"
         minSdk = 21
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.5.0"
+        versionCode = 6
+        versionName = "1.5.1"
     }
 
     buildTypes {

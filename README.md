@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Android-brightgreen)
 ![Kotlin](https://img.shields.io/badge/language-Kotlin-purple)
-![Version](https://img.shields.io/badge/version-1.5.0-blue)
+![Version](https://img.shields.io/badge/version-1.5.1-blue)
 
 > **中文** — 一款轻量、高效的英语默写练习工具，帮助中小学生巩固课内单词、词组和句子。  
 > **English** — A lightweight, efficient English dictation practice tool for K-12 students to reinforce vocabulary, phrases, and sentences.
@@ -184,7 +184,7 @@ GitHub Actions workflow at `.github/workflows/build.yml` auto-builds APK on ever
 
 | 版本 Version | 日期 Date | 更新内容 Changes |
 |-------------|-----------|-----------------|
-| v1.5.0 | 2026-07 | 新增 📝 测验模式、🔖 标记上题、📡 局域网监看、管理面板「展示正误情况」配置项；修复倒计时失效、页面卡死、导出兼容性、AI复核格式误判 / Added Exam Mode, mark previous question, LAN monitor, admin "show feedback" toggle; fixed timer, page freeze, export, AI format parsing |
+| v1.5.1 | 2026-07 | 复核保留记录（展示✅复核通过/❌复核未过标记）、监看面板信息丰富（类型统计、倒计时、用时、元信息）、"我不会"在答错后仍记录跳过行为、复核Prompt严格化（拼写不一致即判错）、明确首页AI Prompt模板用途说明 / Review records preserved with pass/fail badges, richer LAN monitor (type stats, timer, elapsed, meta), skip recorded after wrong attempt, stricter review prompt, clarified AI Prompt label |
 | v1.4.4 | 2026-07 | 新增历史记录导出/导入功能、每次答题重置题目标记、更新说明文档为双语 / Added history export/import, reset marked questions per session, bilingual README |
 | v1.4.3 | 2026-07 | 正确率细分（单词/词组/句子）、修复复核正确后错题不移除、新增忽略标点符号开关、错题导出、历史记录回到结算页 / Accuracy breakdown by type, fix review bugs, punctuation toggle, wrong question export |
 | v1.4.2 | 2026-07 | 答题光标支持、AI配置一键导入、格式转换提示词可编辑、JSON句子自动拆分、文件上传修复 / Input cursor support, AI config import, editable prompts, JSON sentence splitting, file upload fix |
