@@ -1189,7 +1189,9 @@ function renderQuestion() {
 
   document.getElementById('progressFill').style.width = (state.currentIdx / total * 100) + '%';
   document.getElementById('progressText').textContent = '第 ' + idx + ' / ' + total + ' 题';
-  document.getElementById('wrongCountDisplay').textContent = '❌ ' + state.totalWrongCount;
+  var wcDisplay = document.getElementById('wrongCountDisplay');
+  wcDisplay.textContent = '❌ ' + state.totalWrongCount;
+  wcDisplay.style.display = shouldShowFeedback() ? '' : 'none';
 
   var badge = document.getElementById('typeBadge');
   var map = {word:'单词', phrase:'词组', sentence:'句子'};
@@ -1288,7 +1290,9 @@ function lockQuestion() {
 }
 
 function updateWrongDisplay() {
-  document.getElementById('wrongCountDisplay').textContent = '❌ ' + state.everWrong.size;
+  var wcDisplay = document.getElementById('wrongCountDisplay');
+  wcDisplay.textContent = '❌ ' + state.everWrong.size;
+  wcDisplay.style.display = shouldShowFeedback() ? '' : 'none';
 }
 
 // ===== 我不会 =====
@@ -2891,7 +2895,7 @@ function pushLanSnapshot() {
     var q = state.questions && state.questions[state.currentIdx] ? state.questions[state.currentIdx] : null;
     var total = state.questions ? state.questions.length : 0;
     var wrong = state.totalWrongCount || 0;
-    var done = state.isEarlyEnd ? (state.currentIdx || 0) : total;
+    var done = state.currentIdx || 0;
     var correct = done - wrong;
     var accuracy = done > 0 ? Math.round(correct / done * 100) : 0;
     var elapsed = state.startTime ? Math.floor((Date.now() - state.startTime) / 1000) : 0;
