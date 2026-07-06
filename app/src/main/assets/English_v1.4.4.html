@@ -1268,6 +1268,11 @@ function submitAnswer() {
     if (showFb) { input.className = 'correct'; fb.textContent = '正确！'; fb.className = 'q-feedback correct'; }
     lockQuestion(); setTimeout(function() { nextQuestion(); }, showFb ? 600 : 200);
   } else if (state.attemptCount < state.maxAttempts) {
+    // 记录本次错误答案（中间尝试），结算界面展示完整作答历史
+    state.wrongRecords.push({
+      chinese: q.chinese, answer: q.answer, userInput: userAns,
+      index: state.currentIdx, isSkip: false
+    });
     if (showFb) { input.className = 'wrong'; fb.textContent = '不正确，还有第二次机会'; fb.className = 'q-feedback wrong'; }
     input.focus();
   } else {
@@ -1301,8 +1306,10 @@ function closeSkipModal() { document.getElementById('skipModal').classList.remov
 function confirmSkip() {
   closeSkipModal();
   var q = state.questions[state.currentIdx];
-  if (state.everWrong.has(state.currentIdx)) {
-    // 已答错过，仍然记录"跳过"行为，方便在结算页查看完整作答历史
+  // 检查该题是否已有作答记录（包括中间错误尝试）
+  var hasAttempt = state.wrongRecords.some(function(r) { return r.index === state.currentIdx; });
+  if (state.everWrong.has(state.currentIdx) || hasAttempt) {
+    // 已有作答记录（可能是中间错误或已判错），追加跳过记录
     state.wrongRecords.push({
       chinese: q.chinese,
       answer: q.answer,
@@ -1310,6 +1317,11 @@ function confirmSkip() {
       index: state.currentIdx,
       isSkip: true
     });
+    // 确保加入错题集（中间尝试时 everWrong 可能尚未标记）
+    if (!state.everWrong.has(state.currentIdx)) {
+      state.everWrong.add(state.currentIdx);
+      state.totalWrongCount++;
+    }
     state.attemptCount = state.maxAttempts;
     state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: '（跳过）', index: state.currentIdx};
     lockQuestion(); setTimeout(function() { nextQuestion(); }, 400);
@@ -2243,9 +2255,25 @@ var adminClickTimer = null;
 function onVersionClick() {
   adminClickCount++;
   if (adminClickTimer) clearTimeout(adminClickTimer);
-  adminClickTimer = setTimeout(function() { adminClickCount = 0; }, 2000);
-  if (adminClickCount >= 7) {
+  adminClickTimer = setTimeout(function() { adminClickCount = 0; }, 3000);
+  // 点击反馈提示
+  if (adminClickCount < 5) {
+    var hint = document.getElementById('versionClickHint');
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.id = 'versionClickHint';
+      hint.style.cssText = 'position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#1a2332;color:#fff;padding:6px 16px;border-radius:20px;font-size:12px;z-index:9999;transition:opacity .3s';
+      document.body.appendChild(hint);
+    }
+    hint.textContent = '🔑 再点击 ' + (5 - adminClickCount) + ' 次进入管理面板';
+    hint.style.opacity = '1';
+    clearTimeout(hint._timer);
+    hint._timer = setTimeout(function() { hint.style.opacity = '0'; }, 1500);
+  }
+  if (adminClickCount >= 5) {
     adminClickCount = 0;
+    var hint = document.getElementById('versionClickHint');
+    if (hint) { hint.style.opacity = '0'; }
     var pwd = prompt('🔐 请输入管理密码：');
     if (pwd === 'password') {
       openAdminPanel();
