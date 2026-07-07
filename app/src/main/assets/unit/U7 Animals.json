@@ -1,0 +1,190 @@
+{
+  "title": "Unit 7 Animals (动物) 单词默写",
+  "questions": [
+    {
+      "chinese": "动物",
+      "answer": "animal",
+      "type": "word"
+    },
+    {
+      "chinese": "猴子",
+      "answer": "monkey",
+      "type": "word"
+    },
+    {
+      "chinese": "狮子",
+      "answer": "lion",
+      "type": "word"
+    },
+    {
+      "chinese": "熊",
+      "answer": "bear",
+      "type": "word"
+    },
+    {
+      "chinese": "老虎",
+      "answer": "tiger",
+      "type": "word"
+    },
+    {
+      "chinese": "熊猫",
+      "answer": "panda",
+      "type": "word"
+    },
+    {
+      "chinese": "大象",
+      "answer": "elephant",
+      "type": "word"
+    },
+    {
+      "chinese": "午餐时间",
+      "answer": "lunchtime",
+      "type": "word"
+    },
+    {
+      "chinese": "鱼；鱼肉",
+      "answer": "fish",
+      "type": "word"
+    },
+    {
+      "chinese": "喂养",
+      "answer": "feed",
+      "type": "word"
+    },
+    {
+      "chinese": "动物园",
+      "answer": "zoo",
+      "type": "word"
+    },
+    {
+      "chinese": "去，走",
+      "answer": "go",
+      "type": "word"
+    },
+    {
+      "chinese": "在动物园",
+      "answer": "at the zoo",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢吃新鲜的竹子",
+      "answer": "love to eat fresh bamboo",
+      "type": "phrase"
+    },
+    {
+      "chinese": "睡觉和玩耍",
+      "answer": "sleep and play",
+      "type": "phrase"
+    },
+    {
+      "chinese": "看它们一整天",
+      "answer": "watch them all day",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢蛋糕",
+      "answer": "like cakes",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢鱼",
+      "answer": "like fish",
+      "type": "phrase"
+    },
+    {
+      "chinese": "相互高举胳膊击掌",
+      "answer": "high five",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在动物园里",
+      "answer": "in the zoo",
+      "type": "phrase"
+    },
+    {
+      "chinese": "又可爱又酷",
+      "answer": "cute and cool",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喜欢老虎/熊/猴子",
+      "answer": "like tigers/bears/monkeys",
+      "type": "phrase"
+    },
+    {
+      "chinese": "不喜欢狮子",
+      "answer": "don't like lions",
+      "type": "phrase"
+    },
+    {
+      "chinese": "喂养动物",
+      "answer": "feed animals",
+      "type": "phrase"
+    },
+    {
+      "chinese": "去看熊猫",
+      "answer": "go to see the pandas",
+      "type": "phrase"
+    },
+    {
+      "chinese": "让我们在动物园里看熊猫。",
+      "answer": "Let's see the pandas at the zoo.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们喜爱吃新鲜的竹子。",
+      "answer": "They love to eat fresh bamboo.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我能看它们一整天。",
+      "answer": "I can watch them all day.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你喜欢蛋糕/香蕉/鱼吗？",
+      "answer": "Do you like cakes/bananas/fish?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，我喜欢。/ 不，我不喜欢。",
+      "answer": "Yes, I do. / No, I don't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你喜欢池子里的大象吗？",
+      "answer": "Do you like elephants in the pool?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它们很大，又可爱又酷。",
+      "answer": "They're large, cute and cool.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我喜欢老虎，它们很酷。",
+      "answer": "I like tigers. They're cool.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你想要一根香蕉吗？",
+      "answer": "Would you like a banana?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "好的，谢谢。/ 不用了，谢谢。",
+      "answer": "Yes, please. / No, thank you.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要在动物园里给动物喂食。",
+      "answer": "Don't feed animals in the zoo.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们去看熊猫吧。",
+      "answer": "Let's go to see the pandas.",
+      "type": "sentence"
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "title": "Unit 8 Colours (颜色) 单词默写",
+  "questions": [
+    {
+      "chinese": "颜色，色彩",
+      "answer": "colour",
+      "type": "word"
+    },
+    {
+      "chinese": "黄色的",
+      "answer": "yellow",
+      "type": "word"
+    },
+    {
+      "chinese": "蓝色的",
+      "answer": "blue",
+      "type": "word"
+    },
+    {
+      "chinese": "红色的",
+      "answer": "red",
+      "type": "word"
+    },
+    {
+      "chinese": "橘黄色的",
+      "answer": "orange",
+      "type": "word"
+    },
+    {
+      "chinese": "粉红色的",
+      "answer": "pink",
+      "type": "word"
+    },
+    {
+      "chinese": "绿色的",
+      "answer": "green",
+      "type": "word"
+    },
+    {
+      "chinese": "棕色的",
+      "answer": "brown",
+      "type": "word"
+    },
+    {
+      "chinese": "黑色的",
+      "answer": "black",
+      "type": "word"
+    },
+    {
+      "chinese": "白色的",
+      "answer": "white",
+      "type": "word"
+    },
+    {
+      "chinese": "买",
+      "answer": "buy",
+      "type": "word"
+    },
+    {
+      "chinese": "气球",
+      "answer": "balloon",
+      "type": "word"
+    },
+    {
+      "chinese": "当然",
+      "answer": "sure",
+      "type": "word"
+    },
+    {
+      "chinese": "变色龙",
+      "answer": "chameleon",
+      "type": "word"
+    },
+    {
+      "chinese": "小的",
+      "answer": "little",
+      "type": "word"
+    },
+    {
+      "chinese": "买一个气球",
+      "answer": "buy a balloon",
+      "type": "phrase"
+    },
+    {
+      "chinese": "想要一个气球",
+      "answer": "want a balloon",
+      "type": "phrase"
+    },
+    {
+      "chinese": "什么颜色",
+      "answer": "what colour",
+      "type": "phrase"
+    },
+    {
+      "chinese": "为我摘一个苹果",
+      "answer": "pick an apple for me",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一个橙色的气球",
+      "answer": "an orange balloon",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在树上",
+      "answer": "on the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一个绿色的/红色的气球",
+      "answer": "a green/red balloon",
+      "type": "phrase"
+    },
+    {
+      "chinese": "想要一个来自树上的红苹果",
+      "answer": "want a red apple from the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我的小朋友",
+      "answer": "my little friend",
+      "type": "phrase"
+    },
+    {
+      "chinese": "红黄相间",
+      "answer": "yellow and red",
+      "type": "phrase"
+    },
+    {
+      "chinese": "非常酷",
+      "answer": "very cool",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在我们/你们周围",
+      "answer": "around us/you",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我可以买一个气球吗？",
+      "answer": "Can I buy a balloon?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "当然。",
+      "answer": "Sure.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我想要一个粉色的气球。",
+      "answer": "I want a pink balloon.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "那个气球是给你的。",
+      "answer": "That balloon is for you.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "在树上的是什么？",
+      "answer": "What's on the tree?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你能为我摘一个苹果吗？",
+      "answer": "Can you pick an apple for me?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是我的小朋友。",
+      "answer": "It's my little friend.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "现在它是什么颜色的？",
+      "answer": "What colour is it now?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是棕色的。",
+      "answer": "It's brown.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "现在它是红黄相间的。",
+      "answer": "It's yellow and red now.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的小朋友是一只变色龙。",
+      "answer": "My little friend is a chameleon.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它又变绿了。",
+      "answer": "It's green again.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "怎么回事？",
+      "answer": "How come?",
+      "type": "sentence"
+    }
+  ]
+}

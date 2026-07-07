@@ -1,0 +1,910 @@
+{
+  "title": "U1-U4 阶段性测试 单词默写",
+  "questions": [
+    {
+      "chinese": "学校",
+      "answer": "school",
+      "type": "word"
+    },
+    {
+      "chinese": "用品，用具",
+      "answer": "thing",
+      "type": "word"
+    },
+    {
+      "chinese": "铅笔",
+      "answer": "pencil",
+      "type": "word"
+    },
+    {
+      "chinese": "直尺",
+      "answer": "ruler",
+      "type": "word"
+    },
+    {
+      "chinese": "橡皮",
+      "answer": "rubber",
+      "type": "word"
+    },
+    {
+      "chinese": "书包",
+      "answer": "schoolbag",
+      "type": "word"
+    },
+    {
+      "chinese": "那，那个",
+      "answer": "that",
+      "type": "word"
+    },
+    {
+      "chinese": "放，安置",
+      "answer": "put",
+      "type": "word"
+    },
+    {
+      "chinese": "猜测，估计",
+      "answer": "guess",
+      "type": "word"
+    },
+    {
+      "chinese": "长的",
+      "answer": "long",
+      "type": "word"
+    },
+    {
+      "chinese": "铅笔袋，铅笔盒",
+      "answer": "pencil case",
+      "type": "word"
+    },
+    {
+      "chinese": "再一次，又一次",
+      "answer": "again",
+      "type": "word"
+    },
+    {
+      "chinese": "学习用品",
+      "answer": "school things",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我的橡皮",
+      "answer": "my rubber",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在你的书包里",
+      "answer": "in your schoolbag",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一本大的书",
+      "answer": "a big book",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在我的铅笔盒里",
+      "answer": "in my pencil case",
+      "type": "phrase"
+    },
+    {
+      "chinese": "钢笔和铅笔们",
+      "answer": "pens and pencils",
+      "type": "phrase"
+    },
+    {
+      "chinese": "你的短铅笔们",
+      "answer": "your short pencils",
+      "type": "phrase"
+    },
+    {
+      "chinese": "看一看",
+      "answer": "take a look",
+      "type": "phrase"
+    },
+    {
+      "chinese": "为我",
+      "answer": "for me",
+      "type": "phrase"
+    },
+    {
+      "chinese": "再猜一次",
+      "answer": "guess again",
+      "type": "phrase"
+    },
+    {
+      "chinese": "这是什么？",
+      "answer": "What's this?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是我的铅笔盒。",
+      "answer": "It's my pencil case.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "那是什么？",
+      "answer": "What's that?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是我的橡皮。",
+      "answer": "It's my rubber.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "把你的学习用品放进你的书包里。",
+      "answer": "Put your school things in your schoolbag.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的书包里有什么？看一看。",
+      "answer": "What's in my schoolbag? Take a look.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "一个铅笔盒和一本大书。",
+      "answer": "A pencil case and a big book.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的铅笔盒里有什么？你能看到吗？",
+      "answer": "What's in my pencil case? Can you see?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是一把尺吗？",
+      "answer": "Is it a ruler?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不，它不是。",
+      "answer": "No, it isn't.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是一个铅笔盒吗？",
+      "answer": "Is it a pencil case?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，它是。",
+      "answer": "Yes, it is.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你是对的。",
+      "answer": "You're right.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "好主意！",
+      "answer": "Good idea!",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它是给你的铅笔的。",
+      "answer": "It's for your pencil.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "现在你的铅笔是长的了。",
+      "answer": "Now your pencil is long.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我们的",
+      "answer": "our",
+      "type": "word"
+    },
+    {
+      "chinese": "教室",
+      "answer": "classroom",
+      "type": "word"
+    },
+    {
+      "chinese": "关，关闭",
+      "answer": "close",
+      "type": "word"
+    },
+    {
+      "chinese": "窗，窗户",
+      "answer": "window",
+      "type": "word"
+    },
+    {
+      "chinese": "椅子",
+      "answer": "chair",
+      "type": "word"
+    },
+    {
+      "chinese": "打扫，清扫",
+      "answer": "sweep",
+      "type": "word"
+    },
+    {
+      "chinese": "地板，地面",
+      "answer": "floor",
+      "type": "word"
+    },
+    {
+      "chinese": "我们",
+      "answer": "us",
+      "type": "word"
+    },
+    {
+      "chinese": "课桌，书桌",
+      "answer": "desk",
+      "type": "word"
+    },
+    {
+      "chinese": "黑板",
+      "answer": "blackboard",
+      "type": "word"
+    },
+    {
+      "chinese": "洁净的，干净的",
+      "answer": "clean",
+      "type": "word"
+    },
+    {
+      "chinese": "肮脏的",
+      "answer": "dirty",
+      "type": "word"
+    },
+    {
+      "chinese": "让",
+      "answer": "let",
+      "type": "word"
+    },
+    {
+      "chinese": "(使)保持，处于",
+      "answer": "keep",
+      "type": "word"
+    },
+    {
+      "chinese": "关门",
+      "answer": "close the door",
+      "type": "phrase"
+    },
+    {
+      "chinese": "关窗户",
+      "answer": "close the window",
+      "type": "phrase"
+    },
+    {
+      "chinese": "把书收起来",
+      "answer": "put away the books",
+      "type": "phrase"
+    },
+    {
+      "chinese": "擦黑板",
+      "answer": "clean the blackboard",
+      "type": "phrase"
+    },
+    {
+      "chinese": "扫地",
+      "answer": "sweep the floor",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一张脏课桌",
+      "answer": "a dirty desk",
+      "type": "phrase"
+    },
+    {
+      "chinese": "保持它干净整洁",
+      "answer": "keep it clean",
+      "type": "phrase"
+    },
+    {
+      "chinese": "又大又新",
+      "answer": "big and new",
+      "type": "phrase"
+    },
+    {
+      "chinese": "打扫我们的教室",
+      "answer": "clean our classroom",
+      "type": "phrase"
+    },
+    {
+      "chinese": "擦桌子",
+      "answer": "clean the desk",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我们的教室又大又新。",
+      "answer": "Our classroom is big and new.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们为了大家保持它的干净和整洁。",
+      "answer": "Let's keep it clean for you and me.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们来打扫教室。",
+      "answer": "Let's clean our classroom.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "请扫地。",
+      "answer": "Sweep the floor, please.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "请清洁你的桌椅。",
+      "answer": "Please clean your desk and chair.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "看！那张桌子很脏！",
+      "answer": "Look! That desk is dirty!",
+      "type": "sentence"
+    },
+    {
+      "chinese": "今天是个好天。",
+      "answer": "It's a good day.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们擦擦桌子然后出去玩吧。",
+      "answer": "Let's clean our desks and go out to play.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "放好你们的书然后我们走吧！",
+      "answer": "Put away your books and off we go!",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我会擦黑板。",
+      "answer": "I can clean the blackboard.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我也是！",
+      "answer": "Me too!",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们扫地吧。",
+      "answer": "Let's sweep the floor.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我们的教室现在很干净。",
+      "answer": "Our classroom is clean now.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "规则，规章",
+      "answer": "rule",
+      "type": "word"
+    },
+    {
+      "chinese": "图书馆",
+      "answer": "library",
+      "type": "word"
+    },
+    {
+      "chinese": "大声说，叫，嚷",
+      "answer": "shout",
+      "type": "word"
+    },
+    {
+      "chinese": "吃",
+      "answer": "eat",
+      "type": "word"
+    },
+    {
+      "chinese": "跑，奔跑",
+      "answer": "run",
+      "type": "word"
+    },
+    {
+      "chinese": "太太，夫人",
+      "answer": "Mrs",
+      "type": "word"
+    },
+    {
+      "chinese": "在……上面",
+      "answer": "on",
+      "type": "word"
+    },
+    {
+      "chinese": "安静的",
+      "answer": "quiet",
+      "type": "word"
+    },
+    {
+      "chinese": "有趣的",
+      "answer": "fun",
+      "type": "word"
+    },
+    {
+      "chinese": "遵循，听从",
+      "answer": "follow",
+      "type": "word"
+    },
+    {
+      "chinese": "糖果",
+      "answer": "sweet",
+      "type": "word"
+    },
+    {
+      "chinese": "不要",
+      "answer": "don't",
+      "type": "word"
+    },
+    {
+      "chinese": "说话，讲话",
+      "answer": "talk",
+      "type": "word"
+    },
+    {
+      "chinese": "迟的，晚的",
+      "answer": "late",
+      "type": "word"
+    },
+    {
+      "chinese": "不能",
+      "answer": "can't",
+      "type": "word"
+    },
+    {
+      "chinese": "我们的图书馆",
+      "answer": "our library",
+      "type": "phrase"
+    },
+    {
+      "chinese": "遵守规则",
+      "answer": "follow the rules",
+      "type": "phrase"
+    },
+    {
+      "chinese": "制定规则",
+      "answer": "make rules",
+      "type": "phrase"
+    },
+    {
+      "chinese": "坐下",
+      "answer": "sit down",
+      "type": "phrase"
+    },
+    {
+      "chinese": "看向窗外",
+      "answer": "look out of the window",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在你的桌子上画画",
+      "answer": "draw on your desk",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在这里画画",
+      "answer": "draw here",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在课堂上说话",
+      "answer": "talk in class",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在图书馆里",
+      "answer": "in the library",
+      "type": "phrase"
+    },
+    {
+      "chinese": "保持安静",
+      "answer": "keep quiet",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在这里吃",
+      "answer": "eat here",
+      "type": "phrase"
+    },
+    {
+      "chinese": "看，瞧",
+      "answer": "look at",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我们的学校规则",
+      "answer": "our school rules",
+      "type": "phrase"
+    },
+    {
+      "chinese": "制定班级规则",
+      "answer": "make class rules",
+      "type": "phrase"
+    },
+    {
+      "chinese": "不要喊叫/讲话/吃/跑。",
+      "answer": "Don't shout/talk/eat/run.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这是我们的图书馆。",
+      "answer": "This is our library.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "请遵守规则。",
+      "answer": "Please follow the rules.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "请坐下。",
+      "answer": "Sit down, please.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你迟到了。",
+      "answer": "You're late.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "下次不要再迟到了。",
+      "answer": "Don't be late again.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要往窗外看。",
+      "answer": "Don't look out of the window.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要在你的桌子上画画。",
+      "answer": "Don't draw on your desk.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你可以在这里画画。",
+      "answer": "You can draw here.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "请保持安静。",
+      "answer": "Keep quiet.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你想要一颗糖吗？",
+      "answer": "Would you like a sweet?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "是的，谢谢。/ 不用了，谢谢。",
+      "answer": "Yes, please. / No, thank you.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "看这里的规则。",
+      "answer": "Look at the rules here.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "不要紧。",
+      "answer": "That's all right.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "在……的后面",
+      "answer": "behind",
+      "type": "word"
+    },
+    {
+      "chinese": "树，树木",
+      "answer": "tree",
+      "type": "word"
+    },
+    {
+      "chinese": "在……旁边",
+      "answer": "by",
+      "type": "word"
+    },
+    {
+      "chinese": "在……下面",
+      "answer": "under",
+      "type": "word"
+    },
+    {
+      "chinese": "花，花朵",
+      "answer": "flower",
+      "type": "word"
+    },
+    {
+      "chinese": "玩耍",
+      "answer": "play",
+      "type": "word"
+    },
+    {
+      "chinese": "在外面",
+      "answer": "outside",
+      "type": "word"
+    },
+    {
+      "chinese": "准备好",
+      "answer": "ready",
+      "type": "word"
+    },
+    {
+      "chinese": "开始；移动",
+      "answer": "go",
+      "type": "word"
+    },
+    {
+      "chinese": "飞机",
+      "answer": "plane",
+      "type": "word"
+    },
+    {
+      "chinese": "很，非常",
+      "answer": "very",
+      "type": "word"
+    },
+    {
+      "chinese": "远",
+      "answer": "far",
+      "type": "word"
+    },
+    {
+      "chinese": "在哪里，到哪里",
+      "answer": "where",
+      "type": "word"
+    },
+    {
+      "chinese": "找到",
+      "answer": "find",
+      "type": "word"
+    },
+    {
+      "chinese": "结束",
+      "answer": "over",
+      "type": "word"
+    },
+    {
+      "chinese": "学生",
+      "answer": "student",
+      "type": "word"
+    },
+    {
+      "chinese": "花园，园圃",
+      "answer": "garden",
+      "type": "word"
+    },
+    {
+      "chinese": "极好的，美丽的",
+      "answer": "lovely",
+      "type": "word"
+    },
+    {
+      "chinese": "关于",
+      "answer": "of",
+      "type": "word"
+    },
+    {
+      "chinese": "美好的",
+      "answer": "nice",
+      "type": "word"
+    },
+    {
+      "chinese": "鸭子",
+      "answer": "duck",
+      "type": "word"
+    },
+    {
+      "chinese": "蝴蝶",
+      "answer": "butterfly",
+      "type": "word"
+    },
+    {
+      "chinese": "美丽的",
+      "answer": "beautiful",
+      "type": "word"
+    },
+    {
+      "chinese": "来自",
+      "answer": "from",
+      "type": "word"
+    },
+    {
+      "chinese": "玩得高兴",
+      "answer": "have fun",
+      "type": "phrase"
+    },
+    {
+      "chinese": "课后",
+      "answer": "after class",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在树后面",
+      "answer": "behind the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在树旁边",
+      "answer": "by the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在桌子上面",
+      "answer": "on the table",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在桌子下面",
+      "answer": "under the table",
+      "type": "phrase"
+    },
+    {
+      "chinese": "课间休息",
+      "answer": "break time",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在花丛里",
+      "answer": "in the flower",
+      "type": "phrase"
+    },
+    {
+      "chinese": "来自美术社团",
+      "answer": "from the Art Club",
+      "type": "phrase"
+    },
+    {
+      "chinese": "我的纸飞机",
+      "answer": "my paper plane",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在外面玩",
+      "answer": "play outside",
+      "type": "phrase"
+    },
+    {
+      "chinese": "走得非常远",
+      "answer": "go very far",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在树上",
+      "answer": "in the tree",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在鸭子上",
+      "answer": "on the duck",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在学校里画画",
+      "answer": "draw pictures in the school",
+      "type": "phrase"
+    },
+    {
+      "chinese": "想要画花朵",
+      "answer": "want to draw the flowers",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在花园里",
+      "answer": "in the garden",
+      "type": "phrase"
+    },
+    {
+      "chinese": "在你后面",
+      "answer": "behind you",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一些好看的图画",
+      "answer": "some nice pictures",
+      "type": "phrase"
+    },
+    {
+      "chinese": "一张你和蝴蝶的图画",
+      "answer": "a picture of you and the butterfly",
+      "type": "phrase"
+    },
+    {
+      "chinese": "让我们来玩捉迷藏吧。",
+      "answer": "Let's play hide-and-seek.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "谁在树后面？",
+      "answer": "Who's behind the tree?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你看到了吗？",
+      "answer": "Can you see?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "现在是休息时间。",
+      "answer": "It's break time.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们出去玩吧。",
+      "answer": "Let's play outside.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "这些飞机走得非常远。",
+      "answer": "The planes go very far.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的飞机在桌子上。",
+      "answer": "My plane is on the table.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的飞机在花丛里。",
+      "answer": "My plane is in the flowers.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我的飞机在哪里？我找不到它了。",
+      "answer": "Where's my plane? I can't find it.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它在树上。",
+      "answer": "It's in the tree.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "下课了。",
+      "answer": "Class is over.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "让我们画一些好看的图画吧。",
+      "answer": "Let's draw some nice pictures.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "我想要画花园里的花。",
+      "answer": "I want to draw the flowers in the garden.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "一只蝴蝶在树旁边。",
+      "answer": "A butterfly is by the tree.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它在你后面。",
+      "answer": "It's behind you.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "它在鸭子上。",
+      "answer": "It's on the duck.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "你画了什么？",
+      "answer": "What do you draw?",
+      "type": "sentence"
+    },
+    {
+      "chinese": "一张你和蝴蝶的图画。",
+      "answer": "A picture of you and the butterfly.",
+      "type": "sentence"
+    },
+    {
+      "chinese": "好漂亮/可爱！",
+      "answer": "How beautiful/lovely!",
+      "type": "sentence"
+    }
+  ]
+}

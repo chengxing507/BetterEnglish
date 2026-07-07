@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英语默写 · 实时监督</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.container{max-width:640px;width:100%;padding:20px;text-align:center}
+h1{font-size:22px;margin-bottom:2px;color:#f1f5f9}
+.sub{font-size:13px;color:#94a3b8;margin-bottom:16px}
+.card{background:#1e293b;border-radius:16px;padding:22px 18px;margin-bottom:12px;border:1px solid #334155}
+.icon{font-size:36px;margin-bottom:4px}
+.title{font-size:16px;font-weight:700}
+.detail{font-size:12px;color:#94a3b8;margin-bottom:10px}
+.pbar{height:6px;background:#334155;border-radius:4px;overflow:hidden;margin-bottom:12px}
+.pfill{height:100%;background:linear-gradient(90deg,#3b82f6,#8b5cf6);width:0%;transition:width .8s ease}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.box{background:#0f172a;border-radius:8px;padding:8px 6px;font-size:11px}
+.box .sv{font-weight:700;font-size:16px}
+.box .sl{color:#64748b;font-size:9px;margin-top:1px}
+.curq{background:#0f172a;border-radius:8px;padding:12px;margin-bottom:10px;border-left:3px solid #3b82f6}
+.ql{font-size:9px;color:#64748b;letter-spacing:1px;margin-bottom:3px}
+.qc{font-size:16px;font-weight:700;color:#f1f5f9}
+.qm{font-size:11px;color:#94a3b8;margin-top:4px}
+.wlist{text-align:left;max-height:200px;overflow-y:auto}
+.witem{display:flex;justify-content:space-between;padding:4px 6px;background:#0f172a;border-radius:4px;margin-bottom:2px;font-size:10px;border-left:2px solid #ef4444}
+.wic{color:#f1f5f9;flex:1}
+.wio{color:#22c55e;text-align:right}
+.wi-ua{color:#f59e0b;font-size:9px;text-align:right}
+.ft{font-size:10px;color:#475569;margin-top:10px}
+.auto{font-size:10px;color:#3b82f6;margin-top:4px}
+.meta{font-size:10px;color:#64748b;margin-top:8px}
+.ts{font-size:11px;color:#94a3b8;margin-bottom:8px;display:flex;gap:8px;justify-content:center}
+.timer{font-size:13px;margin-bottom:8px}
+.timer .tv{font-size:18px}
+/* Wrong stats specific */
+.wrong-stats{font-size:12px;color:#f59e0b;margin-bottom:8px;padding:6px;background:#0f172a;border-radius:6px}
+.wrong-stats span{margin:0 4px}
+/* Popup section */
+.popup-section{margin-top:12px;padding-top:10px;border-top:1px solid #334155}
+.popup-section .popup-title{font-size:11px;color:#94a3b8;margin-bottom:6px}
+.popup-input-row{display:flex;gap:6px;margin-bottom:6px}
+.popup-input-row input{flex:1;padding:6px 8px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#e2e8f0;font-size:12px;outline:none}
+.popup-input-row input:focus{border-color:#3b82f6}
+.popup-btn{padding:6px 14px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:#3b82f6;color:#fff;white-space:nowrap}
+.popup-btn:hover{background:#2563eb}
+.popup-status{font-size:10px;color:#22c55e;margin-top:4px;min-height:16px}
+.popup-log{text-align:left;max-height:100px;overflow-y:auto;margin-top:6px}
+.popup-log-item{display:flex;justify-content:space-between;padding:3px 6px;background:#0f172a;border-radius:4px;margin-bottom:2px;font-size:10px}
+.popup-log-item .pl-msg{color:#e2e8f0}
+.popup-log-item .pl-status{color:#22c55e}
+.popup-log-item .pl-status.pending{color:#f59e0b}
+/* Settlement card */
+.settlement-card{background:#1e293b;border-radius:16px;padding:22px 18px;margin-bottom:12px;border:1px solid #f59e0b}
+.settlement-card .s-title{font-size:14px;font-weight:700;color:#f59e0b;margin-bottom:10px}
+.settlement-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📝 英语默写</h1>
+  <div class="sub">实时监督面板</div>
+  <div id="app"></div>
+  <div class="ft" id="footer"></div>
+  <div class="auto" id="refresh"></div>
+</div>
+<script>
+var DATA = __JSON__;
+var esc=function(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;};
+
+/** 发送弹窗到答题端 */
+function sendPopup() {
+  var input = document.getElementById('popupInput');
+  var msg = input.value.trim();
+  if (!msg) { document.getElementById('popupStatus').textContent = '⚠️ 请输入弹窗消息'; return; }
+  // 通过 fetch 发起到答题端的弹窗 HTTP 请求
+  fetch('/api/popup?msg=' + encodeURIComponent(msg), {method:'POST'})
+    .then(function(r){return r.text();})
+    .then(function(txt){
+      if (txt === 'OK') {
+        document.getElementById('popupStatus').textContent = '✅ 弹窗已发送，等待确认...';
+        input.value = '';
+        // 添加到日志
+        addPopupLog(msg, 'pending');
+      } else {
+        document.getElementById('popupStatus').textContent = '❌ 发送失败: ' + esc(txt);
+      }
+    })
+    .catch(function(e){
+      document.getElementById('popupStatus').textContent = '❌ 网络错误: ' + e.message;
+    });
+}
+
+/** 添加到弹窗日志 */
+function addPopupLog(msg, status) {
+  var log = document.getElementById('popupLog');
+  var item = document.createElement('div');
+  item.className = 'popup-log-item';
+  var st = status === 'acknowledged' ? '✅ 已确认' : '⏳ 待确认';
+  var sc = status === 'acknowledged' ? 'pl-status' : 'pl-status pending';
+  item.innerHTML = '<span class="pl-msg">' + esc(msg) + '</span><span class="' + sc + '">' + st + '</span>';
+  log.insertBefore(item, log.firstChild);
+}
+
+function render(){
+  var d=DATA,app=document.getElementById("app");
+  
+  // Check if popup acknowledged status changed
+  if (d._popupAck && d._popupAckMsg) {
+    document.getElementById('popupStatus').textContent = '✅ 答题端已确认: ' + esc(d._popupAckMsg);
+    addPopupLog(d._popupAckMsg, 'acknowledged');
+    // Clear the ack flag to avoid repeated logging
+    d._popupAck = false;
+  }
+  
+  if(d.active!==true){
+    // 非练习状态 - 检查是否有结算数据
+    if (d.settlementData) {
+      renderSettlement(d, app);
+      return;
+    }
+    app.innerHTML='<div class="card"><div class="icon">⏸️</div><div class="title">等待开始练习</div><div class="detail">打开手机上的英语默写App并开始练习，此处将自动显示进度</div></div>';
+    document.getElementById("footer").textContent="监督地址 "+window.location.host;
+    return;
+  }
+  var total=d.total||0,curIdx=d.currentIdx||0,cur=curIdx+1;
+  var done=d.done||0,wrong=d.wrong||0,correct=d.correct!==undefined?d.correct:(done-wrong);
+  var pct=total>0?Math.round(done/total*100):0;
+  var acc=d.accuracy!==undefined?d.accuracy:(done>0?Math.round(correct/done*100):0);
+  var q=d.currentQuestion||"",qAns=d.currentAnswer||"",qIn=d.currentInput||"";
+  var tMap={word:"📖单词",phrase:"📝词组",sentence:"💬句子"};
+  var tLbl=tMap[d.currentType]||"";
+  var timerHtml="";
+  if(d.timerRemaining>=0){
+    var tw=d.timerRemaining<=5?"color:#ef4444;font-weight:700":"";
+    timerHtml='<div class="timer"><span>⏱</span> 剩余 <span class="tv" style="'+tw+'">'+d.timerRemaining+'s</span></div>';
+  }
+  
+  // 错题统计：单词、词组、句子分别展示错题数
+  var wrongStatsHtml = "";
+  if(d.typeStats){
+    var ts=d.typeStats;
+    var wordWrong=ts.word?ts.word.wrong:0;
+    var phraseWrong=ts.phrase?ts.phrase.wrong:0;
+    var sentenceWrong=ts.sentence?ts.sentence.wrong:0;
+    wrongStatsHtml='<div class="wrong-stats">错题数 📖单词：'+wordWrong+'个  📝词组：'+phraseWrong+'个  💬句子：'+sentenceWrong+'个</div>';
+  }
+  
+  // 题型进度
+  var tsHtml="";
+  if(d.typeStats){
+    var ts=d.typeStats;
+    tsHtml='<div class="ts">';
+    if(ts.word)tsHtml+="<span>📖 "+(ts.word.total-ts.word.wrong)+"/"+ts.word.total+"</span>";
+    if(ts.phrase)tsHtml+="<span>📝 "+(ts.phrase.total-ts.phrase.wrong)+"/"+ts.phrase.total+"</span>";
+    if(ts.sentence)tsHtml+="<span>💬 "+(ts.sentence.total-ts.sentence.wrong)+"/"+ts.sentence.total+"</span>";
+    tsHtml+="</div>";
+  }
+  
+  // 具体错题展示（含错误答案）
+  var wHtml="";
+  if(d.wrongRecords&&d.wrongRecords.length>0){
+    var seen={};
+    wHtml='<div class="wlist">';
+    d.wrongRecords.forEach(function(r){
+      if(seen[r.index])return;
+      seen[r.index]=true;
+      var userAns = r.userInput || '';
+      wHtml+='<div class="witem"><span class="wic">'+esc(r.chinese)+' → <span style="color:#ef4444">'+esc(userAns)+'</span></span><span class="wio">✅ '+esc(r.answer)+'</span></div>';
+    });
+    wHtml+="</div>";
+  }
+  var meta="";
+  if(d.elapsed)meta+="⏱ "+esc(d.elapsed)+" | ";
+  if(d.switchCount!==undefined)meta+="切屏 "+d.switchCount+"次 | ";
+  if(d.maxAttempts)meta+="容错 "+(d.attemptCount||0)+"/"+d.maxAttempts+" | ";
+  if(d.hasAiKey)meta+="AI已配置 | ";
+  if(d.isEarlyEnd)meta+="提前结束 | ";
+  if(meta)meta=meta.slice(0,-3);
+  var mIcon=d.isExamMode?"📝":"✏️",mName=d.isExamMode?"测验模式":"练习模式";
+  
+  // 弹窗功能区域
+  var popupHtml = '<div class="popup-section">' +
+    '<div class="popup-title">📢 弹窗消息</div>' +
+    '<div class="popup-input-row">' +
+    '<input type="text" id="popupInput" placeholder="输入弹窗消息..." onkeydown="if(event.key===\'Enter\')sendPopup()">' +
+    '<button class="popup-btn" onclick="sendPopup()">发送弹窗</button>' +
+    '</div>' +
+    '<div class="popup-status" id="popupStatus"></div>' +
+    '<div class="popup-log" id="popupLog"></div>' +
+    '</div>';
+  
+  app.innerHTML=
+    '<div class="card">'+
+    '<div class="icon">'+mIcon+'</div>'+
+    '<div class="title">'+mName+'</div>'+
+    '<div class="detail">'+esc(d.sessionTitle||"进行中")+'</div>'+
+    timerHtml+
+    '<div class="pbar"><div class="pfill" style="width:'+pct+'%"></div></div>'+
+    '<div class="grid">'+
+    '<div class="box"><div class="sv" style="color:#3b82f6">'+cur+'/'+total+'</div><div class="sl">当前/总题</div></div>'+
+    '<div class="box"><div class="sv" style="color:#22c55e">'+acc+'%</div><div class="sl">正确率</div></div>'+
+    '<div class="box"><div class="sv" style="color:#ef4444">'+wrong+'</div><div class="sl">错误</div></div>'+
+    '<div class="box"><div class="sv" style="color:#f59e0b">'+correct+'</div><div class="sl">正确</div></div>'+
+    '</div>'+
+    wrongStatsHtml+
+    tsHtml+
+    '<div class="curq">'+
+    '<div class="ql">'+tLbl+' 第'+cur+'题</div>'+
+    '<div class="qc">'+esc(q)+'</div>'+
+    (qAns?'<div class="qm">正确答案: '+esc(qAns)+'</div>':"")+
+    (qIn?'<div class="qm">当前输入: '+esc(qIn)+'</div>':"")+
+    '</div>'+
+    wHtml+
+    (meta?'<div class="meta">'+meta+'</div>':"")+
+    popupHtml+
+    '</div>';
+  document.getElementById("footer").textContent="监督地址 "+window.location.host+" | 自动刷新中";
+}
+
+/** 渲染结算界面 */
+function renderSettlement(d, app) {
+  var sd = d.settlementData;
+  app.innerHTML =
+    '<div class="settlement-card">' +
+    '<div class="s-title">📊 练习结算</div>' +
+    '<div class="settlement-grid">' +
+    '<div class="box"><div class="sv" style="color:#3b82f6">' + sd.total + '</div><div class="sl">总题数</div></div>' +
+    '<div class="box"><div class="sv" style="color:#22c55e">' + (sd.accuracy || 0) + '%</div><div class="sl">正确率</div></div>' +
+    '<div class="box"><div class="sv" style="color:#ef4444">' + (sd.wrong || 0) + '</div><div class="sl">错误题数</div></div>' +
+    '<div class="box"><div class="sv" style="color:#f59e0b">' + (sd.correct || 0) + '</div><div class="sl">正确题数</div></div>' +
+    '</div>' +
+    '<div style="font-size:12px;color:#94a3b8;margin-bottom:8px">⏱ ' + (sd.duration || '0秒') + ' | 切屏 ' + (sd.switchCount || 0) + '次</div>' +
+    (sd.wrongStatsHtml || '') +
+    (sd.wrongListHtml || '<div style="font-size:12px;color:#64748b">🎉 全部正确，无错题</div>') +
+    '</div>' +
+    '<div class="card"><div class="icon">⏸️</div><div class="title">练习已结束</div><div class="detail">监督地址 ' + window.location.host + '</div></div>';
+  document.getElementById("footer").textContent="监督地址 "+window.location.host+" | 练习已结束";
+}
+
+render();
+setTimeout(function(){window.location.reload();},2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 书本图标 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,35h20v30l-10,-6l-10,6z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,35h20v30l-10,-6l-10,6z" />
+    <!-- 字母 E -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,48h20v2H44z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,48h20v2H44z"
+        android:translateX="26"
+        android:translateY="0" />
+    <!-- 笔尖 -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M50,70l8,-16l8,16z" />
+</vector>
