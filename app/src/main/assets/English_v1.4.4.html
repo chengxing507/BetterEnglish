@@ -373,11 +373,12 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
 <body>
 
 <div class="header">
-  <div style="position:relative">
-    <h1>📝 英语默写</h1>
-    <span style="position:absolute;top:0;right:0;font-size:11px;opacity:.7;font-weight:400;cursor:pointer;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,.15)" onclick="onVersionClick()" title="点击查看版本信息">v1.5.2</span>
-  </div>
+  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400;cursor:pointer" onclick="onVersionClick()" title="点击查看版本信息">v1.5.2</span></h1>
   <p id="headerSub">导入数据，开始练习</p>
+</div>
+
+<div style="text-align:right;padding:4px 16px 0 0;margin-top:-8px">
+  <button onclick="openAdminPanel()" style="border:none;background:rgba(45,106,79,.15);color:#2d6a4f;padding:4px 14px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer">⚙️ 管理面板</button>
 </div>
 
 <div class="container">
@@ -724,6 +725,7 @@ var state = {
   questions: [],
   currentIdx: 0,
   wrongRecords: [],  // [{chinese, answer, userInput, index, isSkip}]
+  _lastAttemptInput: null,
   everWrong: new Set(),
   totalWrongCount: 0,
   startTime: 0,
@@ -1270,6 +1272,8 @@ function submitAnswer() {
     lockQuestion(); setTimeout(function() { nextQuestion(); }, showFb ? 600 : 200);
   } else if (state.attemptCount < state.maxAttempts) {
     if (showFb) { input.className = 'wrong'; fb.textContent = '不正确，还有第二次机会'; fb.className = 'q-feedback wrong'; }
+    // 保存首次错误答案，以便后续"跳过"时记录具体内容
+    state._lastAttemptInput = userAns;
     input.focus();
   } else {
     state.wrongRecords.push({chinese:q.chinese, answer:q.answer, userInput:userAns, index:state.currentIdx, isSkip:false});
@@ -1301,16 +1305,28 @@ function confirmSkip() {
   closeSkipModal();
   var q = state.questions[state.currentIdx];
   if (state.everWrong.has(state.currentIdx)) {
-    // 已答错过，仍然记录"跳过"行为，方便在结算页查看完整作答历史
+    // 已答错过：先找到之前的错误答案，追加一条"跳过"记录但保留错误答案信息
+    var prevWrongInput = '（未知）';
+    for (var si = state.wrongRecords.length - 1; si >= 0; si--) {
+      var wr = state.wrongRecords[si];
+      if (wr.index === state.currentIdx && !wr.isSkip && wr.userInput && wr.userInput !== '（跳过）') {
+        prevWrongInput = wr.userInput;
+        break;
+      }
+    }
+    // 如果之前的记录未保存具体错误答案（因第一次尝试只反馈未记录），则从input存根获取
+    if (prevWrongInput === '（未知）' && state._lastAttemptInput) {
+      prevWrongInput = state._lastAttemptInput;
+    }
     state.wrongRecords.push({
       chinese: q.chinese,
       answer: q.answer,
-      userInput: '（跳过）',
+      userInput: prevWrongInput + ' → （跳过）',
       index: state.currentIdx,
       isSkip: true
     });
     state.attemptCount = state.maxAttempts;
-    state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: '（跳过）', index: state.currentIdx};
+    state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: prevWrongInput + ' → （跳过）', index: state.currentIdx};
     lockQuestion(); setTimeout(function() { nextQuestion(); }, 400);
     return;
   }
@@ -1362,6 +1378,8 @@ function finishPractice() {
   document.getElementById('resultTitle').textContent = title;
   document.getElementById('statAccuracy').textContent = accuracyRaw.toFixed(2) + '%';
   state._typeStats = calcTypeStats(state.questions, state.everWrong);
+  // 管理面板结算模式：存储各类型准确率
+  state._settlementTypeStats = state._typeStats;
   updateAccuracyDetail();
   document.getElementById('statDuration').textContent = duration;
   document.getElementById('statTotal').textContent = total;
@@ -2285,6 +2303,32 @@ function openAdminPanel() {
   // 加载展示正误配置
   var ecfg = JSON.parse(localStorage.getItem('beExamConfig') || '{}');
   document.getElementById('adminShowFeedback').checked = ecfg.showFeedback !== false;
+  // 展示各类型准确率（仅在结算/结果页时）
+  var adminTypeStats = document.getElementById('adminTypeStats');
+  var adminTypeStatsContent = document.getElementById('adminTypeStatsContent');
+  if (adminTypeStats && adminTypeStatsContent) {
+    var resultPage = document.getElementById('pageResult');
+    if (resultPage && resultPage.classList.contains('active') && state._settlementTypeStats) {
+      var ts = state._settlementTypeStats;
+      var html = '';
+      var typeNames = {word: '📖 单词', phrase: '📝 词组', sentence: '💬 句子'};
+      for (var t in ts) {
+        if (ts[t] && ts[t].total > 0) {
+          var correct = ts[t].total - ts[t].wrong;
+          var pct = Math.round(correct / ts[t].total * 100);
+          html += '<div>' + (typeNames[t] || t) + '：' + correct + '/' + ts[t].total + '（' + pct + '%）</div>';
+        }
+      }
+      if (html) {
+        adminTypeStatsContent.innerHTML = html;
+        adminTypeStats.style.display = 'block';
+      } else {
+        adminTypeStats.style.display = 'none';
+      }
+    } else {
+      adminTypeStats.style.display = 'none';
+    }
+  }
   document.getElementById('adminStatus').textContent = '';
   document.getElementById('adminPanel').classList.add('show');
 }
@@ -3134,6 +3178,13 @@ console.log('📝 英语默写 loaded');
     <label>允许复核比例 (%)</label>
     <input type="number" id="adminDisputeRatio" min="0" max="50" value="20">
     <div class="admin-hint">每场练习允许申请AI复核的题目比例，默认20%</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <div id="adminTypeStats" style="display:none;margin-bottom:12px;padding:10px;background:var(--sub-bg,#f8f9fa);border-radius:8px">
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px">📊 各类型正确率</div>
+      <div id="adminTypeStatsContent" style="font-size:12px;line-height:1.8"></div>
+    </div>
 
     <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
 
