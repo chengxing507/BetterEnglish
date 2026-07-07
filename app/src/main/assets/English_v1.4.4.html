@@ -373,12 +373,12 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
 <body>
 
 <div class="header">
-  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400;cursor:pointer" onclick="onVersionClick()" title="点击查看版本信息">v1.5.2</span></h1>
+  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400">v1.5.2</span></h1>
   <p id="headerSub">导入数据，开始练习</p>
 </div>
 
 <div style="text-align:right;padding:4px 16px 0 0;margin-top:-8px">
-  <button onclick="openAdminPanel()" style="border:none;background:rgba(45,106,79,.15);color:#2d6a4f;padding:4px 14px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer">⚙️ 管理面板</button>
+  <button onclick="checkAdminPassword()" style="border:none;background:rgba(45,106,79,.15);color:#2d6a4f;padding:4px 14px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer">⚙️ 管理面板</button>
 </div>
 
 <div class="container">
@@ -1330,10 +1330,15 @@ function confirmSkip() {
     lockQuestion(); setTimeout(function() { nextQuestion(); }, 400);
     return;
   }
+  // 检查之前是否有过错误输入（第一次尝试未达上限时，错误答案不会写入wrongRecords）
+  var skipInput = '（跳过）';
+  if (state._lastAttemptInput && state.attemptCount > 0) {
+    skipInput = state._lastAttemptInput + ' → （跳过）';
+  }
   state.wrongRecords.push({
     chinese: q.chinese,
     answer: q.answer,
-    userInput: '（跳过）',
+    userInput: skipInput,
     index: state.currentIdx,
     isSkip: true
   });
@@ -1341,7 +1346,7 @@ function confirmSkip() {
   state.totalWrongCount++;
   state.attemptCount = state.maxAttempts;
   updateWrongDisplay();
-  state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: '（跳过）', index: state.currentIdx};
+  state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: skipInput, index: state.currentIdx};
   lockQuestion();
   setTimeout(function() { nextQuestion(); }, 400);
 }
@@ -2257,19 +2262,27 @@ if (!document.querySelector('.page.active')) document.getElementById('pageImport
 var adminClickCount = 0;
 var adminClickTimer = null;
 
-function onVersionClick() {
-  adminClickCount++;
-  if (adminClickTimer) clearTimeout(adminClickTimer);
-  adminClickTimer = setTimeout(function() { adminClickCount = 0; }, 2000);
-  if (adminClickCount >= 7) {
-    adminClickCount = 0;
-    var pwd = prompt('🔐 请输入管理密码：');
-    if (pwd === 'password') {
-      openAdminPanel();
-    } else if (pwd !== null) {
-      alert('❌ 密码错误！');
-    }
+function getAdminPassword() {
+  var pwd = localStorage.getItem('beAdminPassword');
+  return pwd || '123456'; // 默认密码123456
+}
+
+function setAdminPassword(newPwd) {
+  localStorage.setItem('beAdminPassword', newPwd);
+}
+
+function checkAdminPassword() {
+  var correctPwd = getAdminPassword();
+  var pwd = prompt('🔐 请输入管理面板密码：');
+  if (pwd === correctPwd) {
+    openAdminPanel();
+  } else if (pwd !== null) {
+    alert('❌ 密码错误！');
   }
+}
+
+function onVersionClick() {
+  // 保留空函数，避免版本号点击报错
 }
 
 function getSwitchConfig() {
@@ -2363,6 +2376,23 @@ function saveAdminConfig() {
   };
   localStorage.setItem('beExamConfig', JSON.stringify(ecfg));
   document.getElementById('adminStatus').textContent = '✅ 保存成功！';
+  setTimeout(function() { document.getElementById('adminStatus').textContent = ''; }, 2000);
+}
+
+/** 修改管理面板密码 */
+function changeAdminPassword() {
+  var newPwd = document.getElementById('adminPasswordInput').value.trim();
+  if (!newPwd) { alert('请输入新密码'); return; }
+  if (newPwd.length < 4) { alert('密码至少4位'); return; }
+  var correctPwd = getAdminPassword();
+  var oldPwd = prompt('请输入当前密码确认：');
+  if (oldPwd !== correctPwd) {
+    alert('❌ 当前密码错误！');
+    return;
+  }
+  setAdminPassword(newPwd);
+  document.getElementById('adminPasswordInput').value = '';
+  document.getElementById('adminStatus').textContent = '✅ 密码修改成功！';
   setTimeout(function() { document.getElementById('adminStatus').textContent = ''; }, 2000);
 }
 
@@ -3218,6 +3248,15 @@ console.log('📝 英语默写 loaded');
       <label for="adminShowFeedback">👁️ 答题时展示正误情况</label>
     </div>
     <div class="admin-hint" style="margin-left:24px">关闭后答题过程中不显示正确/错误反馈（测验模式自动关闭）</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <label>🔑 管理密码</label>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <input type="password" id="adminPasswordInput" placeholder="输入新密码" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:var(--input-bg);color:var(--text)">
+      <button class="btn btn-sm" onclick="changeAdminPassword()" style="background:#6f42c1;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">修改</button>
+    </div>
+    <div class="admin-hint">默认密码 123456，建议首次使用后修改</div>
 
     <div class="admin-status" id="adminStatus"></div>
 
