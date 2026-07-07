@@ -377,9 +377,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
   <p id="headerSub">导入数据，开始练习</p>
 </div>
 
-<div style="text-align:right;padding:4px 16px 0 0;margin-top:-8px">
-  <button onclick="checkAdminPassword()" style="border:none;background:rgba(45,106,79,.15);color:#2d6a4f;padding:4px 14px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer">⚙️ 管理面板</button>
-</div>
+<!-- 管理面板按钮移入首页card内 -->
 
 <div class="container">
 
@@ -397,6 +395,10 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
     </div>
     <div class="import-actions">
       <label>📁 选择文件<input type="file" id="fileInput" accept=".json"></label>
+    </div>
+    <div style="text-align:center;margin-top:10px">
+      <button onclick="checkAdminPassword()" style="border:none;background:#6f42c1;color:#fff;padding:6px 20px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">⚙️ 管理面板</button>
+      <span style="font-size:10px;color:#888;display:block;margin-top:3px">默认密码 123456</span>
     </div>
     <!-- mode selector -->
     <div class="mode-group" id="modeGroup">
@@ -1314,9 +1316,15 @@ function confirmSkip() {
         break;
       }
     }
-    // 如果之前的记录未保存具体错误答案（因第一次尝试只反馈未记录），则从input存根获取
+    // 如果之前的记录未保存具体错误答案，则从input存根获取
     if (prevWrongInput === '（未知）' && state._lastAttemptInput) {
       prevWrongInput = state._lastAttemptInput;
+    }
+    // 最后尝试从输入框读取（用户可能输入了但还没提交）
+    if (prevWrongInput === '（未知）') {
+      var curInput = document.getElementById('answerInput');
+      var curVal = curInput ? curInput.value.trim() : '';
+      if (curVal) { prevWrongInput = curVal; }
     }
     state.wrongRecords.push({
       chinese: q.chinese,
@@ -1330,9 +1338,13 @@ function confirmSkip() {
     lockQuestion(); setTimeout(function() { nextQuestion(); }, 400);
     return;
   }
-  // 检查之前是否有过错误输入（第一次尝试未达上限时，错误答案不会写入wrongRecords）
+  // 检查当前输入框是否有内容（用户答错后未清空，直接点跳过）
   var skipInput = '（跳过）';
-  if (state._lastAttemptInput && state.attemptCount > 0) {
+  var curInput = document.getElementById('answerInput');
+  var curVal = curInput ? curInput.value.trim() : '';
+  if (curVal) {
+    skipInput = curVal + ' → （跳过）';
+  } else if (state._lastAttemptInput && state.attemptCount > 0) {
     skipInput = state._lastAttemptInput + ' → （跳过）';
   }
   state.wrongRecords.push({
