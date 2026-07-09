@@ -19,6 +19,7 @@ import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
 import java.net.URLEncoder
+import java.net.URLDecoder
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +34,9 @@ class MainActivity : AppCompatActivity() {
 
     /** 供 HTTP 服务器读取快照 */
     fun getSnapshot(): String = snapshot
+
+    /** 供 HTTP 服务器获取 WebView */
+    fun getWebView(): WebView = webView
 
     // Activity Result API：文件选择器
     private val fileChooserLauncher = registerForActivityResult(
@@ -234,36 +238,60 @@ class SimpleHttpServer(
         serverSocket = null
     }
 
-    private fun handleClient(client: Socket) {
-        val reader = BufferedReader(InputStreamReader(client.inputStream))
-        val requestLine = reader.readLine() ?: return
-        // 只支持 GET
-        if (!requestLine.startsWith("GET")) return
+    private fun handleClient}
 
-        // 读取请求头
-        var line = reader.readLine()
-        while (line != null && line.isNotEmpty()) {
-            line = reader.readLine()
-        }
+            val reader = BufferedReader(InputStreamReader(client.inputStream))
+            val requestLine = reader.readLine() ?: return
+        
+            // 读取请求头
+            var line = reader.readLine()
+            var contentLength = 0
+            while (line != null && line.isNotEmpty()) {
+                if (line.startsWith("Content-Length:", ignoreCase = true)) {
+                    contentLength = line.substringAfter(":").trim().toIntOrNull() ?: 0
+                }
+                line = reader.readLine()
+            }
 
-        // 读取当前快照
-        val json = activity.getSnapshot()
-        val body = buildStatusPage(json)
-        val response = """
-HTTP/1.1 200 OK
-Content-Type: text/html; charset=utf-8
-Content-Length: ${body.toByteArray().size}
-Connection: close
-Access-Control-Allow-Origin: *
+            // 解析请求路径
+            val parts = requestLine.split(" ")
+            val method = parts.getOrNull(0) ?: return
+            val path = parts.getOrNull(1) ?: "/"
 
-$body
-""".trimIndent()
+            // 处理弹窗 API
+            if (path.startsWith("/api/popup") && method == "POST") {
+                val msg = path.substringAfter("msg=").substringBefore("&")
+                    .replace("+", " ")
+                    .let { java.net.URLDecoder.decode(it, "UTF-8") }
+                // 通过 evaluateJavascript 调用前端的弹窗函数
+                            activity.runOnUiThread {
+                                activity.getWebView().evaluateJavascript(
+                                    "onMonitorPopup('${msg.replace("'", "\\'").replace("\n", "\\n")}');",
+                                    null
+                                )
+                            }
+                val resp = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 2\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\n\r\nOK"
+                client.outputStream.write(resp.toByteArray(Charsets.UTF_8))
+                client.outputStream.flush()
+                return
+            }
 
-        client.outputStream.write(response.toByteArray(Charsets.UTF_8))
-        client.outputStream.flush()
-    }
+            // 读取当前快照
+            val json = activity.getSnapshot()
+            val body = buildStatusPage(json)
+            val response = buildString {
+                            append("HTTP/1.1 200 OK\r\n")
+                            append("Content-Type: text/html; charset=utf-8\r\n")
+                            append("Content-Length: ${body.toByteArray().size}\r\n")
+                            append("Connection: close\r\n")
+                            append("Access-Control-Allow-Origin: *\r\n")
+                            append("\r\n")
+                            append(body)
+                        }
 
-    private fun buildStatusPage(json: String): String {
+            client.outputStream.write(response.toByteArray(Charsets.UTF_8))
+            client.outputStream.flush()
+        }private fun buildStatusPage(json: String): String {
         val safeJson = json.replace("</script>", "<\\/script>")
         val template = activity.assets.open("monitor.html")
             .bufferedReader().use { it.readText() }

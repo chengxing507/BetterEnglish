@@ -194,8 +194,9 @@ body{
 
 .q-input{margin:16px 0}
 .q-input input{
-  width:100%;padding:14px 16px;border:2px solid #dee2e6;border-radius:12px;
-  font-size:18px;text-align:center;outline:none;transition:border-color .2s,background .2s;background:#fff
+  width:100%;padding:18px 16px;border:2px solid #dee2e6;border-radius:12px;
+  font-size:18px;text-align:center;outline:none;transition:border-color .2s,background .2s;background:#fff;
+  min-height:60px;line-height:1.5
 }
 .q-input input:focus{border-color:#2d6a4f;box-shadow:0 0 0 3px rgba(45,106,79,.15);caret-color:#2d6a4f}
 .q-input input.correct{border-color:#28a745;background:#f0fff4}
@@ -289,7 +290,7 @@ body{
   .q-card{padding:24px 16px 22px}
   .q-chinese{font-size:24px}
   .q-chinese.sentence{font-size:20px}
-  .q-input input{font-size:16px;padding:12px}
+  .q-input input{font-size:16px;padding:16px;min-height:56px}
 }
 
 :root{--bg:#f0f4f8;--text:#1a2332;--card-bg:#fff;--card-shadow:0 4px 20px rgba(0,0,0,.08);--border:#dee2e6;--input-bg:#fff;--sub-bg:#f8f9fa;--sub-text:#6c757d;--badge-bg:#e9ecef;--badge-text:#495057;--hover-bg:#dee2e6;--code-bg:#1a2332;--code-text:#e6db74;--overlay:rgba(0,0,0,.45)}
@@ -373,9 +374,11 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
 <body>
 
 <div class="header">
-  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400;cursor:pointer" onclick="onVersionClick()" title="点击查看版本信息">v1.5.1</span></h1>
+  <h1>📝 英语默写 <span style="font-size:12px;opacity:.6;font-weight:400">v1.5.2</span></h1>
   <p id="headerSub">导入数据，开始练习</p>
 </div>
+
+<!-- 管理面板按钮移入首页card内 -->
 
 <div class="container">
 
@@ -394,45 +397,11 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
     <div class="import-actions">
       <label>📁 选择文件<input type="file" id="fileInput" accept=".json"></label>
     </div>
-    <!-- mode selector -->
-    <div class="mode-group" id="modeGroup">
-      <span class="mode-chip on random" data-mode="random" onclick="toggleMode('random')">🔀 随机</span>
-      <span class="mode-chip" data-mode="word" onclick="toggleMode('word')">📖 单词</span>
-      <span class="mode-chip" data-mode="phrase" onclick="toggleMode('phrase')">📝 词组</span>
-      <span class="mode-chip" data-mode="sentence" onclick="toggleMode('sentence')">💬 句子</span>
-      <span class="mode-chip" data-mode="exam" onclick="toggleMode('exam')" style="border-color:#dc3545;color:#dc3545">📝 测验模式</span>
-    </div>
-    <div class="mode-hint" id="modeHint">🔀 随机打乱所有题目</div>
-
-    <div class="import-error" id="importError"></div>
-    <div class="import-preview" id="importPreview"></div>
-    <button class="btn btn-primary btn-block" id="startBtn" disabled onclick="startPractice()" style="margin-top:14px">开始默写</button>
-  </div>
-
-    <div class="ai-settings">
-    <button class="ai-settings-btn" id="aiSettingsBtn" onclick="toggleAiSettings()">⚙️ AI 配置</button>
-  </div>
-  <div class="ai-panel" id="aiPanel">
-    <label>Base URL</label>
-    <input type="text" id="aiBaseUrl" placeholder="https://api.openai.com/v1">
-    <label>API Key</label>
-    <input type="password" id="aiApiKey" placeholder="sk-...">
-    <label>Model（可选）</label>
-    <input type="text" id="aiModel" placeholder="gpt-4o-mini">
-    <label style="margin-top:12px">AI分析Prompt 模板 <span style="color:#999;font-weight:400;font-size:11px">用于"AI分析本次练习"按钮，分析练习数据并给出学习建议。支持变量: {title} {total} {accuracy} {duration} {wrongDetail}</span></label>
-    <textarea id="aiPrompt" placeholder="不填则使用默认 prompt"></textarea>
-    <button class="btn btn-secondary btn-block ai-save-btn" onclick="saveAiSettings()">💾 保存配置</button>
-  </div>
-<div class="history-btn-area">
-    <button onclick="showHistory()">📋 历史记录</button>
-    <button onclick="showPage('pageConvert')" style="background:#1a73e8;margin-left:8px">🔧 格式转换</button>
-  </div>
-
-  <!-- ===== 局域网监看 ===== -->
+  <!-- ===== 局域网监督 ===== -->
   <div class="card" style="margin-top:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
       <span style="font-size:16px">📡</span>
-      <span style="font-weight:700;font-size:14px">局域网监看</span>
+      <span style="font-weight:700;font-size:14px">局域网监督</span>
       <span style="font-size:11px;color:var(--sub-text,#888)">在另一设备浏览器查看实时进度</span>
     </div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -522,10 +491,11 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
       <button class="kb-key special narrow" onclick="kbBackspace()">⌫</button>
     </div>
     <div class="kb-row">
-      <button class="kb-key special narrow" onclick="kbPress('?')">?</button>
+      <button class="kb-key special narrow" onclick="kbPress('/')">/</button>
       <button class="kb-key special narrow" onclick="kbPress(',')">,</button>
       <button class="kb-key special narrow" onclick="kbPress('.')">.</button>
       <button class="kb-key special narrow" onclick="kbPress('\'')" id="kbQuote">'</button>
+      <button class="kb-key special narrow" onclick="kbPress('—')" id="kbDash">—</button>
       <button class="kb-key space special" onclick="kbPress(' ')">空格</button>
       <button class="kb-key action" onclick="kbSubmit()">↵</button>
     </div>
@@ -721,6 +691,7 @@ var state = {
   questions: [],
   currentIdx: 0,
   wrongRecords: [],  // [{chinese, answer, userInput, index, isSkip}]
+  _lastAttemptInput: null,
   everWrong: new Set(),
   totalWrongCount: 0,
   startTime: 0,
@@ -1268,12 +1239,9 @@ function submitAnswer() {
     if (showFb) { input.className = 'correct'; fb.textContent = '正确！'; fb.className = 'q-feedback correct'; }
     lockQuestion(); setTimeout(function() { nextQuestion(); }, showFb ? 600 : 200);
   } else if (state.attemptCount < state.maxAttempts) {
-    // 记录本次错误答案（中间尝试），结算界面展示完整作答历史
-    state.wrongRecords.push({
-      chinese: q.chinese, answer: q.answer, userInput: userAns,
-      index: state.currentIdx, isSkip: false
-    });
     if (showFb) { input.className = 'wrong'; fb.textContent = '不正确，还有第二次机会'; fb.className = 'q-feedback wrong'; }
+    // 保存首次错误答案，以便后续"跳过"时记录具体内容
+    state._lastAttemptInput = userAns;
     input.focus();
   } else {
     state.wrongRecords.push({chinese:q.chinese, answer:q.answer, userInput:userAns, index:state.currentIdx, isSkip:false});
@@ -1306,31 +1274,51 @@ function closeSkipModal() { document.getElementById('skipModal').classList.remov
 function confirmSkip() {
   closeSkipModal();
   var q = state.questions[state.currentIdx];
-  // 检查该题是否已有作答记录（包括中间错误尝试）
-  var hasAttempt = state.wrongRecords.some(function(r) { return r.index === state.currentIdx; });
-  if (state.everWrong.has(state.currentIdx) || hasAttempt) {
-    // 已有作答记录（可能是中间错误或已判错），追加跳过记录
+  if (state.everWrong.has(state.currentIdx)) {
+    // 已答错过：先找到之前的错误答案，追加一条"跳过"记录但保留错误答案信息
+    var prevWrongInput = '（未知）';
+    for (var si = state.wrongRecords.length - 1; si >= 0; si--) {
+      var wr = state.wrongRecords[si];
+      if (wr.index === state.currentIdx && !wr.isSkip && wr.userInput && wr.userInput !== '（跳过）') {
+        prevWrongInput = wr.userInput;
+        break;
+      }
+    }
+    // 如果之前的记录未保存具体错误答案，则从input存根获取
+    if (prevWrongInput === '（未知）' && state._lastAttemptInput) {
+      prevWrongInput = state._lastAttemptInput;
+    }
+    // 最后尝试从输入框读取（用户可能输入了但还没提交）
+    if (prevWrongInput === '（未知）') {
+      var curInput = document.getElementById('answerInput');
+      var curVal = curInput ? curInput.value.trim() : '';
+      if (curVal) { prevWrongInput = curVal; }
+    }
     state.wrongRecords.push({
       chinese: q.chinese,
       answer: q.answer,
-      userInput: '（跳过）',
+      userInput: prevWrongInput + ' → （跳过）',
       index: state.currentIdx,
       isSkip: true
     });
-    // 确保加入错题集（中间尝试时 everWrong 可能尚未标记）
-    if (!state.everWrong.has(state.currentIdx)) {
-      state.everWrong.add(state.currentIdx);
-      state.totalWrongCount++;
-    }
     state.attemptCount = state.maxAttempts;
-    state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: '（跳过）', index: state.currentIdx};
+    state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: prevWrongInput + ' → （跳过）', index: state.currentIdx};
     lockQuestion(); setTimeout(function() { nextQuestion(); }, 400);
     return;
+  }
+  // 检查当前输入框是否有内容（用户答错后未清空，直接点跳过）
+  var skipInput = '（跳过）';
+  var curInput = document.getElementById('answerInput');
+  var curVal = curInput ? curInput.value.trim() : '';
+  if (curVal) {
+    skipInput = curVal + ' → （跳过）';
+  } else if (state._lastAttemptInput && state.attemptCount > 0) {
+    skipInput = state._lastAttemptInput + ' → （跳过）';
   }
   state.wrongRecords.push({
     chinese: q.chinese,
     answer: q.answer,
-    userInput: '（跳过）',
+    userInput: skipInput,
     index: state.currentIdx,
     isSkip: true
   });
@@ -1338,7 +1326,7 @@ function confirmSkip() {
   state.totalWrongCount++;
   state.attemptCount = state.maxAttempts;
   updateWrongDisplay();
-  state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: '（跳过）', index: state.currentIdx};
+  state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: skipInput, index: state.currentIdx};
   lockQuestion();
   setTimeout(function() { nextQuestion(); }, 400);
 }
@@ -1375,912 +1363,27 @@ function finishPractice() {
   document.getElementById('resultTitle').textContent = title;
   document.getElementById('statAccuracy').textContent = accuracyRaw.toFixed(2) + '%';
   state._typeStats = calcTypeStats(state.questions, state.everWrong);
-  updateAccuracyDetail();
-  document.getElementById('statDuration').textContent = duration;
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statWrong').textContent = state.everWrong.size;
-  var doneCount = state.isEarlyEnd ? state.currentIdx : total;
-  document.getElementById('statDone').textContent = doneCount + '/' + state.totalOriginal;
-  document.getElementById('statSwitch').textContent = state.switchCount;
-
-  // 错题列表（合并同一题目的多次错误，点击展开）
-  var ws = document.getElementById('wrongSection');
-  var wl = document.getElementById('wrongList');
-  wl.innerHTML = '';
-  if (state.wrongRecords.length > 0) {
-    ws.style.display = 'block';
-    var groups = {};
-    state.wrongRecords.forEach(function(r) { if (!groups[r.index]) groups[r.index] = []; groups[r.index].push(r); });
-    Object.keys(groups).forEach(function(idx) {
-      var attempts = groups[idx];
-      var first = attempts[0];
-      var gd = document.createElement('div');
-      gd.className = 'w-group';
-      var badge = attempts.length > 1 ? ' <span style="font-size:11px;color:#888">尝试' + attempts.length + '次</span>' : '';
-      var reviewBadge = '';
-      if (first.reviewStatus === 'passed') reviewBadge = ' <span style="font-size:11px;color:#22c55e;font-weight:600">✅ 复核通过</span>';
-      else if (first.reviewStatus === 'failed') reviewBadge = ' <span style="font-size:11px;color:#ef4444;font-weight:600">❌ 复核未通过</span>';
-      gd.innerHTML = '<div class="w-group-header">' +
-        '<span class="w-g-title">' + escHtml(first.chinese) + ' ' + escHtml(first.answer) + '</span>' + reviewBadge + badge +
-        '<span class="w-g-arrow" style="font-size:11px;cursor:pointer" onclick="this.parentElement.classList.toggle(\'expanded\');this.parentElement.nextElementSibling.classList.toggle(\'show\')">▼</span></div>' +
-        '<div class="w-group-body">' +
-        attempts.map(function(a, i) {
-          var label = a.isSkip ? '跳过' : '第' + (i+1) + '次';
-          var rs = '';
-          if (a.reviewStatus === 'passed') rs = ' ✅复核通过';
-          else if (a.reviewStatus === 'failed') rs = ' ❌复核未过';
-          return '<div class="w-attempt"><span class="wa-label">' + label + '</span> ' + escHtml(a.userInput) + rs + '</div>';
-        }).join('') +
-        '</div>';
-      wl.appendChild(gd);
-    });
-  } else { ws.style.display = 'none'; }
-
-  // 复核区
-  var disputeSection = document.getElementById('disputeResultSection');
-  if (disputeSection) {
-    disputeSection.innerHTML = '';
-    if (state.wrongRecords.length > 0 && state.disputeCount < state.maxDisputes) {
-      var unreviewedCount = 0;
-      Object.keys(groups).forEach(function(idx) {
-        var first = groups[idx][0];
-        if (!first.reviewStatus) unreviewedCount++;
-      });
-      if (unreviewedCount > 0) {
-        var dTitle = document.createElement('h3');
-        dTitle.textContent = '复核（剩余' + (state.maxDisputes - state.disputeCount) + '次）';
-        dTitle.style.cssText = 'font-size:14px;margin-bottom:8px;color:#6f42c1';
-        disputeSection.appendChild(dTitle);
-        Object.keys(groups).forEach(function(idx) {
-          var first = groups[idx][0];
-          if (first.reviewStatus) return;
-          var btn = document.createElement('button');
-          btn.className = 'btn btn-sm';
-          btn.style.cssText = 'border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#f3e8ff;color:#6f42c1;margin:0 6px 6px 0';
-          btn.textContent = first.chinese + ' 复核';
-          btn.onclick = function() { prepareDispute(idx); };
-          disputeSection.appendChild(btn);
-        });
-      }
-    }
-  }
-
-  // 标记题目区
-  var markedSection = document.getElementById('markedSection');
-  var markedList = document.getElementById('markedList');
-  var batchBtn = document.getElementById('btnBatchReview');
-  markedList.innerHTML = '';
-  if (state.markedQuestions.length > 0) {
-    markedSection.style.display = 'block';
-    batchBtn.disabled = false;
-    batchBtn.textContent = '🤖 一键复核全部标记题目（' + state.markedQuestions.length + '题）';
-    document.getElementById('batchReviewStatus').textContent = '';
-    document.getElementById('batchReviewResults').innerHTML = '';
-    state.markedQuestions.sort(function(a,b){return a-b;}).forEach(function(idx) {
-      var q = state.questions[idx];
-      if (!q) return;
-      var item = document.createElement('div');
-      item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--sub-bg,#f8f9fa);border-radius:6px;margin-bottom:4px;font-size:12px';
-      var userAnswer = '';
-      for (var ri = 0; ri < state.wrongRecords.length; ri++) {
-        if (state.wrongRecords[ri].index == idx) {
-          userAnswer = state.wrongRecords[ri].userInput;
-          break;
-        }
-      }
-      item.innerHTML = '<span><strong>' + escHtml(q.chinese) + '</strong> → ' + escHtml(q.answer) + (userAnswer ? ' <span style="color:#888">| 你的答案: ' + escHtml(userAnswer) + '</span>' : '') + '</span>';
-      markedList.appendChild(item);
-    });
-  } else {
-    markedSection.style.display = 'none';
-  }
-
-  // 保存到历史
-  saveHistory({
-    title: document.getElementById('headerSub').textContent,
-    total: total,
-    wrong: wrongCount,
-    accuracy: parseFloat(accuracyRaw.toFixed(2)),
-    duration: duration,
-    wrongRecords: state.wrongRecords.slice(),
-    mode: state.mode,
-    isEarlyEnd: state.isEarlyEnd,
-    switchCount: state.switchCount
-  });
-
-  showPage('pageResult');
+function getAdminPassword() {
+  var pwd = localStorage.getItem('beAdminPassword');
+  return pwd || '123456'; // 默认密码123456
 }
 
-// ===== 历史记录 =====
-function saveHistory(session) {
-  var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
-  session.date = new Date().toLocaleString('zh-CN');
-  // 额外保存题目列表和标记题目，便于历史记录回到结算页
-  session.questions = state.questions ? state.questions.slice() : [];
-  session.markedQuestions = state.markedQuestions ? state.markedQuestions.slice() : [];
-  session.totalOriginal = state.totalOriginal || session.total;
-  h.unshift(session);
-  if (h.length > 50) h = h.slice(0, 50);
-  localStorage.setItem('dictHistory', JSON.stringify(h));
+function setAdminPassword(newPwd) {
+  localStorage.setItem('beAdminPassword', newPwd);
 }
 
-function showHistory() {
-  var list = document.getElementById('historyList');
-  var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
-  if (!h.length) {
-    list.innerHTML = '<div class="history-empty">暂无历史记录</div>';
-    document.getElementById('clearAllBtn').style.display = 'none';
-  } else {
-    var html = '';
-    for (var i = 0; i < h.length; i++) {
-      var s = h[i];
-      html += '<div class="history-item">' +
-        '<div class="hi-left" onclick="showHistoryDetail(' + i + ')">' +
-        '<div class="hi-title">' + escHtml(s.title || '未命名') + '</div>' +
-        '<div class="hi-meta">' + escHtml(s.date) + '</div>' +
-        '<div class="hi-stats"><span style="color:#2d6a4f">正确率 ' + (typeof s.accuracy === 'number' ? s.accuracy.toFixed(2) : s.accuracy) + '%</span>' +
-        '<span style="color:#dc3545">错 ' + s.wrong + '/' + s.total + '</span>' +
-        '<span>' + s.duration + '</span>' +
-        '<span style="color:#6f42c1">切屏 ' + (s.switchCount || 0) + '</span></div></div>' +
-        '<button class="hi-del" onclick="event.stopPropagation();deleteHistoryItem(' + i + ')" title="删除">✕</button></div>';
-    }
-    list.innerHTML = html;
-    document.getElementById('clearAllBtn').style.display = 'inline-flex';
-  }
-  document.getElementById('historyOverlay').classList.add('show');
-}
-
-function deleteHistoryItem(idx) {
-  if (!confirm('确定删除这条记录吗？')) return;
-  var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
-  h.splice(idx, 1);
-  localStorage.setItem('dictHistory', JSON.stringify(h));
-  showHistory(); // 刷新列表
-}
-
-function clearAllHistory() {
-  if (!confirm('确定清除所有历史记录吗？此操作不可恢复！')) return;
-  localStorage.removeItem('dictHistory');
-  showHistory();
-}
-
-// ===== 导出/导入历史记录 =====
-function exportHistory() {
-  try {
-    var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
-    if (h.length === 0) { alert('暂无历史记录可导出'); return; }
-    var data = JSON.stringify(h, null, 2);
-    // 使用 Blob + ObjectURL 方式（兼容 Android WebView）
-    var blob = new Blob([data], {type: 'application/json'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'BetterEnglish_history_' + new Date().toISOString().slice(0,10) + '.json';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 200);
-  } catch(e) {
-    alert('导出失败: ' + e.message);
+function checkAdminPassword() {
+  var correctPwd = getAdminPassword();
+  var pwd = prompt('🔐 请输入管理面板密码：');
+  if (pwd === correctPwd) {
+    openAdminPanel();
+  } else if (pwd !== null) {
+    alert('❌ 密码错误！');
   }
 }
-
-function importHistory(event) {
-  var statusEl = document.getElementById('historyImportStatus');
-  var file = event.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      var data = JSON.parse(e.target.result);
-      if (!Array.isArray(data)) throw new Error('数据格式错误，应为数组');
-      // 验证每条记录基本结构
-      for (var i = 0; i < data.length; i++) {
-        if (typeof data[i] !== 'object' || !data[i].date) {
-          throw new Error('第 ' + (i+1) + ' 条记录缺少 date 字段');
-        }
-      }
-      var existing = JSON.parse(localStorage.getItem('dictHistory') || '[]');
-      var merged = data.concat(existing);
-      // 按日期去重（保留较新的）
-      var seen = {};
-      merged = merged.filter(function(item) {
-        var key = item.date + '_' + (item.title || '') + '_' + (item.accuracy || '');
-        if (seen[key]) return false;
-        seen[key] = true;
-        return true;
-      });
-      if (merged.length > 50) merged = merged.slice(0, 50);
-      localStorage.setItem('dictHistory', JSON.stringify(merged));
-      statusEl.textContent = '✅ 成功导入 ' + data.length + ' 条记录（合并后共 ' + merged.length + ' 条）';
-      statusEl.style.color = '#28a745';
-      showHistory(); // 刷新列表
-    } catch(err) {
-      statusEl.textContent = '❌ 导入失败: ' + err.message;
-      statusEl.style.color = '#dc3545';
-    }
-    event.target.value = ''; // 清空文件选择
-  };
-  reader.readAsText(file);
-}
-
-function showHistoryDetail(idx) {
-  var h = JSON.parse(localStorage.getItem('dictHistory') || '[]');
-  var s = h[idx];
-  if (!s) return;
-
-  // 关闭历史弹窗
-  closeHistory();
-
-  // 用历史数据填充结果页
-  var accuracy = s.accuracy;
-  var total = s.total;
-  var wrongCount = s.wrong;
-  var correctCount = total - wrongCount;
-  var qs = s.questions || [];
-
-  var icon = '🎉', title = '练习完成！';
-  if (s.isEarlyEnd) { icon = '⏹️'; title = '已提前结束'; }
-  else if (accuracy === 100) { icon = '🏆'; title = '满分通关！太棒了！'; }
-  else if (accuracy >= 80) { icon = '🌟'; title = '做得很好！'; }
-  else if (accuracy >= 60) { icon = '👍'; title = '还不错，继续加油！'; }
-  else if (accuracy > 0) { icon = '💪'; title = '加油，多练练！'; }
-  else { icon = '😅'; title = '再试试吧！'; }
-
-  document.getElementById('resultIcon').textContent = icon;
-  document.getElementById('resultTitle').textContent = title + ' 📋 历史回顾';
-  document.getElementById('statAccuracy').textContent = (typeof accuracy === 'number' ? accuracy.toFixed(2) : accuracy) + '%';
-  var hWrongSet = new Set();
-  (s.wrongRecords || []).forEach(function(r) { hWrongSet.add(r.index); });
-  state._typeStats = calcTypeStats(qs, hWrongSet);
-  updateAccuracyDetail();
-  document.getElementById('statDuration').textContent = s.duration;
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statWrong').textContent = wrongCount;
-  document.getElementById('statDone').textContent = (s.isEarlyEnd ? s.wrongRecords.length : total) + '/' + (s.totalOriginal || total);
-  document.getElementById('statSwitch').textContent = s.switchCount || 0;
-
-  // 错题列表
-  var ws = document.getElementById('wrongSection');
-  var wl = document.getElementById('wrongList');
-  wl.innerHTML = '';
-  var records = s.wrongRecords || [];
-  if (records.length > 0) {
-    ws.style.display = 'block';
-    var groups = {};
-    records.forEach(function(r) { if (!groups[r.index]) groups[r.index] = []; groups[r.index].push(r); });
-    Object.keys(groups).forEach(function(idx2) {
-      var attempts = groups[idx2];
-      var first = attempts[0];
-      var gd = document.createElement('div');
-      gd.className = 'w-group';
-      var badge = attempts.length > 1 ? ' <span style="font-size:11px;color:#888">尝试' + attempts.length + '次</span>' : '';
-      var reviewBadge = '';
-      if (first.reviewStatus === 'passed') reviewBadge = ' <span style="font-size:11px;color:#22c55e;font-weight:600">✅ 复核通过</span>';
-      else if (first.reviewStatus === 'failed') reviewBadge = ' <span style="font-size:11px;color:#ef4444;font-weight:600">❌ 复核未通过</span>';
-      gd.innerHTML = '<div class="w-group-header">' +
-        '<span class="w-g-title">' + escHtml(first.chinese) + ' ' + escHtml(first.answer) + '</span>' + reviewBadge + badge +
-        '<span class="w-g-arrow" style="font-size:11px;cursor:pointer" onclick="this.parentElement.classList.toggle(\'expanded\');this.parentElement.nextElementSibling.classList.toggle(\'show\')">▼</span></div>' +
-        '<div class="w-group-body">' +
-        attempts.map(function(a, i) {
-          var label = a.isSkip ? '跳过' : '第' + (i+1) + '次';
-          var rs = '';
-          if (a.reviewStatus === 'passed') rs = ' ✅复核通过';
-          else if (a.reviewStatus === 'failed') rs = ' ❌复核未过';
-          return '<div class="w-attempt"><span class="wa-label">' + label + '</span> ' + escHtml(a.userInput) + rs + '</div>';
-        }).join('') +
-        '</div>';
-      wl.appendChild(gd);
-    });
-  } else { ws.style.display = 'none'; }
-
-  // 清除复核区（历史记录中不显示复核）
-  var disputeSection = document.getElementById('disputeResultSection');
-  if (disputeSection) disputeSection.innerHTML = '';
-
-  // 标记题目区
-  var markedSection = document.getElementById('markedSection');
-  var markedList = document.getElementById('markedList');
-  var batchBtn = document.getElementById('btnBatchReview');
-  markedList.innerHTML = '';
-  var mq = s.markedQuestions || [];
-  var qs = s.questions || [];
-  if (mq.length > 0 && qs.length > 0) {
-    markedSection.style.display = 'block';
-    batchBtn.disabled = false;
-    batchBtn.textContent = '🤖 一键复核全部标记题目（' + mq.length + '题）';
-    document.getElementById('batchReviewStatus').textContent = '';
-    document.getElementById('batchReviewResults').innerHTML = '';
-    mq.sort(function(a,b){return a-b;}).forEach(function(qIdx) {
-      var q = qs[qIdx];
-      if (!q) return;
-      var item = document.createElement('div');
-      item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--sub-bg,#f8f9fa);border-radius:6px;margin-bottom:4px;font-size:12px';
-      var userAnswer = '';
-      for (var ri = 0; ri < records.length; ri++) {
-        if (records[ri].index == qIdx) {
-          userAnswer = records[ri].userInput;
-          break;
-        }
-      }
-      item.innerHTML = '<span><strong>' + escHtml(q.chinese) + '</strong> → ' + escHtml(q.answer) + (userAnswer ? ' <span style="color:#888">| 你的答案: ' + escHtml(userAnswer) + '</span>' : '') + '</span>';
-      markedList.appendChild(item);
-    });
-  } else {
-    markedSection.style.display = 'none';
-  }
-
-  // 清除 AI 分析结果（让用户可重新点击分析）
-  document.getElementById('aiResult').innerHTML = '';
-
-  // 将历史数据临时赋给 state，以便 AI 分析、批量复核等功能正常工作
-  state.questions = qs;
-  state.markedQuestions = mq;
-  state.wrongRecords = records;
-  state.totalOriginal = s.totalOriginal || total;
-  state.isEarlyEnd = s.isEarlyEnd || false;
-  state.switchCount = s.switchCount || 0;
-  state.mode = s.mode || '';
-
-  showPage('pageResult');
-}
-
-function closeHistory() {
-  document.getElementById('historyOverlay').classList.remove('show');
-}
-
-// ===== 虚拟键盘 =====
-function kbGetCursor(input) {
-  return input.selectionStart !== null ? input.selectionStart : input.value.length;
-}
-
-function kbSetCursor(input, pos) {
-  // 在下一个 tick 设置光标，确保 value 已更新
-  setTimeout(function() {
-    input.focus();
-    input.setSelectionRange(pos, pos);
-  }, 0);
-}
-
-function kbPress(key) {
-  if (state.locked) return;
-  var input = document.getElementById('answerInput');
-  var cur = input.value;
-  var pos = kbGetCursor(input);
-  // 在光标位置插入字符，而不是追加到末尾
-  input.value = cur.slice(0, pos) + key + cur.slice(pos);
-  input.className = '';
-  document.getElementById('feedback').textContent = '';
-  document.getElementById('feedback').className = 'q-feedback';
-  // 光标移到插入字符之后
-  kbSetCursor(input, pos + key.length);
-  // 如果按了字母且 shift 开启，自动关闭 shift
-  if (state.shiftOn && /^[a-zA-Z]$/.test(key)) {
-    kbToggleShift();
-  }
-}
-
-function kbBackspace() {
-  if (state.locked) return;
-  var input = document.getElementById('answerInput');
-  var pos = kbGetCursor(input);
-  if (pos <= 0) return;
-  // 删除光标前的一个字符
-  input.value = input.value.slice(0, pos - 1) + input.value.slice(pos);
-  kbSetCursor(input, pos - 1);
-}
-
-function kbToggleShift() {
-  state.shiftOn = !state.shiftOn;
-  var btn = document.getElementById('kbShift');
-  if (state.shiftOn) {
-    btn.textContent = '⇪';
-    btn.classList.add('shift-on');
-    // 切换所有字母键为大写
-    document.querySelectorAll('#keyboard .kb-key[data-key]').forEach(function(k) {
-      var key = k.getAttribute('data-key');
-      if (key && /^[a-z]$/.test(key)) {
-        k.textContent = key.toUpperCase();
-        k.setAttribute('data-key', key.toUpperCase());
-      }
-    });
-  } else {
-    btn.textContent = '⇧';
-    btn.classList.remove('shift-on');
-    document.querySelectorAll('#keyboard .kb-key[data-key]').forEach(function(k) {
-      var key = k.getAttribute('data-key');
-      if (key && /^[A-Z]$/.test(key)) {
-        k.textContent = key.toLowerCase();
-        k.setAttribute('data-key', key.toLowerCase());
-      }
-    });
-  }
-}
-
-function kbSubmit() {
-  submitAnswer();
-}
-
-// 虚拟键盘按键事件（支持点击和触摸）
-document.getElementById('keyboard').addEventListener('click', function(e) {
-  var target = e.target;
-  if (target.classList.contains('kb-key') && target.hasAttribute('data-key')) {
-    var key = target.getAttribute('data-key');
-    if (key && !target.classList.contains('disabled')) {
-      kbPress(key);
-    }
-  }
-});
-
-// 阻止触摸时的页面滚动/缩放
-document.getElementById('keyboard').addEventListener('touchstart', function(e) {
-  // 不阻止默认行为，只阻止特定按键的
-}, {passive: true});
-
-// ===== AI 分析 =====
-function loadAiSettings() {
-  document.getElementById('aiBaseUrl').value = localStorage.getItem('aiBaseUrl') || '';
-  document.getElementById('aiApiKey').value = localStorage.getItem('aiApiKey') || '';
-  document.getElementById('aiModel').value = localStorage.getItem('aiModel') || '';
-  document.getElementById('aiPrompt').value = localStorage.getItem('aiPrompt') || '';
-  document.getElementById('aiSettingsBtn').classList.toggle('on', !!localStorage.getItem('aiApiKey'));
-}
-
-function toggleAiSettings() {
-  var panel = document.getElementById('aiPanel');
-  panel.classList.toggle('show');
-  loadAiSettings();
-}
-
-function saveAiSettings() {
-  localStorage.setItem('aiBaseUrl', document.getElementById('aiBaseUrl').value.trim());
-  localStorage.setItem('aiApiKey', document.getElementById('aiApiKey').value.trim());
-  localStorage.setItem('aiModel', document.getElementById('aiModel').value.trim());
-  localStorage.setItem('aiPrompt', document.getElementById('aiPrompt').value.trim());
-  document.getElementById('aiSettingsBtn').classList.toggle('on', !!document.getElementById('aiApiKey').value.trim());
-  document.getElementById('aiPanel').classList.remove('show');
-}
-
-function getDefaultPrompt() {
-  return '你是一位英语学习辅导老师。请用中文分析以下英语默写练习数据，给出针对性的学习建议。\\n\\n'
-    + '练习标题: {title}\\n'
-    + '总题数: {total}\\n'
-    + '正确率: {accuracy}\\n'
-    + '用时: {duration}\\n\\n'
-    + '错题详情:\\n{wrongDetail}\\n\\n'
-    + '请用50字左右简要分析本次练习并加以鼓励。';
-}
-
-function buildPrompt() {
-  var total = document.getElementById('statTotal').textContent;
-  var accuracy = document.getElementById('statAccuracy').textContent;
-  var duration = document.getElementById('statDuration').textContent;
-  var title = document.getElementById('headerSub').textContent;
-  var wrongList = state.wrongRecords || [];
-
-  var wrongDetail = '';
-  if (wrongList.length > 0) {
-    wrongDetail = wrongList.map(function(r, i) {
-      return (i+1) + '. 中文: ' + r.chinese + ' | 正确答案: ' + r.answer + ' | 你的回答: ' + r.userInput;
-    }).join('\n');
-  } else {
-    wrongDetail = '全部答对，没有错题。';
-  }
-
-  var template = localStorage.getItem('aiPrompt') || '';
-  if (!template.trim()) template = getDefaultPrompt();
-
-  return template
-    .replace(/{title}/g, title)
-    .replace(/{total}/g, total)
-    .replace(/{accuracy}/g, accuracy)
-    .replace(/{duration}/g, duration)
-    .replace(/{wrongDetail}/g, wrongDetail);
-}
-
-function requestAiAnalysis() {
-  var baseUrl = localStorage.getItem('aiBaseUrl') || '';
-  var apiKey = localStorage.getItem('aiApiKey') || '';
-  var model = localStorage.getItem('aiModel') || 'gpt-4o-mini';
-
-  if (!apiKey) {
-    alert('请先配置 API Key（点击首页的 ⚙️ AI 配置 按钮）');
-    return;
-  }
-  if (!baseUrl) baseUrl = 'https://api.openai.com/v1';
-  if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
-  if (!baseUrl.endsWith('/v1')) baseUrl += '/v1';
-
-  var resultDiv = document.getElementById('aiResult');
-  resultDiv.className = 'ai-result show';
-  resultDiv.innerHTML = '<div class="ai-loading"><div class="spinner"></div><br>AI 正在分析中...</div>';
-  document.getElementById('btnAiAnalysis').disabled = true;
-
-  var prompt = buildPrompt();
-  doAiRequest(baseUrl, apiKey, model, prompt, resultDiv, true);
-}
-
-function doAiRequest(baseUrl, apiKey, model, prompt, resultDiv, useStream) {
-  var url = baseUrl + '/chat/completions';
-  var body = JSON.stringify({
-    model: model,
-    messages: [
-      {role: 'system', content: '你是一位耐心细致的英语学习辅导老师，擅长分析学习数据并给出实用建议。'},
-      {role: 'user', content: prompt}
-    ],
-    temperature: 0.7,
-    max_tokens: 1000,
-    stream: useStream
-  });
-
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', url, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.setRequestHeader('Authorization', 'Bearer ' + apiKey);
-  xhr.timeout = 60000;
-
-  var processedLen = 0;
-  var streamContent = '';
-  var isStreamDone = false;
-
-  if (useStream) {
-    xhr.onprogress = function() {
-      if (isStreamDone) return;
-      var full = xhr.responseText;
-      var searchFrom = processedLen;
-      while (searchFrom < full.length) {
-        var dn = full.indexOf('\n\n', searchFrom);
-        if (dn === -1) break;
-        var eventStr = full.substring(searchFrom, dn);
-        searchFrom = dn + 2;
-        eventStr.split('\n').forEach(function(line) {
-          if (line.startsWith('data: ')) {
-            var data = line.slice(6).trim();
-            if (data === '[DONE]') { isStreamDone = true; return; }
-            try {
-              var parsed = JSON.parse(data);
-              var delta = parsed.choices?.[0]?.delta?.content || '';
-              if (delta) streamContent += delta;
-            } catch(e) {}
-          }
-        });
-        processedLen = searchFrom;
-      }
-      if (streamContent) {
-        resultDiv.innerHTML = '<div class="ai-content">' + escHtml(streamContent).replace(/\n/g, '<br>') + '</div>';
-      }
-    };
-
-    xhr.onloadend = function() {
-      document.getElementById('btnAiAnalysis').disabled = false;
-      isStreamDone = true;
-      if (!streamContent) {
-        // 流式没出内容，回退到非流式
-        doAiRequest(baseUrl, apiKey, model, prompt, resultDiv, false);
-      }
-    };
-  } else {
-    xhr.onload = function() {
-      document.getElementById('btnAiAnalysis').disabled = false;
-      try {
-        var data = JSON.parse(xhr.responseText);
-        var text = data.choices?.[0]?.message?.content || 'AI 未返回有效内容';
-        resultDiv.innerHTML = '<div class="ai-content">' + escHtml(text).replace(/\n/g, '<br>') + '</div>';
-      } catch(e) {
-        resultDiv.innerHTML = '<div class="ai-error">❌ 解析响应失败: ' + e.message + '</div>';
-      }
-    };
-  }
-
-  xhr.onerror = function() {
-    document.getElementById('btnAiAnalysis').disabled = false;
-    resultDiv.innerHTML = '<div class="ai-error">❌ 网络请求失败，请检查网络连接和配置</div>';
-  };
-  xhr.ontimeout = function() {
-    document.getElementById('btnAiAnalysis').disabled = false;
-    resultDiv.innerHTML = '<div class="ai-error">❌ 请求超时，请稍后重试</div>';
-  };
-
-  xhr.send(body);
-}
-
-// ===== 格式转换工具 =====
-var toolData = null;
-
-/** 优化的默认转换提示词 */
-function getDefaultConvertPrompt(inputText) {
-  return '你是一个数据格式转换专家。请将用户提供的文本内容，转换为BE项目标准的JSON格式。\n\n'
-    + '【BE标准JSON格式】\n'
-    + '{\n  "title": "标题（根据内容自动生成）",\n  "questions": [\n    {\n      "chinese": "中文/提示",\n      "answer": "英文答案",\n      "type": "word|phrase|sentence"\n    }\n  ]\n}\n\n'
-    + '【核心规则】\n'
-    + '1. 从输入中提取中英文对照信息，chinese填中文，answer填英文\n'
-    + '2. type判断：单词/单个词用word，短语/词组（2~5个词）用phrase，句子/对话（完整句）用sentence\n'
-    + '3. **严格拆分规则**：如果一句中文中包含多个英文内容（如用"——"、"——"、"/"、"、"、"和"、"与"连接），必须拆分为多个独立question\n'
-    + '4. 每个独立含义作为一个question，保留各自独立的chinese和answer\n'
-    + '5. 只输出JSON，不要任何解释或多余文字\n\n'
-    + '【拆分示例】\n'
-    + '输入："苹果——apple，书——book"\n'
-    + '输出应为两个独立的question：[{chinese:"苹果",answer:"apple",type:"word"},{chinese:"书",answer:"book",type:"word"}]\n\n'
-    + '输入："今天天气很好——How are you？"\n'
-    + '输出：[{chinese:"今天天气很好",answer:"How are you?",type:"phrase"},{chinese:"你好吗？",answer:"How are you?",type:"sentence"}]';
-}
-
-function loadToolConfig() {
-  var cfg = JSON.parse(localStorage.getItem('beToolConfig') || '{}');
-  if (cfg.baseUrl) document.getElementById('toolBaseUrl').value = cfg.baseUrl;
-  if (cfg.apiKey) document.getElementById('toolApiKey').value = cfg.apiKey;
-  if (cfg.model) document.getElementById('toolModel').value = cfg.model;
-  if (cfg.prompt) document.getElementById('toolPrompt').value = cfg.prompt;
-}
-
-function saveToolConfig() {
-  localStorage.setItem('beToolConfig', JSON.stringify({
-    baseUrl: document.getElementById('toolBaseUrl').value.trim(),
-    apiKey: document.getElementById('toolApiKey').value.trim(),
-    model: document.getElementById('toolModel').value.trim() || 'gpt-4o-mini',
-    prompt: document.getElementById('toolPrompt').value.trim()
-  }));
-}
-
-function importHomeConfig() {
-  var homeUrl = localStorage.getItem('aiBaseUrl') || '';
-  var homeKey = localStorage.getItem('aiApiKey') || '';
-  var homeModel = localStorage.getItem('aiModel') || '';
-  var homePrompt = localStorage.getItem('aiPrompt') || '';
-  var status = document.getElementById('importConfigStatus');
-  if (!homeKey) {
-    status.textContent = '⚠️ 主页未配置 AI，请先在主页设置';
-    status.style.color = '#dc3545';
-    return;
-  }
-  document.getElementById('toolBaseUrl').value = homeUrl;
-  document.getElementById('toolApiKey').value = homeKey;
-  document.getElementById('toolModel').value = homeModel || 'gpt-4o-mini';
-  if (homePrompt) document.getElementById('toolPrompt').value = homePrompt;
-  saveToolConfig();
-  status.textContent = '✅ 已导入主页配置';
-  status.style.color = '#155724';
-  setTimeout(function() { status.textContent = ''; }, 3000);
-}
-
-document.getElementById('toolBaseUrl').addEventListener('input', saveToolConfig);
-document.getElementById('toolApiKey').addEventListener('input', saveToolConfig);
-document.getElementById('toolModel').addEventListener('input', saveToolConfig);
-document.getElementById('toolPrompt').addEventListener('input', saveToolConfig);
-
-async function convertToolText() {
-  var input = document.getElementById('toolInput').value.trim();
-  var title = document.getElementById('toolTitle').value.trim();
-  if (!input) { document.getElementById('toolStatus').textContent = '❌ 请输入要转换的内容'; return; }
-
-  saveToolConfig();
-  var baseUrl = document.getElementById('toolBaseUrl').value.trim();
-  var apiKey = document.getElementById('toolApiKey').value.trim();
-  var model = document.getElementById('toolModel').value.trim() || 'gpt-4o-mini';
-  if (!baseUrl || !apiKey) { document.getElementById('toolStatus').textContent = '❌ 请填写 LLM 配置'; return; }
-
-  var btn = document.getElementById('toolConvertBtn');
-  btn.disabled = true; btn.textContent = '⏳ 转换中...';
-  document.getElementById('toolStatus').textContent = '⏳ AI 正在转换...';
-  document.getElementById('toolStatus').style.color = '#856404';
-
-  // 使用用户自定义提示词（如果有），否则使用优化后的默认提示词
-  var customPrompt = document.getElementById('toolPrompt').value.trim();
-  var systemPrompt = customPrompt || getDefaultConvertPrompt(input);
-
-  try {
-    var resp = await fetch(baseUrl.replace(/\/+$/, '') + '/chat/completions', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
-      body: JSON.stringify({
-        model: model,
-        messages: [
-          {role:'system', content: systemPrompt},
-          {role:'user', content: '标题：' + (title || '自动生成') + '\n\n内容：\n' + input + '\n\n请转换为BE标准JSON格式。'}
-        ],
-        temperature: 0.3,
-        max_tokens: 4096
-      })
-    });
-    if (!resp.ok) throw new Error('API错误 ('+resp.status+')');
-    var data = await resp.json();
-    var content = data.choices?.[0]?.message?.content || '';
-    // 提取JSON
-    var jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) content = jsonMatch[1].trim();
-    else {
-      var start = content.indexOf('{');
-      if (start >= 0) {
-        var depth = 0, end = -1;
-        for (var i = start; i < content.length; i++) {
-          if (content[i] === '{') depth++;
-          else if (content[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
-        }
-        if (end > start) content = content.slice(start, end+1);
-      }
-    }
-    var parsed = JSON.parse(content);
-    if (!parsed.questions || !Array.isArray(parsed.questions)) throw new Error('缺少 questions 数组');
-    // 规范化
-    var normalized = {title: parsed.title || title || '未命名', questions: []};
-    parsed.questions.forEach(function(q) {
-      if (q && q.chinese && q.answer) {
-        var t = q.type || 'word';
-        if (t !== 'word' && t !== 'phrase' && t !== 'sentence') t = 'word';
-        normalized.questions.push({chinese:String(q.chinese).trim(), answer:String(q.answer).trim(), type:t});
-      }
-    });
-    toolData = normalized;
-    document.getElementById('toolOutput').textContent = JSON.stringify(normalized, null, 2);
-    document.getElementById('toolStatus').textContent = '✅ 转换成功！共 ' + normalized.questions.length + ' 题';
-    document.getElementById('toolStatus').style.color = '#155724';
-  } catch(e) {
-    document.getElementById('toolStatus').textContent = '❌ ' + e.message;
-    document.getElementById('toolStatus').style.color = '#dc3545';
-    document.getElementById('toolOutput').textContent = '// 错误：' + e.message;
-  }
-  btn.disabled = false; btn.textContent = '🤖 AI 转换';
-}
-
-function copyToolOutput() {
-  var text = document.getElementById('toolOutput').textContent;
-  if (!text || text === '等待转换...') return;
-  navigator.clipboard.writeText(text).catch(function() {
-    var ta = document.createElement('textarea'); ta.value = text;
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-  });
-  showToast('✅ 已复制');
-}
-
-function useToolOutput() {
-  if (!toolData || !toolData.questions || !toolData.questions.length) {
-    showToast('⚠️ 没有可用数据');
-    return;
-  }
-  // 把数据填入导入页面的JSON输入框
-  $jsonInput.value = JSON.stringify(toolData, null, 2);
-  validateInput();
-  showToast('✅ 已导入 ' + toolData.questions.length + ' 题');
-  backToImport();
-}
-
-// ===== 工具 =====
-function formatDuration(ms) {
-  var sec = Math.floor(ms / 1000);
-  if (sec < 60) return sec + '秒';
-  var min = Math.floor(sec / 60);
-  var s = sec % 60;
-  if (min < 60) return min + '分' + s + '秒';
-  var h = Math.floor(min / 60);
-  var m = min % 60;
-  return h + '时' + m + '分' + s + '秒';
-}
-
-function escHtml(s) {
-  var d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-function showPage(id) {
-  var pages = document.querySelectorAll('.page');
-  for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
-  document.getElementById(id).classList.add('active');
-}
-
-function backToImport() {
-  document.getElementById('headerSub').textContent = '导入数据，选择模式，开始练习';
-  showPage('pageImport');
-}
-
-// 点击遮罩关闭
-
-// ===== 提前结束 =====
-function showEndEarlyModal() { document.getElementById('endEarlyModal').classList.add('show'); }
-function closeEndEarlyModal() { document.getElementById('endEarlyModal').classList.remove('show'); }
-function confirmEndEarly() {
-  closeEndEarlyModal();
-  stopTimer();
-  state.isEarlyEnd = true;
-  // 将未做的题目加入错题记录，确保统计完整
-  for (var i = state.currentIdx; i < state.questions.length; i++) {
-    if (!state.everWrong.has(i)) {
-      var q = state.questions[i];
-      state.wrongRecords.push({
-        chinese: q.chinese,
-        answer: q.answer,
-        userInput: '（未作答）',
-        index: i,
-        isSkip: true
-      });
-      state.everWrong.add(i);
-      state.totalWrongCount++;
-    }
-  }
-  finishPractice();
-}
-
-document.getElementById('endEarlyModal').addEventListener('click', function(e) {
-  if (e.target === this) closeEndEarlyModal();
-});
-
-document.getElementById('skipModal').addEventListener('click', function(e) {
-  if (e.target === this) closeSkipModal();
-});
-document.getElementById('historyOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeHistory();
-});
-document.getElementById('markListOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeMarkListOverlay();
-});
-document.getElementById('disputeResultOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeDisputeResultOverlay();
-});
-
-loadAiSettings();
-loadToolConfig();
-// ===== 深色模式 =====
-function toggleDarkMode() {
-  var btn = document.getElementById('darkModeToggle');
-  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  if (isDark) {
-    document.documentElement.removeAttribute('data-theme');
-    btn.textContent = '🌙';
-    localStorage.setItem('darkMode', 'off');
-  } else {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    btn.textContent = '☀️';
-    localStorage.setItem('darkMode', 'on');
-  }
-}
-
-// 初始化深色模式
-if (localStorage.getItem('darkMode') === 'on') {
-  document.documentElement.setAttribute('data-theme', 'dark');
-  // Update button when it exists
-  var checkDarkBtn = setInterval(function() {
-    var btn = document.getElementById('darkModeToggle');
-    if (btn) { btn.textContent = '☀️'; clearInterval(checkDarkBtn); }
-  }, 50);
-}
-
-// 确保首页激活
-if (!document.querySelector('.page.active')) document.getElementById('pageImport').classList.add('active');
-// ===== 切屏检测 & 管理面板 =====
-var adminClickCount = 0;
-var adminClickTimer = null;
 
 function onVersionClick() {
-  adminClickCount++;
-  if (adminClickTimer) clearTimeout(adminClickTimer);
-  adminClickTimer = setTimeout(function() { adminClickCount = 0; }, 3000);
-  // 点击反馈提示
-  if (adminClickCount < 5) {
-    var hint = document.getElementById('versionClickHint');
-    if (!hint) {
-      hint = document.createElement('div');
-      hint.id = 'versionClickHint';
-      hint.style.cssText = 'position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#1a2332;color:#fff;padding:6px 16px;border-radius:20px;font-size:12px;z-index:9999;transition:opacity .3s';
-      document.body.appendChild(hint);
-    }
-    hint.textContent = '🔑 再点击 ' + (5 - adminClickCount) + ' 次进入管理面板';
-    hint.style.opacity = '1';
-    clearTimeout(hint._timer);
-    hint._timer = setTimeout(function() { hint.style.opacity = '0'; }, 1500);
-  }
-  if (adminClickCount >= 5) {
-    adminClickCount = 0;
-    var hint = document.getElementById('versionClickHint');
-    if (hint) { hint.style.opacity = '0'; }
-    var pwd = prompt('🔐 请输入管理密码：');
-    if (pwd === 'password') {
-      openAdminPanel();
-    } else if (pwd !== null) {
-      alert('❌ 密码错误！');
-    }
-  }
+  // 保留空函数，避免版本号点击报错
 }
 
 function getSwitchConfig() {
@@ -2314,40 +1417,20 @@ function openAdminPanel() {
   // 加载展示正误配置
   var ecfg = JSON.parse(localStorage.getItem('beExamConfig') || '{}');
   document.getElementById('adminShowFeedback').checked = ecfg.showFeedback !== false;
-  document.getElementById('adminStatus').textContent = '';
-  document.getElementById('adminPanel').classList.add('show');
-}
-
-function closeAdminPanel() {
-  document.getElementById('adminPanel').classList.remove('show');
-}
-
-function saveAdminConfig() {
-  var cfg = {
-    allowedCount: parseInt(document.getElementById('adminAllowedCount').value) || 3,
-    showWarning: document.getElementById('adminShowWarning').checked,
-    autoEnd: document.getElementById('adminAutoEnd').checked,
-    warningText: document.getElementById('adminWarningText').value.trim() || '⚠️ 检测到切屏行为（共 {count} 次），请保持专注！'
-  };
-  localStorage.setItem('beSwitchConfig', JSON.stringify(cfg));
-  // 保存倒计时配置
-  var tcfg = {
-    word: parseInt(document.getElementById('adminTimerWord').value) || 15,
-    phrase: parseInt(document.getElementById('adminTimerPhrase').value) || 50,
-    sentence: parseInt(document.getElementById('adminTimerSentence').value) || 70
-  };
-  localStorage.setItem('beTimerConfig', JSON.stringify(tcfg));
-  // 保存标点符号配置
-  var pcfg = {
-    ignorePunctuation: document.getElementById('adminIgnorePunct').checked
-  };
-  localStorage.setItem('bePunctuationConfig', JSON.stringify(pcfg));
-  // 保存展示正误配置
-  var ecfg = {
-    showFeedback: document.getElementById('adminShowFeedback').checked
-  };
-  localStorage.setItem('beExamConfig', JSON.stringify(ecfg));
-  document.getElementById('adminStatus').textContent = '✅ 保存成功！';
+/** 修改管理面板密码 */
+function changeAdminPassword() {
+  var newPwd = document.getElementById('adminPasswordInput').value.trim();
+  if (!newPwd) { alert('请输入新密码'); return; }
+  if (newPwd.length < 4) { alert('密码至少4位'); return; }
+  var correctPwd = getAdminPassword();
+  var oldPwd = prompt('请输入当前密码确认：');
+  if (oldPwd !== correctPwd) {
+    alert('❌ 当前密码错误！');
+    return;
+  }
+  setAdminPassword(newPwd);
+  document.getElementById('adminPasswordInput').value = '';
+  document.getElementById('adminStatus').textContent = '✅ 密码修改成功！';
   setTimeout(function() { document.getElementById('adminStatus').textContent = ''; }, 2000);
 }
 
@@ -2907,7 +1990,7 @@ function testAIConnection() {
   });
 }
 
-// ===== 局域网监看 =====
+// ===== 局域网监督 =====
 var _lanSnapshotInterval = null;
 
 /** 是否支持 Native 桥接 */
@@ -2920,10 +2003,11 @@ function pushLanSnapshot() {
   if (!hasLanSupport()) return;
   try {
     var isPractice = document.getElementById('pagePractice').classList.contains('active');
+    var isResult = document.getElementById('pageResult').classList.contains('active');
     var q = state.questions && state.questions[state.currentIdx] ? state.questions[state.currentIdx] : null;
     var total = state.questions ? state.questions.length : 0;
     var wrong = state.totalWrongCount || 0;
-    var done = state.currentIdx || 0;
+    var done = state.isEarlyEnd ? (state.currentIdx || 0) : total;
     var correct = done - wrong;
     var accuracy = done > 0 ? Math.round(correct / done * 100) : 0;
     var elapsed = state.startTime ? Math.floor((Date.now() - state.startTime) / 1000) : 0;
@@ -2944,29 +2028,12 @@ function pushLanSnapshot() {
       });
     }
 
-    var snap = {
-      active: isPractice && state.questions && state.questions.length > 0,
-      sessionTitle: document.getElementById('headerSub').textContent,
-      total: total,
-      currentIdx: state.currentIdx || 0,
-      done: done,
-      correct: correct,
-      wrong: wrong,
-      accuracy: accuracy,
-      elapsed: elapsedStr,
-      timerRemaining: timerVisible ? timerRemaining : -1,
-      maxAttempts: state.maxAttempts,
-      attemptCount: state.attemptCount || 0,
-      isExamMode: state.isExamMode || false,
-      isEarlyEnd: state.isEarlyEnd || false,
-      switchCount: state.switchCount || 0,
-      currentQuestion: q ? q.chinese : '',
-      currentAnswer: q ? q.answer : '',
-      currentType: q ? q.type : '',
-      currentInput: document.getElementById('answerInput') ? document.getElementById('answerInput').value : '',
-      typeStats: typeStats,
-      wrongRecords: (state.wrongRecords || []).slice(-20),
-      hasAiKey: !!localStorage.getItem('aiApiKey')
+      hasAiKey: !!localStorage.getItem('aiApiKey'),
+      // 结算数据 - 在结果页时填充
+      settlementData: settlementData,
+      // 弹窗相关
+      _pendingPopup: pendingPopup,
+      _popupAck: popupAck ? {msg: popupAck} : null
     };
     BEAndroid.updateSnapshot(JSON.stringify(snap));
   } catch(e) {
@@ -2991,7 +2058,7 @@ function startLanMonitor() {
     if (result && result.startsWith('OK:')) {
       var ip = BEAndroid.getLocalIp();
       var p = result.split(':')[1];
-      document.getElementById('lanStatus').innerHTML = '✅ 监看地址: <strong>http://' + ip + ':' + p + '</strong><br><span style="font-size:11px;color:#94a3b8">在局域网内另一设备浏览器打开此地址</span>';
+      document.getElementById('lanStatus').innerHTML = '✅ 监督地址: <strong>http://' + ip + ':' + p + '</strong><br><span style="font-size:11px;color:#94a3b8">在局域网内另一设备浏览器打开此地址</span>';
       document.getElementById('lanStatus').style.color = '#155724';
       document.getElementById('lanStartBtn').style.display = 'none';
       document.getElementById('lanStopBtn').style.display = '';
@@ -3022,46 +2089,15 @@ function stopLanMonitor() {
   document.getElementById('lanStopBtn').style.display = 'none';
 }
 
-// 页面关闭或导航时停止监看
+// 页面关闭或导航时停止监督
 window.addEventListener('beforeunload', function() {
   stopLanMonitor();
 });
 
-console.log('📝 英语默写 loaded');
-</script>
-<!-- ===== Admin Panel ===== -->
-<div class="admin-overlay" id="adminPanel">
-  <div class="admin-box">
-    <h2>🔐 管理面板</h2>
-    <div class="admin-sub">切屏检测配置</div>
-
-    <label>单次练习允许切屏次数</label>
-    <input type="number" id="adminAllowedCount" min="0" max="99" value="3">
-    <div class="admin-hint">设为 0 表示一次都不允许切屏</div>
-
-    <div class="admin-check">
-      <input type="checkbox" id="adminShowWarning" checked>
-      <label for="adminShowWarning">切屏返回时显示提示</label>
+    <div id="adminTypeStats" style="display:none;margin-bottom:12px;padding:10px;background:var(--sub-bg,#f8f9fa);border-radius:8px">
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px">📊 各类型正确率</div>
+      <div id="adminTypeStatsContent" style="font-size:12px;line-height:1.8"></div>
     </div>
-
-    <div class="admin-check">
-      <input type="checkbox" id="adminAutoEnd">
-      <label for="adminAutoEnd">超过允许次数自动结束练习</label>
-    </div>
-
-    <label>切屏提示文字 <span style="font-weight:400;color:var(--sub-text)">（支持 {count} 变量）</span></label>
-    <textarea id="adminWarningText" rows="2">⚠️ 检测到切屏行为（共 {count} 次），请保持专注！</textarea>
-    <div class="admin-hint">提示中的 {count} 会自动替换为实际切屏次数</div>
-
-    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
-
-    <label>单题容错次数</label>
-    <input type="number" id="adminMaxAttempts" min="1" max="5" value="2">
-    <div class="admin-hint">每题可答错的次数，第1次错可修改再答，默认2次</div>
-
-    <label>允许复核比例 (%)</label>
-    <input type="number" id="adminDisputeRatio" min="0" max="50" value="20">
-    <div class="admin-hint">每场练习允许申请AI复核的题目比例，默认20%</div>
 
     <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
 
@@ -3095,6 +2131,15 @@ console.log('📝 英语默写 loaded');
       <label for="adminShowFeedback">👁️ 答题时展示正误情况</label>
     </div>
     <div class="admin-hint" style="margin-left:24px">关闭后答题过程中不显示正确/错误反馈（测验模式自动关闭）</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <label>🔑 管理密码</label>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <input type="password" id="adminPasswordInput" placeholder="输入新密码" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:var(--input-bg);color:var(--text)">
+      <button class="btn btn-sm" onclick="changeAdminPassword()" style="background:#6f42c1;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">修改</button>
+    </div>
+    <div class="admin-hint">默认密码 123456，建议首次使用后修改</div>
 
     <div class="admin-status" id="adminStatus"></div>
 

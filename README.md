@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/platform-Android-brightgreen)
 ![Kotlin](https://img.shields.io/badge/language-Kotlin-purple)
-![Version](https://img.shields.io/badge/version-1.5.1-blue)
+![Version](https://img.shields.io/badge/version-1.5.2-blue)
 
 > **中文** — 一款轻量、高效的英语默写练习工具，帮助中小学生巩固课内单词、词组和句子。  
 > **English** — A lightweight, efficient English dictation practice tool for K-12 students to reinforce vocabulary, phrases, and sentences.
@@ -29,7 +29,7 @@
 | 📈 **练习统计** | Practice Statistics | 正确率、错题分布等数据可视化 |
 | 📋 **历史记录导出/导入** | History Export/Import | 支持备份和恢复所有练习记录 |
 | 🔖 **题目标记** | Question Marking | 支持标记题目，结束后集中复核 |
-| 📡 **局域网监看** | LAN Monitor | 在局域网内另一设备浏览器实时查看练习进度 |
+| 📡 **局域网监督** | LAN Monitor/Supervisor | 在局域网内另一设备浏览器实时查看练习进度 |
 
 ---
 
@@ -130,13 +130,13 @@ Built-in question banks are in `assets/unit/`. You can also import custom questi
 - 支持「错题重练」模式 / Supports "Retry Wrong Questions" mode
 - 错题记录包含：正确答案、你的答案、错误次数 / Records include: correct answer, your answer, error count
 
-### 5. 局域网监看 · LAN Monitor
+### 5. 局域网监督 · LAN Monitor/Supervisor
 
 练习过程中，可通过局域网内另一台设备的浏览器实时查看进度：  
 Monitor practice progress in real-time from another device on the same LAN:
 
-1. 在 App 首页底部「📡 局域网监看」区域，点击 **▶ 启动** / Tap **▶ Start** at the bottom of the home page
-2. 记下显示的监看地址 `http://192.168.x.x:8080` / Note the monitor address shown
+1. 在 App 首页「📡 局域网监督」区域，点击 **▶ 启动** / Tap **▶ Start** at the bottom of the home page
+2. 记下显示的监督地址 `http://192.168.x.x:8080` / Note the monitor address shown
 3. 在局域网内另一设备的浏览器中打开该地址 / Open the address in another device's browser on the same LAN
 4. 页面每 2 秒自动刷新显示实时进度 / The page auto-refreshes every 2 seconds
 
@@ -145,7 +145,7 @@ Monitor practice progress in real-time from another device on the same LAN:
 
 ### 4. 高级设置 · Advanced Settings
 
-点击首页版本号 **7 次** 进入管理面板（密码：`password`），可设置：  
+点击首页 **⚙️ 管理面板** 按钮进入管理面板（默认密码：`123456`），可设置：  
 Click the version number **7 times** on the home page to enter the admin panel (password: `password`):
 
 - ⏱️ 倒计时时间（单词/词组/句子分别设置）/ Countdown timer (per type)
@@ -155,8 +155,8 @@ Click the version number **7 times** on the home page to enter the admin panel (
 - 📋 **导出错题**（结果页支持导出纯中文/纯英文/中英双语，一键复制） / **Export wrong questions** (Chinese/English/bilingual, one-click copy)
 - 📤 **导出/导入历史记录** / **Export/Import practice history**
 
-> 💡 版本号彩蛋：首页标题右侧版本号连续点击 7 次进入隐藏管理面板  
-> 💡 Easter egg: Click the version number 7 times to access the hidden admin panel
+> 💡 管理面板：首页 **⚙️ 管理面板** 按钮进入（密码可在面板内修改）  
+> 💡 Admin panel: Click **⚙️ Admin** button on home page (password changeable inside panel)
 
 ---
 
@@ -184,8 +184,8 @@ GitHub Actions workflow at `.github/workflows/build.yml` auto-builds APK on ever
 
 | 版本 Version | 日期 Date | 更新内容 Changes |
 |-------------|-----------|-----------------|
+| v1.5.2 | 2026-07 | 管理面板密码保护(可修改)；监督面板弹窗功能；结算面板同步显示；错题回顾格式优化(第一次/第二次+错误答案)；答题键盘新增/和—键；输入框增高；删除版本号彩蛋 / Admin panel password protection; supervisor popup; settlement sync; wrong answer format (1st/2nd attempt + wrong answer); keyboard adds / and —; taller input; removed easter egg |
 | v1.5.1 | 2026-07 | 复核保留记录（展示✅复核通过/❌复核未过标记）、监看面板信息丰富（类型统计、倒计时、用时、元信息）、"我不会"在答错后仍记录跳过行为、复核Prompt严格化（拼写不一致即判错）、明确首页AI Prompt模板用途说明 / Review records preserved with pass/fail badges, richer LAN monitor (type stats, timer, elapsed, meta), skip recorded after wrong attempt, stricter review prompt, clarified AI Prompt label |
-| v1.5.0 | 2026-07 | 新增 📝 测验模式、🔖 标记上题、📡 局域网监看、管理面板「展示正误情况」配置项；修复倒计时失效、页面卡死、导出兼容性、AI复核格式误判 / Added Exam Mode, mark previous question, LAN monitor, admin "show feedback" toggle; fixed timer, page freeze, export, AI format parsing |
 | v1.4.4 | 2026-07 | 新增历史记录导出/导入功能、每次答题重置题目标记、更新说明文档为双语 / Added history export/import, reset marked questions per session, bilingual README |
 | v1.4.3 | 2026-07 | 正确率细分（单词/词组/句子）、修复复核正确后错题不移除、新增忽略标点符号开关、错题导出、历史记录回到结算页 / Accuracy breakdown by type, fix review bugs, punctuation toggle, wrong question export |
 | v1.4.2 | 2026-07 | 答题光标支持、AI配置一键导入、格式转换提示词可编辑、JSON句子自动拆分、文件上传修复 / Input cursor support, AI config import, editable prompts, JSON sentence splitting, file upload fix |
