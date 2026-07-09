@@ -238,8 +238,8 @@ class SimpleHttpServer(
         serverSocket = null
     }
 
-    private fun handleClient}
-
+    private fun handleClient(client: Socket) {
+        try {
             val reader = BufferedReader(InputStreamReader(client.inputStream))
             val requestLine = reader.readLine() ?: return
         
@@ -291,7 +291,12 @@ class SimpleHttpServer(
 
             client.outputStream.write(response.toByteArray(Charsets.UTF_8))
             client.outputStream.flush()
-        }private fun buildStatusPage(json: String): String {
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun buildStatusPage(json: String): String {
         val safeJson = json.replace("</script>", "<\\/script>")
         val template = activity.assets.open("monitor.html")
             .bufferedReader().use { it.readText() }
