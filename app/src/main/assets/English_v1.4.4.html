@@ -397,6 +397,44 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
     <div class="import-actions">
       <label>📁 选择文件<input type="file" id="fileInput" accept=".json"></label>
     </div>
+    <div style="text-align:center;margin-top:10px">
+      <button onclick="checkAdminPassword()" style="border:none;background:#6f42c1;color:#fff;padding:6px 20px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">⚙️ 管理面板</button>
+      <span style="font-size:10px;color:#888;display:block;margin-top:3px">默认密码 123456</span>
+    </div>
+    <!-- mode selector -->
+    <div class="mode-group" id="modeGroup">
+      <span class="mode-chip on random" data-mode="random" onclick="toggleMode('random')">🔀 随机</span>
+      <span class="mode-chip" data-mode="word" onclick="toggleMode('word')">📖 单词</span>
+      <span class="mode-chip" data-mode="phrase" onclick="toggleMode('phrase')">📝 词组</span>
+      <span class="mode-chip" data-mode="sentence" onclick="toggleMode('sentence')">💬 句子</span>
+      <span class="mode-chip" data-mode="exam" onclick="toggleMode('exam')" style="border-color:#dc3545;color:#dc3545">📝 测验模式</span>
+    </div>
+    <div class="mode-hint" id="modeHint">🔀 随机打乱所有题目</div>
+
+    <div class="import-error" id="importError"></div>
+    <div class="import-preview" id="importPreview"></div>
+    <button class="btn btn-primary btn-block" id="startBtn" disabled onclick="startPractice()" style="margin-top:14px">开始默写</button>
+  </div>
+
+    <div class="ai-settings">
+    <button class="ai-settings-btn" id="aiSettingsBtn" onclick="toggleAiSettings()">⚙️ AI 配置</button>
+  </div>
+  <div class="ai-panel" id="aiPanel">
+    <label>Base URL</label>
+    <input type="text" id="aiBaseUrl" placeholder="https://api.openai.com/v1">
+    <label>API Key</label>
+    <input type="password" id="aiApiKey" placeholder="sk-...">
+    <label>Model（可选）</label>
+    <input type="text" id="aiModel" placeholder="gpt-4o-mini">
+    <label style="margin-top:12px">AI分析Prompt 模板 <span style="color:#999;font-weight:400;font-size:11px">用于"AI分析本次练习"按钮，分析练习数据并给出学习建议。支持变量: {title} {total} {accuracy} {duration} {wrongDetail}</span></label>
+    <textarea id="aiPrompt" placeholder="不填则使用默认 prompt"></textarea>
+    <button class="btn btn-secondary btn-block ai-save-btn" onclick="saveAiSettings()">💾 保存配置</button>
+  </div>
+<div class="history-btn-area">
+    <button onclick="showHistory()">📋 历史记录</button>
+    <button onclick="showPage('pageConvert')" style="background:#1a73e8;margin-left:8px">🔧 格式转换</button>
+  </div>
+
   <!-- ===== 局域网监督 ===== -->
   <div class="card" style="margin-top:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
