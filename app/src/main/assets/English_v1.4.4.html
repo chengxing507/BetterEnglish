@@ -1401,6 +1401,122 @@ function finishPractice() {
   document.getElementById('resultTitle').textContent = title;
   document.getElementById('statAccuracy').textContent = accuracyRaw.toFixed(2) + '%';
   state._typeStats = calcTypeStats(state.questions, state.everWrong);
+  updateAccuracyDetail();
+  document.getElementById('statDuration').textContent = duration;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statWrong').textContent = state.everWrong.size;
+  var doneCount = state.isEarlyEnd ? state.currentIdx : total;
+  document.getElementById('statDone').textContent = doneCount + '/' + state.totalOriginal;
+  document.getElementById('statSwitch').textContent = state.switchCount;
+
+  // 错题列表（合并同一题目的多次错误，点击展开）
+  var ws = document.getElementById('wrongSection');
+  var wl = document.getElementById('wrongList');
+  wl.innerHTML = '';
+  if (state.wrongRecords.length > 0) {
+    ws.style.display = 'block';
+    var groups = {};
+    state.wrongRecords.forEach(function(r) { if (!groups[r.index]) groups[r.index] = []; groups[r.index].push(r); });
+    Object.keys(groups).forEach(function(idx) {
+      var attempts = groups[idx];
+      var first = attempts[0];
+      var gd = document.createElement('div');
+      gd.className = 'w-group';
+      var badge = attempts.length > 1 ? ' <span style="font-size:11px;color:#888">尝试' + attempts.length + '次</span>' : '';
+      var reviewBadge = '';
+      if (first.reviewStatus === 'passed') reviewBadge = ' <span style="font-size:11px;color:#22c55e;font-weight:600">✅ 复核通过</span>';
+      else if (first.reviewStatus === 'failed') reviewBadge = ' <span style="font-size:11px;color:#ef4444;font-weight:600">❌ 复核未通过</span>';
+      gd.innerHTML = '<div class="w-group-header">' +
+        '<span class="w-g-title">' + escHtml(first.chinese) + ' ' + escHtml(first.answer) + '</span>' + reviewBadge + badge +
+        '<span class="w-g-arrow" style="font-size:11px;cursor:pointer" onclick="this.parentElement.classList.toggle(\'expanded\');this.parentElement.nextElementSibling.classList.toggle(\'show\')">▼</span></div>' +
+        '<div class="w-group-body">' +
+        attempts.map(function(a, i) {
+          var label = a.isSkip ? '跳过' : '第' + (i+1) + '次';
+          var rs = '';
+          if (a.reviewStatus === 'passed') rs = ' ✅复核通过';
+          else if (a.reviewStatus === 'failed') rs = ' ❌复核未过';
+          return '<div class="w-attempt"><span class="wa-label">' + label + '</span> ' + escHtml(a.userInput) + rs + '</div>';
+        }).join('') +
+        '</div>';
+      wl.appendChild(gd);
+    });
+  } else { ws.style.display = 'none'; }
+
+  // 复核区
+  var disputeSection = document.getElementById('disputeResultSection');
+  if (disputeSection) {
+    disputeSection.innerHTML = '';
+    if (state.wrongRecords.length > 0 && state.disputeCount < state.maxDisputes) {
+      var unreviewedCount = 0;
+      Object.keys(groups).forEach(function(idx) {
+        var first = groups[idx][0];
+        if (!first.reviewStatus) unreviewedCount++;
+      });
+      if (unreviewedCount > 0) {
+        var dTitle = document.createElement('h3');
+        dTitle.textContent = '复核（剩余' + (state.maxDisputes - state.disputeCount) + '次）';
+        dTitle.style.cssText = 'font-size:14px;margin-bottom:8px;color:#6f42c1';
+        disputeSection.appendChild(dTitle);
+        Object.keys(groups).forEach(function(idx) {
+          var first = groups[idx][0];
+          if (first.reviewStatus) return;
+          var btn = document.createElement('button');
+          btn.className = 'btn btn-sm';
+          btn.style.cssText = 'border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#f3e8ff;color:#6f42c1;margin:0 6px 6px 0';
+          btn.textContent = first.chinese + ' 复核';
+          btn.onclick = function() { prepareDispute(idx); };
+          disputeSection.appendChild(btn);
+        });
+      }
+    }
+  }
+
+  // 标记题目区
+  var markedSection = document.getElementById('markedSection');
+  var markedList = document.getElementById('markedList');
+  var batchBtn = document.getElementById('btnBatchReview');
+  markedList.innerHTML = '';
+  if (state.markedQuestions.length > 0) {
+    markedSection.style.display = 'block';
+    batchBtn.disabled = false;
+    batchBtn.textContent = '🤖 一键复核全部标记题目（' + state.markedQuestions.length + '题）';
+    document.getElementById('batchReviewStatus').textContent = '';
+    document.getElementById('batchReviewResults').innerHTML = '';
+    state.markedQuestions.sort(function(a,b){return a-b;}).forEach(function(idx) {
+      var q = state.questions[idx];
+      if (!q) return;
+      var item = document.createElement('div');
+      item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--sub-bg,#f8f9fa);border-radius:6px;margin-bottom:4px;font-size:12px';
+      var userAnswer = '';
+      for (var ri = 0; ri < state.wrongRecords.length; ri++) {
+        if (state.wrongRecords[ri].index == idx) {
+          userAnswer = state.wrongRecords[ri].userInput;
+          break;
+        }
+      }
+      item.innerHTML = '<span><strong>' + escHtml(q.chinese) + '</strong> → ' + escHtml(q.answer) + (userAnswer ? ' <span style="color:#888">| 你的答案: ' + escHtml(userAnswer) + '</span>' : '') + '</span>';
+      markedList.appendChild(item);
+    });
+  } else {
+    markedSection.style.display = 'none';
+  }
+
+  // 保存到历史
+  saveHistory({
+    title: document.getElementById('headerSub').textContent,
+    total: total,
+    wrong: wrongCount,
+    accuracy: parseFloat(accuracyRaw.toFixed(2)),
+    duration: duration,
+    wrongRecords: state.wrongRecords.slice(),
+    mode: state.mode,
+    isEarlyEnd: state.isEarlyEnd,
+    switchCount: state.switchCount
+  });
+
+  showPage('pageResult');
+}
+
 function getAdminPassword() {
   var pwd = localStorage.getItem('beAdminPassword');
   return pwd || '123456'; // 默认密码123456
