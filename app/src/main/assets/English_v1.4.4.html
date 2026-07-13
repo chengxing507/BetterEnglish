@@ -205,6 +205,8 @@ body{
 .q-feedback.correct{color:#28a745}
 .q-feedback.wrong{color:#dc3545}
 .q-feedback.skip{color:#6c757d;font-weight:400}
+.q-feedback.hidden{display:none}
+.wrong-count-badge.hidden{display:none}
 
 /* ===== Timer ===== */
 .q-timer{
@@ -279,7 +281,7 @@ body{
 .kb-key.special:active{background:#495057}
 .kb-key.action{background:#2d6a4f;color:#fff;font-size:15px;font-weight:700}
 .kb-key.action:active{background:#1b4332}
-.kb-key.space{flex:5;font-size:14px;letter-spacing:2px}
+.kb-key.space{flex:3;font-size:14px;letter-spacing:2px}
 .kb-key.wide{flex:1.8}
 .kb-key.narrow{flex:0.8}
 .kb-key.shift-on{background:#2d6a4f;color:#fff}
@@ -363,6 +365,15 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
 .w-attempt{padding:8px 14px;font-size:12px;border-bottom:1px solid var(--border)}
 .w-attempt:last-child{border-bottom:none}
 .w-attempt .wa-label{color:#888;font-size:11px}
+.w-group-header .wa-checkbox{margin-right:8px;width:16px;height:16px;cursor:pointer;accent-color:#6f42c1;flex-shrink:0}
+.w-group-header.selected{border-left-color:#6f42c1;background:#f3e8ff}
+.w-batch-actions{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.w-batch-actions button{font-size:11px;padding:4px 10px;border-radius:6px;border:none;font-weight:600;cursor:pointer}
+.w-batch-actions .ba-select{background:#e9ecef;color:#495057}
+.w-batch-actions .ba-select:hover{background:#dee2e6}
+.w-batch-actions .ba-review{background:#6f42c1;color:#fff}
+.w-batch-actions .ba-review:hover{background:#553098}
+.w-batch-actions .ba-review:disabled{background:#adb5bd;cursor:not-allowed}
 
 /* ===== Dispute Modal ===== */
 .d-status{padding:12px;border-radius:8px;margin:10px 0;font-size:13px;text-align:center}
@@ -399,7 +410,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
     </div>
     <div style="text-align:center;margin-top:10px">
       <button onclick="checkAdminPassword()" style="border:none;background:#6f42c1;color:#fff;padding:6px 20px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">⚙️ 管理面板</button>
-      <span style="font-size:10px;color:#888;display:block;margin-top:3px">默认密码 123456</span>
+      <span style="font-size:10px;color:#888;display:block;margin-top:3px">🔒 已启用密码保护</span>
     </div>
     <!-- mode selector -->
     <div class="mode-group" id="modeGroup">
@@ -460,7 +471,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
   </div>
 <div class="progress-info">
     <span id="progressText">第 1 / 1 题</span>
-    <span id="wrongCountDisplay">❌ 0</span>
+    <span id="wrongCountDisplay" class="wrong-count-badge">❌ 0</span>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
@@ -473,6 +484,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
     <span class="timer-icon">⏱</span>
     <span class="timer-num" id="timerNum">30</span>
     <span>秒</span>
+    <button class="btn btn-sm btn-outline" id="btnExtendTime" onclick="extendTime()" style="display:none;padding:2px 10px;font-size:11px;border-color:#f59e0b;color:#92400e;border-radius:12px;margin-left:8px;cursor:pointer;background:transparent;border:2px solid #f59e0b;font-weight:600">⏱ +25s</button>
   </div>
 
   <div class="q-input">
@@ -533,7 +545,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
       <button class="kb-key special narrow" onclick="kbPress(',')">,</button>
       <button class="kb-key special narrow" onclick="kbPress('.')">.</button>
       <button class="kb-key special narrow" onclick="kbPress('\'')" id="kbQuote">'</button>
-      <button class="kb-key special narrow" onclick="kbPress('—')" id="kbDash">—</button>
+      <button class="kb-key special narrow" onclick="kbPress('-')" id="kbDash">-</button>
       <button class="kb-key space special" onclick="kbPress(' ')">空格</button>
       <button class="kb-key action" onclick="kbSubmit()">↵</button>
     </div>
@@ -553,6 +565,7 @@ body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
     <div class="r-stat"><div class="val red" id="statWrong">0</div><div class="lbl">错误题数</div></div>
     <div class="r-stat"><div class="val" id="statDone">0/0</div><div class="lbl">已完成</div></div>
     <div class="r-stat"><div class="val" id="statSwitch" style="color:#6f42c1">0</div><div class="lbl">切屏次数</div></div>
+    <div class="r-stat"><div class="val" id="statExtendTime" style="color:#f59e0b">0</div><div class="lbl">加时次数</div></div>
   </div>
 
   <div id="accuracyDetail" style="display:none;margin-bottom:12px"></div>
@@ -729,6 +742,7 @@ var state = {
   questions: [],
   currentIdx: 0,
   wrongRecords: [],  // [{chinese, answer, userInput, index, isSkip}]
+  _lastAttemptInput: null,
   everWrong: new Set(),
   totalWrongCount: 0,
   startTime: 0,
@@ -746,7 +760,12 @@ var state = {
   timerRemaining: 0,
   timerInterval: null,
   timerConfig: null,
-  markedQuestions: []       // 标记的题目 index 列表
+  markedQuestions: [],       // 标记的题目 index 列表
+  timeExtendUsed: 0,         // 当前题已使用的加时次数
+  totalTimeExtendUsed: 0,    // 本次练习总加时次数
+  extendBudget: null,        // 按比例模式下的全局加时预算 {word:n, phrase:n, sentence:n}
+  timeExtendTotal: 3,         // 当前题可加时的总次数
+  _reviewSelected: null       // 多选复核选中的题目索引列表
 };
 
 // ===== DOM refs =====
@@ -989,6 +1008,7 @@ function doStartPractice(result) {
   state.wrongRecords = [];
   state.everWrong = new Set();
   state.totalWrongCount = 0;
+  state.totalTimeExtendUsed = 0;
   state.startTime = Date.now();
   state.locked = false;
   state.shiftOn = false;
@@ -998,11 +1018,34 @@ function doStartPractice(result) {
   state.lastWrong = null;
   state.disputeCount = 0;
   state.markedQuestions = [];  // 每次答题重置题目标记
+  state._reviewSelected = null;  // 重置多选复核
+  LogManager.init(); // 确保日志系统已初始化
+  LogManager.log('system', '练习开始', {mode: activeModes, total: allQuestions.length, title: result.title});
   // 检测测验模式
   state.isExamMode = activeModes.indexOf('exam') !== -1;
   var scfg = getSwitchConfig();
   state.maxAttempts = state.isExamMode ? 1 : (scfg.maxAttempts || 2);
   state.maxDisputes = Math.max(1, Math.floor(allQuestions.length * (scfg.disputeRatio || 20) / 100));
+  // 计算临时加时预算
+  var xcfg = JSON.parse(localStorage.getItem('beTimeExtendConfig') || '{}');
+  var extMode = xcfg.mode || 'absolute';
+  if (extMode === 'percentage') {
+    state.extendBudget = {word: 0, phrase: 0, sentence: 0};
+    var typeCounts = {word: 0, phrase: 0, sentence: 0};
+    allQuestions.forEach(function(q) {
+      var t = q.type || 'word';
+      if (typeCounts[t] !== undefined) typeCounts[t]++;
+    });
+    ['word', 'phrase', 'sentence'].forEach(function(t) {
+      var pct = xcfg[t] || 20;
+      state.extendBudget[t] = Math.max(1, Math.round(typeCounts[t] * pct / 100));
+    });
+    state.globalExtendRemaining = 0; // 百分比模式用 extendBudget
+  } else {
+    state.extendBudget = null;
+    // 绝对模式：全局加时总次数（如设 0 则关闭加时功能）
+    state.globalExtendRemaining = parseInt(xcfg.totalExtends) || 5;
+  }
   // 测验模式提示
   document.getElementById('headerSub').textContent = (state.isExamMode ? '📝 测验模式 | ' : '') + (result.title || ('共 ' + result.questions.length + ' 题'));
   showPage('pagePractice');
@@ -1074,6 +1117,358 @@ function onTimerExpire() {
   lockQuestion();
   setTimeout(function() { nextQuestion(); }, showFb ? 1000 : 200);
 }
+
+/** 临时加时：为当前题增加25秒答题时间 */
+function extendTime() {
+  if (state.locked) return;
+  var q = state.questions[state.currentIdx];
+  if (!q) return;
+  var type = q.type || 'word';
+  var maxExtends = getMaxExtends(type);
+  if (maxExtends <= 0) {
+    showToast('该题型不允许临时加时');
+    return;
+  }
+  var xcfg = JSON.parse(localStorage.getItem('beTimeExtendConfig') || '{}');
+  var extMode = xcfg.mode || 'absolute';
+  if (extMode === 'absolute') {
+    // 全局模式：从总剩余次数中扣除
+    if (!state.globalExtendRemaining || state.globalExtendRemaining <= 0) {
+      showToast('加时次数已用完');
+      return;
+    }
+    state.globalExtendRemaining--;
+    state.totalTimeExtendUsed++;
+    state.timerRemaining += 25;
+    document.getElementById('timerNum').textContent = state.timerRemaining;
+    updateExtendBtn(state.globalExtendRemaining);
+    showToast('已加时25秒，全局剩余 ' + state.globalExtendRemaining + ' 次');
+  } else {
+    // 百分比模式：按题型从全局预算中扣除
+    if (!state.extendBudget || state.extendBudget[type] <= 0) {
+      showToast('全局加时次数已用完');
+      return;
+    }
+    state.totalTimeExtendUsed++;
+    state.extendBudget[type]--;
+    state.timerRemaining += 25;
+    document.getElementById('timerNum').textContent = state.timerRemaining;
+    var remaining = state.extendBudget[type];
+    updateExtendBtn(remaining);
+    showToast('已加时25秒，全局剩余 ' + remaining + ' 次');
+  }
+}
+
+/** 获取当前题型剩余可加时次数 */
+function getMaxExtends(type) {
+  var xcfg = JSON.parse(localStorage.getItem('beTimeExtendConfig') || '{}');
+  var mode = xcfg.mode || 'absolute';
+  if (mode === 'absolute') {
+    return state.globalExtendRemaining || 0;
+  } else {
+    if (state.extendBudget && state.extendBudget[type] !== undefined) {
+      return state.extendBudget[type];
+    }
+    return 0;
+  }
+}
+
+/** 更新加时按钮显示 */
+function updateExtendBtn(remaining) {
+  var btn = document.getElementById('btnExtendTime');
+  if (!btn) return;
+  if (remaining > 0) {
+    btn.textContent = '\u23f1 +25s (' + remaining + ')';
+    btn.style.display = '';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+/** 显示Toast提示 */
+function showToast(msg) {
+  var toast = document.getElementById('switchToast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 3500);
+}
+
+// ===== 全局日志系统 =====
+/** LogManager: 记录答题、API、配置、系统日志，支持导出/导入备份 */
+var LogManager = {
+  KEYS: {
+    LOGS: 'beLogs_data',
+    CONFIG: 'beLogs_config',
+    HISTORY: 'beLogs_history',
+    SETTINGS_BACKUP: 'beSettings_backup'
+  },
+  DEFAULT_CONFIG: {
+    enabled: true,
+    maxLogs: 5000,
+    logTypes: {answer: true, api: true, config: true, system: true},
+    storagePath: '',
+    autoExportDays: 0
+  },
+  _buffer: [],
+  _flushTimer: null,
+
+  /** 初始化：加载配置 + 检测是否需要提示恢复 */
+  init: function() {
+    this.config = this._loadConfig();
+    this._loadBuffer();
+    this.log('system', '系统启动', {version: 'v1.5.2'});
+    // 检测是否为新安装（无历史数据），弹出恢复提示
+    if (!localStorage.getItem(this.KEYS.HISTORY)) {
+      setTimeout(function() { LogManager._checkRestore(); }, 1000);
+    }
+  },
+
+  /** 记录一条日志 */
+  log: function(type, message, data) {
+    if (!this.config || !this.config.enabled) return;
+    if (this.config.logTypes && this.config.logTypes[type] === false) return;
+    var entry = {
+      id: Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      type: type,
+      message: message,
+      data: data || null,
+      timestamp: new Date().toISOString()
+    };
+    this._buffer.push(entry);
+    this._scheduleFlush();
+    return entry;
+  },
+
+  /** 批量记录 */
+  logBatch: function(entries) {
+    var self = this;
+    entries.forEach(function(e) { self.log(e.type, e.message, e.data); });
+  },
+
+  /** 获取日志 */
+  getLogs: function(type, limit, offset) {
+    var logs = this._getAllLogs();
+    if (type && type !== 'all') logs = logs.filter(function(l) { return l.type === type; });
+    if (offset) logs = logs.slice(offset);
+    if (limit) logs = logs.slice(-limit);
+    return logs;
+  },
+
+  /** 获取日志统计 */
+  getStats: function() {
+    var logs = this._getAllLogs();
+    var stats = {total: logs.length, types: {}, lastDay: 0};
+    var oneDayAgo = Date.now() - 86400000;
+    logs.forEach(function(l) {
+      if (!stats.types[l.type]) stats.types[l.type] = 0;
+      stats.types[l.type]++;
+      if (new Date(l.timestamp).getTime() > oneDayAgo) stats.lastDay++;
+    });
+    return stats;
+  },
+
+  /** 导出全部数据：日志 + 设置 + 历史 */
+  exportAll: function() {
+    var data = {
+      version: 'v1.5.2',
+      exportTime: new Date().toISOString(),
+      logs: this._getAllLogs(),
+      settings: this._exportSettings(),
+      history: this._exportHistory()
+    };
+    return data;
+  },
+
+  /** 导入备份 */
+  importBackup: function(data) {
+    try {
+      if (!data || !data.version) throw new Error('无效的备份文件');
+      // 恢复设置
+      if (data.settings) this._importSettings(data.settings);
+      // 恢复历史
+      if (data.history) this._importHistory(data.history);
+      // 合并日志
+      if (data.logs && Array.isArray(data.logs)) {
+        var existing = this._getAllLogs();
+        var existingIds = {};
+        existing.forEach(function(l) { existingIds[l.id] = true; });
+        data.logs.forEach(function(l) {
+          if (!existingIds[l.id]) existing.push(l);
+        });
+        this._saveLogs(existing);
+        this._buffer = [];
+      }
+      this.log('system', '备份恢复成功', {logCount: (data.logs||[]).length});
+      return true;
+    } catch(e) {
+      this.log('system', '备份恢复失败', {error: e.message});
+      return false;
+    }
+  },
+
+  /** 清空日志 */
+  clearLogs: function(type) {
+    if (type && type !== 'all') {
+      var logs = this._getAllLogs().filter(function(l) { return l.type !== type; });
+      this._saveLogs(logs);
+    } else {
+      localStorage.removeItem(this.KEYS.LOGS);
+    }
+    this._buffer = [];
+    this.log('system', '日志已清空', {type: type || 'all'});
+  },
+
+  /** 下载备份文件 */
+  downloadBackup: function() {
+    var data = this.exportAll();
+    var json = JSON.stringify(data, null, 2);
+    var blob = new Blob([json], {type: 'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'be_backup_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+    this.log('system', '备份已下载', {size: json.length});
+  },
+
+  /** 上传备份文件 */
+  uploadBackup: function(file, callback) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var data = JSON.parse(e.target.result);
+        var ok = LogManager.importBackup(data);
+        if (callback) callback(ok, data);
+      } catch(err) {
+        if (callback) callback(false, null, err.message);
+      }
+    };
+    reader.readAsText(file);
+  },
+
+  // ===== 内部方法 =====
+  _loadConfig: function() {
+    try {
+      return Object.assign({}, this.DEFAULT_CONFIG, JSON.parse(localStorage.getItem(this.KEYS.CONFIG) || '{}'));
+    } catch(e) { return Object.assign({}, this.DEFAULT_CONFIG); }
+  },
+
+  _saveConfig: function() {
+    localStorage.setItem(this.KEYS.CONFIG, JSON.stringify(this.config));
+  },
+
+  _loadBuffer: function() {
+    try {
+      var saved = localStorage.getItem(this.KEYS.LOGS);
+      if (saved) this._buffer = JSON.parse(saved);
+    } catch(e) { this._buffer = []; }
+  },
+
+  _getAllLogs: function() {
+    return this._buffer.slice();
+  },
+
+  _saveLogs: function(logs) {
+    // 只保留最近 maxLogs 条
+    if (logs.length > this.config.maxLogs) {
+      logs = logs.slice(logs.length - this.config.maxLogs);
+    }
+    try {
+      localStorage.setItem(this.KEYS.LOGS, JSON.stringify(logs));
+    } catch(e) {
+      // localStorage 满时截断
+      if (e.name === 'QuotaExceededError' || e.code === 22) {
+        logs = logs.slice(-Math.floor(this.config.maxLogs / 2));
+        try { localStorage.setItem(this.KEYS.LOGS, JSON.stringify(logs)); } catch(e2) {}
+      }
+    }
+    this._buffer = logs;
+  },
+
+  _scheduleFlush: function() {
+    if (this._flushTimer) clearTimeout(this._flushTimer);
+    this._flushTimer = setTimeout(function() {
+      LogManager._flush();
+    }, 2000);
+  },
+
+  _flush: function() {
+    if (this._buffer.length === 0) return;
+    var existing = this._getAllLogs();
+    var all = existing.concat(this._buffer);
+    this._saveLogs(all);
+    this._buffer = [];
+  },
+
+  /** 导出所有 localStorage 设置 */
+  _exportSettings: function() {
+    var keys = ['beSwitchConfig','beTimerConfig','bePunctuationConfig','beExamConfig',
+                'beTimeExtendConfig','beAdminPassword','aiBaseUrl','aiApiKey','aiModel',
+                'aiPrompt','beToolConfig','darkMode'];
+    var settings = {};
+    keys.forEach(function(k) {
+      try {
+        var v = localStorage.getItem(k);
+        if (v !== null) settings[k] = v;
+      } catch(e) {}
+    });
+    return settings;
+  },
+
+  /** 导入设置到 localStorage */
+  _importSettings: function(settings) {
+    if (!settings) return;
+    Object.keys(settings).forEach(function(k) {
+      try { localStorage.setItem(k, settings[k]); } catch(e) {}
+    });
+    this.log('system', '设置已恢复', {keys: Object.keys(settings).length});
+  },
+
+  /** 导出答题历史 */
+  _exportHistory: function() {
+    try {
+      return JSON.parse(localStorage.getItem(this.KEYS.HISTORY) || '[]');
+    } catch(e) { return []; }
+  },
+
+  /** 导入答题历史 */
+  _importHistory: function(history) {
+    if (!Array.isArray(history)) return;
+    localStorage.setItem(this.KEYS.HISTORY, JSON.stringify(history));
+    this.log('system', '答题历史已恢复', {count: history.length});
+  },
+
+  /** 保存一次练习历史 */
+  savePracticeHistory: function(result) {
+    var history = this._exportHistory();
+    history.push(result);
+    // 保留最近 200 条
+    if (history.length > 200) history = history.slice(-200);
+    localStorage.setItem(this.KEYS.HISTORY, JSON.stringify(history));
+    this.log('answer', '练习记录已保存', {accuracy: result.accuracy, total: result.total});
+  },
+
+  /** 检查是否需要恢复（新安装检测） */
+  _checkRestore: function() {
+    // 检测是否有备份文件通过 URL 参数传递（native 桥接）
+    var hasSettings = localStorage.getItem('beSwitchConfig');
+    if (hasSettings) return; // 已有数据，不是新安装
+    // 尝试通过 BEAndroid 桥读取外部存储的备份
+    if (typeof BEAndroid !== 'undefined' && BEAndroid !== null) {
+      // native 端可实现自动恢复
+    }
+  },
+
+  /** 更新配置 */
+  updateConfig: function(newConfig) {
+    this.config = Object.assign({}, this.config, newConfig);
+    this._saveConfig();
+    this.log('config', '日志配置已更新', newConfig);
+  }
+};
 
 // ===== 标记题目 =====
 function toggleMark() {
@@ -1198,6 +1593,12 @@ function renderQuestion() {
   document.getElementById('progressFill').style.width = (state.currentIdx / total * 100) + '%';
   document.getElementById('progressText').textContent = '第 ' + idx + ' / ' + total + ' 题';
   document.getElementById('wrongCountDisplay').textContent = '❌ ' + state.totalWrongCount;
+  // 根据配置隐藏/显示错题计数
+  if (!shouldShowFeedback()) {
+    document.getElementById('wrongCountDisplay').classList.add('hidden');
+  } else {
+    document.getElementById('wrongCountDisplay').classList.remove('hidden');
+  }
 
   var badge = document.getElementById('typeBadge');
   var map = {word:'单词', phrase:'词组', sentence:'句子'};
@@ -1214,6 +1615,10 @@ function renderQuestion() {
   input.disabled = false;
   document.getElementById('feedback').textContent = '';
   document.getElementById('feedback').className = 'q-feedback';
+  // 根据配置隐藏/显示反馈区域
+  if (!shouldShowFeedback()) {
+    document.getElementById('feedback').classList.add('hidden');
+  }
   document.getElementById('btnSubmit').disabled = false;
   document.getElementById('btnDontKnow').disabled = false;
   document.getElementById('kbShift').classList.remove('disabled');
@@ -1221,6 +1626,22 @@ function renderQuestion() {
   document.getElementById('keyboard').classList.add('show');
   state.locked = false;
   state.shiftOn = false;
+  // 显示加时按钮（显示全局剩余次数）
+  (function() {
+    var q = state.questions[state.currentIdx];
+    var type = q ? q.type || 'word' : 'word';
+    var xcfg = JSON.parse(localStorage.getItem('beTimeExtendConfig') || '{}');
+    var mode = xcfg.mode || 'absolute';
+    var remaining = 0;
+    if (mode === 'absolute') {
+      remaining = state.globalExtendRemaining || 0;
+    } else {
+      if (state.extendBudget && state.extendBudget[type] !== undefined) {
+        remaining = state.extendBudget[type];
+      }
+    }
+    updateExtendBtn(remaining);
+  })();
   // 更新标记按钮
   updateMarkButton();
   updateMarkCountDisplay();
@@ -1263,10 +1684,13 @@ function submitAnswer() {
   var ignorePunct = punctConfig.ignorePunctuation !== false; // 默认忽略标点
   function normalizeText(t) {
     var s = t.toLowerCase().trim();
+    // 始终将破折号 — – ― 统一转为空格（无论是否忽略标点）
+    s = s.replace(/[—–―]/g, ' ');
     if (ignorePunct) {
-      s = s.replace(/[.,!?;:'\"()\\[\\]{}_\\-—…·、，。！？；：\"\"''（）【】《》\\s]+/g, ' ');
-      s = s.replace(/\\s+/g, ' ').trim();
+      s = s.replace(/[.,!?;:'"()\[\]{}_\-…·‥、，。！？；：""''（）【】《》〈〉「」『』〖〗【】〔〕～~·・•@#\$%^&*+=\-＋＝±×÷\^￥€£¢°′″‹›«»¡¿‽⁇⁈⁉〰﹏﹎﹍＿①②③④⑤⑥⑦⑧⑨⑩※＊／＼｜‖\s]+/g, ' ');
     }
+    // 始终合并多余空格
+    s = s.replace(/\s+/g, ' ').trim();
     return s;
   }
   var isCorrect = normalizeText(userAns) === normalizeText(q.answer);
@@ -1275,6 +1699,8 @@ function submitAnswer() {
     lockQuestion(); setTimeout(function() { nextQuestion(); }, showFb ? 600 : 200);
   } else if (state.attemptCount < state.maxAttempts) {
     if (showFb) { input.className = 'wrong'; fb.textContent = '不正确，还有第二次机会'; fb.className = 'q-feedback wrong'; }
+    // 保存首次错误答案，以便后续"跳过"时记录具体内容
+    state._lastAttemptInput = userAns;
     input.focus();
   } else {
     state.wrongRecords.push({chinese:q.chinese, answer:q.answer, userInput:userAns, index:state.currentIdx, isSkip:false});
@@ -1297,6 +1723,11 @@ function lockQuestion() {
 
 function updateWrongDisplay() {
   document.getElementById('wrongCountDisplay').textContent = '❌ ' + state.everWrong.size;
+  if (!shouldShowFeedback()) {
+    document.getElementById('wrongCountDisplay').classList.add('hidden');
+  } else {
+    document.getElementById('wrongCountDisplay').classList.remove('hidden');
+  }
 }
 
 // ===== 我不会 =====
@@ -1306,23 +1737,50 @@ function confirmSkip() {
   closeSkipModal();
   var q = state.questions[state.currentIdx];
   if (state.everWrong.has(state.currentIdx)) {
-    // 已答错过，仍然记录"跳过"行为，方便在结算页查看完整作答历史
+    // 已答错过：先找到之前的错误答案，追加一条"跳过"记录但保留错误答案信息
+    var prevWrongInput = '（未知）';
+    for (var si = state.wrongRecords.length - 1; si >= 0; si--) {
+      var wr = state.wrongRecords[si];
+      if (wr.index === state.currentIdx && !wr.isSkip && wr.userInput && wr.userInput !== '（跳过）') {
+        prevWrongInput = wr.userInput;
+        break;
+      }
+    }
+    // 如果之前的记录未保存具体错误答案，则从input存根获取
+    if (prevWrongInput === '（未知）' && state._lastAttemptInput) {
+      prevWrongInput = state._lastAttemptInput;
+    }
+    // 最后尝试从输入框读取（用户可能输入了但还没提交）
+    if (prevWrongInput === '（未知）') {
+      var curInput = document.getElementById('answerInput');
+      var curVal = curInput ? curInput.value.trim() : '';
+      if (curVal) { prevWrongInput = curVal; }
+    }
     state.wrongRecords.push({
       chinese: q.chinese,
       answer: q.answer,
-      userInput: '（跳过）',
+      userInput: prevWrongInput + ' → （跳过）',
       index: state.currentIdx,
       isSkip: true
     });
     state.attemptCount = state.maxAttempts;
-    state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: '（跳过）', index: state.currentIdx};
+    state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: prevWrongInput + ' → （跳过）', index: state.currentIdx};
     lockQuestion(); setTimeout(function() { nextQuestion(); }, 400);
     return;
+  }
+  // 检查当前输入框是否有内容（用户答错后未清空，直接点跳过）
+  var skipInput = '（跳过）';
+  var curInput = document.getElementById('answerInput');
+  var curVal = curInput ? curInput.value.trim() : '';
+  if (curVal) {
+    skipInput = curVal + ' → （跳过）';
+  } else if (state._lastAttemptInput && state.attemptCount > 0) {
+    skipInput = state._lastAttemptInput + ' → （跳过）';
   }
   state.wrongRecords.push({
     chinese: q.chinese,
     answer: q.answer,
-    userInput: '（跳过）',
+    userInput: skipInput,
     index: state.currentIdx,
     isSkip: true
   });
@@ -1330,7 +1788,7 @@ function confirmSkip() {
   state.totalWrongCount++;
   state.attemptCount = state.maxAttempts;
   updateWrongDisplay();
-  state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: '（跳过）', index: state.currentIdx};
+  state.lastWrong = {chinese: q.chinese, answer: q.answer, userInput: skipInput, index: state.currentIdx};
   lockQuestion();
   setTimeout(function() { nextQuestion(); }, 400);
 }
@@ -1367,6 +1825,8 @@ function finishPractice() {
   document.getElementById('resultTitle').textContent = title;
   document.getElementById('statAccuracy').textContent = accuracyRaw.toFixed(2) + '%';
   state._typeStats = calcTypeStats(state.questions, state.everWrong);
+  // 管理面板结算模式：存储各类型准确率
+  state._settlementTypeStats = state._typeStats;
   updateAccuracyDetail();
   document.getElementById('statDuration').textContent = duration;
   document.getElementById('statTotal').textContent = total;
@@ -1374,6 +1834,21 @@ function finishPractice() {
   var doneCount = state.isEarlyEnd ? state.currentIdx : total;
   document.getElementById('statDone').textContent = doneCount + '/' + state.totalOriginal;
   document.getElementById('statSwitch').textContent = state.switchCount;
+  document.getElementById('statExtendTime').textContent = state.totalTimeExtendUsed;
+  // 保存练习记录到日志
+  LogManager.init();
+  LogManager.log('answer', '练习结束', {
+    total: total, wrong: wrongCount, correct: correctCount,
+    accuracy: accuracy, duration: duration, isEarlyEnd: state.isEarlyEnd,
+    mode: state.mode
+  });
+  LogManager.savePracticeHistory({
+    date: new Date().toISOString(), title: result ? (result.title || '') : '',
+    total: total, wrong: wrongCount, correct: correctCount,
+    accuracy: accuracyRaw, duration: duration, isEarlyEnd: state.isEarlyEnd,
+    mode: state.mode, switchCount: state.switchCount,
+    totalTimeExtendUsed: state.totalTimeExtendUsed
+  });
 
   // 错题列表（合并同一题目的多次错误，点击展开）
   var ws = document.getElementById('wrongSection');
@@ -2244,23 +2719,31 @@ if (!document.querySelector('.page.active')) document.getElementById('pageImport
 var adminClickCount = 0;
 var adminClickTimer = null;
 
-function onVersionClick() {
-  adminClickCount++;
-  if (adminClickTimer) clearTimeout(adminClickTimer);
-  adminClickTimer = setTimeout(function() { adminClickCount = 0; }, 2000);
-  if (adminClickCount >= 7) {
-    adminClickCount = 0;
-    var pwd = prompt('🔐 请输入管理密码：');
-    if (pwd === 'password') {
-      openAdminPanel();
-    } else if (pwd !== null) {
-      alert('❌ 密码错误！');
-    }
+function getAdminPassword() {
+  var pwd = localStorage.getItem('beAdminPassword');
+  return pwd || '123456'; // 默认密码123456
+}
+
+function setAdminPassword(newPwd) {
+  localStorage.setItem('beAdminPassword', newPwd);
+}
+
+function checkAdminPassword() {
+  var correctPwd = getAdminPassword();
+  var pwd = prompt('🔐 请输入管理面板密码：');
+  if (pwd === correctPwd) {
+    openAdminPanel();
+  } else if (pwd !== null) {
+    alert('❌ 密码错误！');
   }
 }
 
+function onVersionClick() {
+  // 保留空函数，避免版本号点击报错
+}
+
 function getSwitchConfig() {
-  var def = {allowedCount: 3, showWarning: true, autoEnd: false, warningText: '⚠️ 检测到切屏行为（共 {count} 次），请保持专注！'};
+  var def = {allowedCount: 3, showWarning: true, autoEnd: false, maxAttempts: 2, disputeRatio: 20, warningText: '⚠️ 检测到切屏行为（共 {count} 次），请保持专注！'};
   try { return Object.assign({}, def, JSON.parse(localStorage.getItem('beSwitchConfig') || '{}')); }
   catch(e) { return def; }
 }
@@ -2290,6 +2773,40 @@ function openAdminPanel() {
   // 加载展示正误配置
   var ecfg = JSON.parse(localStorage.getItem('beExamConfig') || '{}');
   document.getElementById('adminShowFeedback').checked = ecfg.showFeedback !== false;
+  // 加载临时加时配置
+  var xcfg = JSON.parse(localStorage.getItem('beTimeExtendConfig') || '{}');
+  document.getElementById('adminExtendMode').value = xcfg.mode || 'absolute';
+  document.getElementById('adminExtendTotal').value = xcfg.totalExtends || 5;
+  document.getElementById('adminExtendPctWord').value = xcfg.word || 20;
+  document.getElementById('adminExtendPctPhrase').value = xcfg.phrase || 20;
+  document.getElementById('adminExtendPctSentence').value = xcfg.sentence || 20;
+  toggleExtendMode();
+  // 展示各类型准确率（仅在结算/结果页时）
+  var adminTypeStats = document.getElementById('adminTypeStats');
+  var adminTypeStatsContent = document.getElementById('adminTypeStatsContent');
+  if (adminTypeStats && adminTypeStatsContent) {
+    var resultPage = document.getElementById('pageResult');
+    if (resultPage && resultPage.classList.contains('active') && state._settlementTypeStats) {
+      var ts = state._settlementTypeStats;
+      var html = '';
+      var typeNames = {word: '📖 单词', phrase: '📝 词组', sentence: '💬 句子'};
+      for (var t in ts) {
+        if (ts[t] && ts[t].total > 0) {
+          var correct = ts[t].total - ts[t].wrong;
+          var pct = Math.round(correct / ts[t].total * 100);
+          html += '<div>' + (typeNames[t] || t) + '：' + correct + '/' + ts[t].total + '（' + pct + '%）</div>';
+        }
+      }
+      if (html) {
+        adminTypeStatsContent.innerHTML = html;
+        adminTypeStats.style.display = 'block';
+      } else {
+        adminTypeStats.style.display = 'none';
+      }
+    } else {
+      adminTypeStats.style.display = 'none';
+    }
+  }
   document.getElementById('adminStatus').textContent = '';
   document.getElementById('adminPanel').classList.add('show');
 }
@@ -2303,7 +2820,9 @@ function saveAdminConfig() {
     allowedCount: parseInt(document.getElementById('adminAllowedCount').value) || 3,
     showWarning: document.getElementById('adminShowWarning').checked,
     autoEnd: document.getElementById('adminAutoEnd').checked,
-    warningText: document.getElementById('adminWarningText').value.trim() || '⚠️ 检测到切屏行为（共 {count} 次），请保持专注！'
+    warningText: document.getElementById('adminWarningText').value.trim() || '⚠️ 检测到切屏行为（共 {count} 次），请保持专注！',
+    maxAttempts: parseInt(document.getElementById('adminMaxAttempts').value) || 2,
+    disputeRatio: parseInt(document.getElementById('adminDisputeRatio').value) || 20
   };
   localStorage.setItem('beSwitchConfig', JSON.stringify(cfg));
   // 保存倒计时配置
@@ -2323,7 +2842,106 @@ function saveAdminConfig() {
     showFeedback: document.getElementById('adminShowFeedback').checked
   };
   localStorage.setItem('beExamConfig', JSON.stringify(ecfg));
+  // 保存临时加时配置
+  var xcfg = {
+    mode: document.getElementById('adminExtendMode').value,
+    totalExtends: parseInt(document.getElementById('adminExtendTotal').value) || 5,
+    word: parseInt(document.getElementById('adminExtendPctWord').value) || 20,
+    phrase: parseInt(document.getElementById('adminExtendPctPhrase').value) || 20,
+    sentence: parseInt(document.getElementById('adminExtendPctSentence').value) || 20
+  };
+  localStorage.setItem('beTimeExtendConfig', JSON.stringify(xcfg));
+  LogManager.log('config', '配置已保存', {keys: ['beSwitchConfig','beTimerConfig','bePunctuationConfig','beExamConfig','beTimeExtendConfig']});
   document.getElementById('adminStatus').textContent = '✅ 保存成功！';
+  setTimeout(function() { document.getElementById('adminStatus').textContent = ''; }, 2000);
+}
+
+/** 切换加时模式显示 */
+function toggleExtendMode() {
+  var mode = document.getElementById('adminExtendMode').value;
+  document.getElementById('adminExtendAbsolute').style.display = mode === 'absolute' ? '' : 'none';
+  document.getElementById('adminExtendPercentage').style.display = mode === 'percentage' ? '' : 'none';
+}
+
+// ===== 日志查看器 =====
+var _currentLogType = 'all';
+
+function toggleLogSection() {
+  var section = document.getElementById('logSection');
+  var arrow = document.getElementById('logSectionArrow');
+  var isOpen = section.style.display !== 'none';
+  section.style.display = isOpen ? 'none' : 'block';
+  arrow.textContent = isOpen ? '▶' : '▼';
+  if (!isOpen) {
+    loadLogs(_currentLogType);
+    updateLogStats();
+  }
+}
+
+function updateLogStats() {
+  var stats = LogManager.getStats();
+  var el = document.getElementById('logStats');
+  if (!el) return;
+  el.textContent = '📊 共 ' + stats.total + ' 条日志 | 答题:' + (stats.types.answer||0) + ' API:' + (stats.types.api||0) + ' 配置:' + (stats.types.config||0) + ' 系统:' + (stats.types.system||0) + ' | 今日:' + stats.lastDay;
+}
+
+function loadLogs(type) {
+  _currentLogType = type || 'all';
+  var el = document.getElementById('logEntries');
+  if (!el) return;
+  var logs = LogManager.getLogs(type, 200);
+  if (logs.length === 0) {
+    el.innerHTML = '<div style="color:#888;text-align:center;padding:10px">暂无日志</div>';
+    return;
+  }
+  var typeLabels = {answer:'📝', api:'🤖', config:'⚙️', system:'🔧'};
+  var html = '';
+  logs.reverse().forEach(function(l) {
+    var icon = typeLabels[l.type] || '📄';
+    var time = l.timestamp ? l.timestamp.slice(11, 19) : '';
+    var msg = escHtml(l.message || '');
+    var extra = '';
+    if (l.data && typeof l.data === 'object') {
+      var str = JSON.stringify(l.data);
+      if (str.length < 200) extra = ' <span style="color:#888">' + escHtml(str) + '</span>';
+    }
+    html += '<div style="border-bottom:1px solid var(--border);padding:2px 0">' +
+      '<span style="color:#888">' + time + '</span> ' + icon + ' ' +
+      '<span style="color:var(--text)">' + msg + '</span>' + extra +
+      '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function importBackupFile(input) {
+  if (!input.files || !input.files[0]) return;
+  LogManager.uploadBackup(input.files[0], function(ok, data, err) {
+    if (ok) {
+      document.getElementById('adminStatus').textContent = '✅ 备份恢复成功！共导入 ' + ((data.logs||[]).length) + ' 条日志';
+      loadLogs(_currentLogType);
+      updateLogStats();
+    } else {
+      document.getElementById('adminStatus').textContent = '❌ 恢复失败: ' + (err || '格式错误');
+    }
+    input.value = '';
+    setTimeout(function() { document.getElementById('adminStatus').textContent = ''; }, 3000);
+  });
+}
+
+/** 修改管理面板密码 */
+function changeAdminPassword() {
+  var newPwd = document.getElementById('adminPasswordInput').value.trim();
+  if (!newPwd) { alert('请输入新密码'); return; }
+  if (newPwd.length < 4) { alert('密码至少4位'); return; }
+  var correctPwd = getAdminPassword();
+  var oldPwd = prompt('请输入当前密码确认：');
+  if (oldPwd !== correctPwd) {
+    alert('❌ 当前密码错误！');
+    return;
+  }
+  setAdminPassword(newPwd);
+  document.getElementById('adminPasswordInput').value = '';
+  document.getElementById('adminStatus').textContent = '✅ 密码修改成功！';
   setTimeout(function() { document.getElementById('adminStatus').textContent = ''; }, 2000);
 }
 
@@ -2558,6 +3176,7 @@ function refreshResultStats() {
   var correctCount = total - wrongCount;
   var accuracyRaw = total > 0 ? (correctCount / total * 100) : 0;
   var accuracy = Math.round(accuracyRaw);
+  document.getElementById('statExtendTime').textContent = state.totalTimeExtendUsed;
   document.getElementById('statAccuracy').textContent = accuracyRaw.toFixed(2) + '%';
   state._typeStats = calcTypeStats(state.questions, state.everWrong);
   updateAccuracyDetail();
@@ -2583,18 +3202,33 @@ function refreshResultWrongList() {
     ws.style.display = 'block';
     var groups = {};
     state.wrongRecords.forEach(function(r) { if (!groups[r.index]) groups[r.index] = []; groups[r.index].push(r); });
-    Object.keys(groups).forEach(function(idx) {
+    var groupKeys = Object.keys(groups);
+    // 批量操作按钮
+    var batchDiv = document.createElement('div');
+    batchDiv.className = 'w-batch-actions';
+    var unreviewed = groupKeys.filter(function(idx) { return !groups[idx][0].reviewStatus; });
+    batchDiv.innerHTML = '<button class="ba-select" onclick="selectAllWrong(' + (unreviewed.length > 0) + ')">' + (unreviewed.length > 0 ? '☑️ 全选未复核' : '☑️ 全选') + '</button>' +
+      '<button class="ba-select" onclick="deselectAllWrong()">⬜ 取消全选</button>' +
+      '<button class="ba-review" id="btnBatchReviewSelected" onclick="batchReviewSelected()" disabled>🔍 复核选中 (0)</button>' +
+      '<span style="font-size:11px;color:#888;margin-left:4px">点击项前的复选框多选，批量AI复核</span>';
+    batchDiv.style.marginBottom = '8px';
+    wl.appendChild(batchDiv);
+
+    groupKeys.forEach(function(idx) {
       var attempts = groups[idx];
       var first = attempts[0];
       var gd = document.createElement('div');
       gd.className = 'w-group';
+      gd.dataset.idx = idx;
       var badge = attempts.length > 1 ? ' <span style="font-size:11px;color:#888">尝试' + attempts.length + '次</span>' : '';
       var reviewBadge = '';
       if (first.reviewStatus === 'passed') reviewBadge = ' <span style="font-size:11px;color:#22c55e;font-weight:600">✅ 复核通过</span>';
       else if (first.reviewStatus === 'failed') reviewBadge = ' <span style="font-size:11px;color:#ef4444;font-weight:600">❌ 复核未通过</span>';
-      gd.innerHTML = '<div class="w-group-header">' +
+      var isReviewed = first.reviewStatus ? true : false;
+      gd.innerHTML = '<div class="w-group-header' + (isReviewed ? '' : '') + '" onclick="toggleWrongCheck(this)">' +
+        '<input type="checkbox" class="wa-checkbox" onclick="event.stopPropagation()" data-idx="' + idx + '" ' + (isReviewed ? 'disabled' : '') + '>' +
         '<span class="w-g-title">' + escHtml(first.chinese) + ' ' + escHtml(first.answer) + '</span>' + reviewBadge + badge +
-        '<span class="w-g-arrow" style="font-size:11px;cursor:pointer" onclick="this.parentElement.classList.toggle(\'expanded\');this.parentElement.nextElementSibling.classList.toggle(\'show\')">▼</span></div>' +
+        '<span class="w-g-arrow" style="font-size:11px;cursor:pointer" onclick="event.stopPropagation();this.parentElement.classList.toggle(\'expanded\');this.parentElement.nextElementSibling.classList.toggle(\'show\')">▼</span></div>' +
         '<div class="w-group-body">' +
         attempts.map(function(a, i) {
           var label = a.isSkip ? '跳过' : '第' + (i+1) + '次';
@@ -2609,6 +3243,119 @@ function refreshResultWrongList() {
   } else {
     ws.style.display = 'none';
   }
+}
+
+/** 切换错题选中状态 */
+function toggleWrongCheck(headerEl) {
+  var cb = headerEl.querySelector('.wa-checkbox');
+  if (!cb || cb.disabled) return;
+  cb.checked = !cb.checked;
+  headerEl.classList.toggle('selected', cb.checked);
+  updateBatchReviewBtn();
+}
+
+/** 全选未复核的错题 */
+function selectAllWrong() {
+  var cbs = document.querySelectorAll('#wrongList .wa-checkbox:not([disabled])');
+  cbs.forEach(function(cb) { cb.checked = true; cb.closest('.w-group-header').classList.add('selected'); });
+  updateBatchReviewBtn();
+}
+
+/** 取消全选 */
+function deselectAllWrong() {
+  var cbs = document.querySelectorAll('#wrongList .wa-checkbox');
+  cbs.forEach(function(cb) { cb.checked = false; cb.closest('.w-group-header').classList.remove('selected'); });
+  updateBatchReviewBtn();
+}
+
+/** 更新批量复核按钮状态 */
+function updateBatchReviewBtn() {
+  var btn = document.getElementById('btnBatchReviewSelected');
+  if (!btn) return;
+  var selected = document.querySelectorAll('#wrongList .wa-checkbox:checked:not([disabled])').length;
+  btn.disabled = selected === 0;
+  btn.textContent = '🔍 复核选中 (' + selected + ')';
+}
+
+/** 批量复核选中的错题 */
+function batchReviewSelected() {
+  var btn = document.getElementById('btnBatchReviewSelected');
+  if (btn.disabled) return;
+  var selectedCbs = document.querySelectorAll('#wrongList .wa-checkbox:checked:not([disabled])');
+  var indices = [];
+  selectedCbs.forEach(function(cb) { indices.push(parseInt(cb.dataset.idx)); });
+  if (indices.length === 0) return;
+  btn.disabled = true;
+  btn.textContent = '⏳ 复核中...';
+  // 逐个复核
+  var done = 0;
+  var total = indices.length;
+  function doNext(i) {
+    if (i >= indices.length) {
+      btn.textContent = '✅ 复核完成 (' + total + '题)';
+      refreshResultWrongList();
+      refreshResultStats();
+      return;
+    }
+    var idx = indices[i];
+    // 构造一个假的 target 对象
+    var target = null;
+    for (var j = 0; j < state.wrongRecords.length; j++) {
+      if (state.wrongRecords[j].index === idx) {
+        target = { chinese: state.wrongRecords[j].chinese, answer: state.wrongRecords[j].answer, userInput: state.wrongRecords[j].userInput, index: idx };
+        break;
+      }
+    }
+    if (!target) { doNext(i+1); return; }
+    doReview(target, function(success) {
+      if (success) done++;
+      doNext(i+1);
+    });
+  }
+  doNext(0);
+}
+
+/** 执行单题 AI 复核（复用原有逻辑，回调模式） */
+function doReview(target, callback) {
+  if (!state._disputeAbort) state._disputeAbort = [];
+  var bu = localStorage.getItem('aiBaseUrl') || 'https://api.openai.com/v1';
+  var ak = localStorage.getItem('aiApiKey') || '';
+  var md = localStorage.getItem('aiModel') || 'gpt-4o-mini';
+  if (!ak) { if (callback) callback(false); return; }
+  if (bu.endsWith('/')) bu = bu.slice(0, -1);
+  if (!bu.endsWith('/v1')) bu += '/v1';
+  var prompt = '你是一位严格的英语复核老师。题目：' + target.chinese + ' 标准答案：' + target.answer + ' 学生答案：' + target.userInput + ' 请严格只输出一个JSON对象，不要markdown格式，不要任何多余文字。格式: {"is_correct": true/false, "explanation": "简短说明"}。忽略大小写和标点差异后比较，只要拼写不一致即判错误，不因"拼写接近"而判正确。';
+  LogManager.log('api', 'AI复核请求', {chinese: target.chinese, answer: target.answer, userInput: target.userInput, model: md});
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', bu + '/chat/completions', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('Authorization', 'Bearer ' + ak);
+  xhr.onload = function() {
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (d.error) { LogManager.log('api', 'AI复核错误', {error: d.error}); if (callback) callback(false); return; }
+      var txt = d.choices?.[0]?.message?.content || '';
+      var r2 = parseAIJson(txt);
+      if (r2 && r2.is_correct !== undefined) {
+        var idx = target.index;
+        if (r2.is_correct) {
+          state.wrongRecords.forEach(function(r) { if (r.index === idx) r.reviewStatus = 'passed'; });
+        } else {
+          state.wrongRecords.forEach(function(r) { if (r.index === idx) r.reviewStatus = 'failed'; });
+        }
+        state.disputeCount++;
+        LogManager.log('api', 'AI复核结果', {chinese: target.chinese, is_correct: r2.is_correct, explanation: r2.explanation});
+        if (callback) callback(true);
+      } else {
+        if (callback) callback(false);
+      }
+    } catch(e) { if (callback) callback(false); }
+  };
+  xhr.onerror = function() { if (callback) callback(false); };
+  xhr.send(JSON.stringify({model: md, messages: [
+    {role: 'system', content: '你只输出纯JSON对象，不要markdown代码块，不要任何其他文字。'},
+    {role: 'user', content: prompt}
+  ], temperature: 0.1, max_tokens: 500}));
 }
 
 /** 按类型统计正确率 */
@@ -2898,7 +3645,7 @@ function pushLanSnapshot() {
     var q = state.questions && state.questions[state.currentIdx] ? state.questions[state.currentIdx] : null;
     var total = state.questions ? state.questions.length : 0;
     var wrong = state.totalWrongCount || 0;
-    var done = state.isEarlyEnd ? (state.currentIdx || 0) : total;
+    var done = state.currentIdx || 0; // 已作答的题目数（未做的题不记为正确也不记为错误）
     var correct = done - wrong;
     var accuracy = done > 0 ? Math.round(correct / done * 100) : 0;
     var elapsed = state.startTime ? Math.floor((Date.now() - state.startTime) / 1000) : 0;
@@ -3106,5 +3853,201 @@ function onMonitorPopup(msg) {
 
 console.log('📝 英语默写 loaded');
 </script>
+<!-- ===== Admin Panel ===== -->
+<div class="admin-overlay" id="adminPanel">
+  <div class="admin-box">
+    <h2>🔐 管理面板</h2>
+    <div class="admin-sub">切屏检测配置</div>
+
+    <label>单次练习允许切屏次数</label>
+    <input type="number" id="adminAllowedCount" min="0" max="99" value="3">
+    <div class="admin-hint">设为 0 表示一次都不允许切屏</div>
+
+    <div class="admin-check">
+      <input type="checkbox" id="adminShowWarning" checked>
+      <label for="adminShowWarning">切屏返回时显示提示</label>
+    </div>
+
+    <div class="admin-check">
+      <input type="checkbox" id="adminAutoEnd">
+      <label for="adminAutoEnd">超过允许次数自动结束练习</label>
+    </div>
+
+    <label>切屏提示文字 <span style="font-weight:400;color:var(--sub-text)">（支持 {count} 变量）</span></label>
+    <textarea id="adminWarningText" rows="2">⚠️ 检测到切屏行为（共 {count} 次），请保持专注！</textarea>
+    <div class="admin-hint">提示中的 {count} 会自动替换为实际切屏次数</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <label>单题容错次数</label>
+    <input type="number" id="adminMaxAttempts" min="1" max="5" value="2">
+    <div class="admin-hint">每题可答错的次数，第1次错可修改再答，默认2次</div>
+
+    <label>允许复核比例 (%)</label>
+    <input type="number" id="adminDisputeRatio" min="0" max="50" value="20">
+    <div class="admin-hint">每场练习允许申请AI复核的题目比例，默认20%</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <div id="adminTypeStats" style="display:none;margin-bottom:12px;padding:10px;background:var(--sub-bg,#f8f9fa);border-radius:8px">
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px">📊 各类型正确率</div>
+      <div id="adminTypeStatsContent" style="font-size:12px;line-height:1.8"></div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <label>⏱ 倒计时设置 <span style="font-weight:400;color:var(--sub-text)">（秒）</span></label>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <div style="flex:1">
+        <label style="font-size:11px;margin-top:0;color:var(--sub-text)">📖 单词</label>
+        <input type="number" id="adminTimerWord" min="5" max="300" value="15">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:11px;margin-top:0;color:var(--sub-text)">📝 词组</label>
+        <input type="number" id="adminTimerPhrase" min="5" max="600" value="50">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:11px;margin-top:0;color:var(--sub-text)">💬 句子</label>
+        <input type="number" id="adminTimerSentence" min="5" max="600" value="70">
+      </div>
+    </div>
+    <div class="admin-hint">每道题的超时时间，超时自动判错进入下一题</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <label>⏱️ 临时加时设置</label>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <div style="flex:1">
+        <label style="font-size:11px;margin-top:0;color:var(--sub-text)">模式</label>
+        <select id="adminExtendMode" onchange="toggleExtendMode()" style="width:100%;padding:9px 8px;border:2px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:var(--input-bg);color:var(--text)">
+          <option value="absolute">全局总次数</option>
+          <option value="percentage">按比例分配</option>
+        </select>
+      </div>
+    </div>
+    <div id="adminExtendAbsolute" style="margin-top:6px">
+      <label style="font-size:11px;margin-top:0;color:var(--sub-text)">全场总加时次数</label>
+      <input type="number" id="adminExtendTotal" min="0" max="99" value="5" style="width:80px;padding:6px 8px;border:2px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:var(--input-bg);color:var(--text)">
+      <div class="admin-hint">设为 0 即关闭加时功能。每次加时 +25秒</div>
+    </div>
+    <div id="adminExtendPercentage" style="display:none;margin-top:6px">
+      <div style="display:flex;gap:8px">
+        <div style="flex:1">
+          <label style="font-size:11px;margin-top:0;color:var(--sub-text)">📖 单词占比%</label>
+          <input type="number" id="adminExtendPctWord" min="0" max="100" value="20">
+        </div>
+        <div style="flex:1">
+          <label style="font-size:11px;margin-top:0;color:var(--sub-text)">📝 词组占比%</label>
+          <input type="number" id="adminExtendPctPhrase" min="0" max="100" value="20">
+        </div>
+        <div style="flex:1">
+          <label style="font-size:11px;margin-top:0;color:var(--sub-text)">💬 句子占比%</label>
+          <input type="number" id="adminExtendPctSentence" min="0" max="100" value="20">
+        </div>
+      </div>
+      <div class="admin-hint">按题型总题数的百分比计算加时次数，每类至少1次</div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <div class="admin-check">
+      <input type="checkbox" id="adminIgnorePunct" checked>
+      <label for="adminIgnorePunct">🔄 自动忽略标点符号</label>
+    </div>
+    <div class="admin-hint" style="margin-left:24px">开启后判断答案时会忽略标点、空格和大小写差异（默认开启）</div>
+
+    <div class="admin-check">
+      <input type="checkbox" id="adminShowFeedback">
+      <label for="adminShowFeedback">👁️ 答题时展示正误情况</label>
+    </div>
+    <div class="admin-hint" style="margin-left:24px">关闭后答题过程中不显示正确/错误反馈（测验模式自动关闭）</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <label>🔑 管理密码</label>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <input type="password" id="adminPasswordInput" placeholder="输入新密码" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:var(--input-bg);color:var(--text)">
+      <button class="btn btn-sm" onclick="changeAdminPassword()" style="background:#6f42c1;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">修改</button>
+    </div>
+    <div class="admin-hint">🔒 已启用密码保护，建议首次使用后修改</div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleLogSection()">
+      <label style="margin:0;cursor:pointer">📋 日志管理 <span style="font-weight:400;font-size:11px;color:var(--sub-text)">点击展开</span></label>
+      <span id="logSectionArrow" style="font-size:12px;color:#999">▶</span>
+    </div>
+    <div id="logSection" style="display:none;margin-top:8px">
+      <div id="logStats" style="font-size:12px;color:var(--sub-text);margin-bottom:8px"></div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="btn btn-sm" onclick="loadLogs('all')" style="background:#6f42c1;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">全部</button>
+        <button class="btn btn-sm" onclick="loadLogs('answer')" style="background:#28a745;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">答题</button>
+        <button class="btn btn-sm" onclick="loadLogs('api')" style="background:#1a73e8;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">API</button>
+        <button class="btn btn-sm" onclick="loadLogs('config')" style="background:#f59e0b;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">配置</button>
+        <button class="btn btn-sm" onclick="loadLogs('system')" style="background:#6c757d;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">系统</button>
+      </div>
+      <div id="logEntries" style="max-height:200px;overflow-y:auto;font-size:11px;font-family:monospace;background:var(--sub-bg);border-radius:6px;padding:8px;margin-bottom:8px;line-height:1.6">
+        <div style="color:#888;text-align:center;padding:10px">点击上方按钮加载日志</div>
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="LogManager.downloadBackup()" style="background:#1a73e8;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">💾 导出备份</button>
+        <button class="btn btn-sm" onclick="document.getElementById('logImportInput').click()" style="background:#28a745;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">📂 导入备份</button>
+        <input type="file" id="logImportInput" accept=".json" style="display:none" onchange="importBackupFile(this)">
+        <button class="btn btn-sm" onclick="if(confirm('确定清空所有日志？')){LogManager.clearLogs('all');loadLogs('all');}" style="background:#dc3545;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">🗑️ 清空</button>
+      </div>
+    </div>
+
+    <div class="admin-status" id="adminStatus"></div>
+
+    <div class="admin-actions">
+      <button class="btn btn-secondary" onclick="closeAdminPanel()">关闭</button>
+      <button class="btn btn-primary" onclick="saveAdminConfig()">💾 保存设置</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Switch Toast ===== -->
+<div class="switch-toast" id="switchToast"></div>
+
+<!-- ===== Mark List Overlay ===== -->
+<div class="overlay" id="markListOverlay">
+  <div class="overlay-box" style="max-width:460px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 style="margin:0;font-size:18px">⭐ 标记列表</h2>
+      <button class="btn btn-sm btn-secondary" onclick="closeMarkListOverlay()" style="padding:4px 12px;font-size:12px">✕ 关闭</button>
+    </div>
+    <div id="markListItems"></div>
+    <div style="margin-top:12px;font-size:12px;color:var(--sub-text,#888);text-align:center">
+      共 <span id="markListTotal">0</span> 题标记
+    </div>
+  </div>
+</div>
+
+<!-- ===== Dispute Modal ===== -->
+<div class="modal-overlay dispute-modal" id="disputeModal">
+  <div class="modal-box">
+    <div class="m-icon">🤔</div>
+    <h3>申请复核</h3>
+    <p style="font-size:13px;color:#666;text-align:center;margin:6px 0">系统将把您的答案提交给AI进行复核</p>
+    <div class="d-status" id="disputeStatus" style="display:none"></div>
+    <div class="q-actions" id="disputeActions">
+      <button class="btn btn-secondary" onclick="closeDisputeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitDispute()" style="background:#6f42c1">确认复核</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Dispute Result Overlay ===== -->
+<div class="modal-overlay" id="disputeResultOverlay">
+  <div class="modal-box">
+    <div class="m-icon" id="disputeResultIcon">✅</div>
+    <h3 id="disputeResultTitle">复核结果</h3>
+    <div style="margin:10px 0;padding:12px;background:var(--sub-bg,#f8f9fa);border-radius:8px;text-align:left;font-size:13px;line-height:1.6" id="disputeResultDetail"></div>
+    <div class="q-actions">
+      <button class="btn btn-primary" onclick="closeDisputeResultOverlay()" style="background:#6f42c1">知道了</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
