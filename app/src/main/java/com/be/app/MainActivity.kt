@@ -20,8 +20,11 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.net.URLEncoder
 import java.net.URLDecoder
+import java.util.ArrayList
+import java.util.Collections
 import kotlin.concurrent.thread
 
+@SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
@@ -56,8 +59,8 @@ class MainActivity : AppCompatActivity() {
     // ============ JavaScript 桥接 ============
     inner class BEJsBridge {
         @JavascriptInterface
-        fun updateSnapshot(json: String) {
-            snapshot = json
+        fun updateSnapshot(json: String?) {
+            snapshot = json ?: "{}"
         }
 
         @JavascriptInterface
@@ -144,6 +147,16 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl("file:///android_asset/English_v1.4.4.html")
     }
 
+    override fun onPause() {
+        super.onPause()
+        webView.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        webView.onResume()
+    }
+
     override fun onBackPressed() {
         if (webView.canGoBack()) {
             webView.goBack()
@@ -160,7 +173,7 @@ class MainActivity : AppCompatActivity() {
     /** 获取本机局域网 IP */
     private fun getLocalIpAddress(): String {
         try {
-            val interfaces = NetworkInterface.getNetworkInterfaces()
+            val interfaces = NetworkInterface.getNetworkInterfaces() ?: return "未知"
             while (interfaces.hasMoreElements()) {
                 val networkInterface = interfaces.nextElement()
                 if (networkInterface.isLoopback || !networkInterface.isUp) continue
@@ -178,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             // 兜底：取第一个非回环 IPv4
-            val allIfs = NetworkInterface.getNetworkInterfaces()
+            val allIfs = NetworkInterface.getNetworkInterfaces() ?: return "未知"
             while (allIfs.hasMoreElements()) {
                 val ni = allIfs.nextElement()
                 val addrs = ni.inetAddresses
@@ -205,6 +218,7 @@ class SimpleHttpServer(
     private var serverSocket: ServerSocket? = null
     @Volatile
     private var running = false
+    private val handlerThreads = Collections.synchronizedList(ArrayList<Thread>())
 
     fun start() {
         running = true
@@ -214,11 +228,13 @@ class SimpleHttpServer(
                 while (running) {
                     try {
                         val client = serverSocket?.accept() ?: break
-                        thread(name = "LanMonitorHandler") {
+                        val handlerThread = thread(name = "LanMonitorHandler") {
+                            handlerThreads.add(Thread.currentThread())
                             try {
                                 handleClient(client)
                             } catch (_: Exception) {
                             } finally {
+                                handlerThreads.remove(Thread.currentThread())
                                 try { client.close() } catch (_: Exception) {}
                             }
                         }
@@ -228,6 +244,13 @@ class SimpleHttpServer(
                 }
             } catch (e: Exception) {
                 android.util.Log.e("LanMonitor", "Server error: ${e.message}")
+            } finally {
+                synchronized(handlerThreads) {
+                    for (t in handlerThreads) {
+                        try { t.interrupt() } catch (_: Exception) {}
+                    }
+                    handlerThreads.clear()
+                }
             }
         }
     }
@@ -235,6 +258,12 @@ class SimpleHttpServer(
     fun stop() {
         running = false
         try { serverSocket?.close() } catch (_: Exception) {}
+        synchronized(handlerThreads) {
+            for (t in handlerThreads) {
+                try { t.interrupt() } catch (_: Exception) {}
+            }
+            handlerThreads.clear()
+        }
         serverSocket = null
     }
 
@@ -242,7 +271,8 @@ class SimpleHttpServer(
         try {
             val reader = BufferedReader(InputStreamReader(client.inputStream))
             val requestLine = reader.readLine() ?: return
-        
+            val outputStream = client.outputStream ?: return
+
             // 读取请求头
             var line = reader.readLine()
             var contentLength = 0
@@ -264,15 +294,15 @@ class SimpleHttpServer(
                     .replace("+", " ")
                     .let { java.net.URLDecoder.decode(it, "UTF-8") }
                 // 通过 evaluateJavascript 调用前端的弹窗函数
-                            activity.runOnUiThread {
-                                activity.getWebView().evaluateJavascript(
-                                    "onMonitorPopup('${msg.replace("'", "\\'").replace("\n", "\\n")}');",
-                                    null
-                                )
-                            }
+                activity.runOnUiThread {
+                    activity.getWebView().evaluateJavascript(
+                        "onMonitorPopup('${msg.replace("'", "\\'").replace("\n", "\\n")}');",
+                        null
+                    )
+                }
                 val resp = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 2\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\n\r\nOK"
-                client.outputStream.write(resp.toByteArray(Charsets.UTF_8))
-                client.outputStream.flush()
+                outputStream.write(resp.toByteArray(Charsets.UTF_8))
+                outputStream.flush()
                 return
             }
 
@@ -280,17 +310,17 @@ class SimpleHttpServer(
             val json = activity.getSnapshot()
             val body = buildStatusPage(json)
             val response = buildString {
-                            append("HTTP/1.1 200 OK\r\n")
-                            append("Content-Type: text/html; charset=utf-8\r\n")
-                            append("Content-Length: ${body.toByteArray().size}\r\n")
-                            append("Connection: close\r\n")
-                            append("Access-Control-Allow-Origin: *\r\n")
-                            append("\r\n")
-                            append(body)
-                        }
+                append("HTTP/1.1 200 OK\r\n")
+                append("Content-Type: text/html; charset=utf-8\r\n")
+                append("Content-Length: ${body.toByteArray().size}\r\n")
+                append("Connection: close\r\n")
+                append("Access-Control-Allow-Origin: *\r\n")
+                append("\r\n")
+                append(body)
+            }
 
-            client.outputStream.write(response.toByteArray(Charsets.UTF_8))
-            client.outputStream.flush()
+            outputStream.write(response.toByteArray(Charsets.UTF_8))
+            outputStream.flush()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -304,5 +334,3 @@ class SimpleHttpServer(
     }
 
 }
-
-

@@ -1094,6 +1094,11 @@ function stopTimer() {
 function onTimerExpire() {
   if (state.locked) return;
   stopTimer();
+  // 如果当前题已经答过（已判错），不重复记录，直接跳到下一题
+  if (state.everWrong.has(state.currentIdx)) {
+    nextQuestion();
+    return;
+  }
   var q = state.questions[state.currentIdx];
   var fb = document.getElementById('feedback');
   var showFb = shouldShowFeedback();
@@ -1664,6 +1669,22 @@ function shouldShowFeedback() {
   return ecfg.showFeedback !== false; // 默认展示
 }
 
+function normalizeText(t, ignorePunct) {
+  if (ignorePunct === undefined) {
+    var punctConfig = JSON.parse(localStorage.getItem('bePunctuationConfig') || '{}');
+    ignorePunct = punctConfig.ignorePunctuation !== false;
+  }
+  var s = t.toLowerCase().trim();
+  // 始终将破折号 — – ― 统一转为空格（无论是否忽略标点）
+  s = s.replace(/[—–―]/g, ' ');
+  if (ignorePunct) {
+    s = s.replace(/[.,!?;:'\"()\\[\\]{}_\\-…·‥、，。！？；：\"\"''（）【】《》〈〉「」『』〖〗【】〔〕～~·・•@#\\$%^&*+=\\-＋＝±×÷\\^￥€£¢°′″‹›«»¡¿‽⁇⁈⁉〰﹏﹎﹍＿①②③④⑤⑥⑦⑧⑨⑩※＊／＼｜‖\\s]+/g, ' ');
+  }
+  // 始终合并多余空格
+  s = s.replace(/\\s+/g, ' ').trim();
+  return s;
+}
+
 function submitAnswer() {
   if (state.locked) return;
   // 注意：不在开头停掉计时器 —— 如果答错还有机会，计时器继续走
@@ -1679,20 +1700,6 @@ function submitAnswer() {
     return;
   }
   state.attemptCount++;
-  // 是否区分标点符号（从管理面板配置）
-  var punctConfig = JSON.parse(localStorage.getItem('bePunctuationConfig') || '{}');
-  var ignorePunct = punctConfig.ignorePunctuation !== false; // 默认忽略标点
-  function normalizeText(t) {
-    var s = t.toLowerCase().trim();
-    // 始终将破折号 — – ― 统一转为空格（无论是否忽略标点）
-    s = s.replace(/[—–―]/g, ' ');
-    if (ignorePunct) {
-      s = s.replace(/[.,!?;:'"()\[\]{}_\-…·‥、，。！？；：""''（）【】《》〈〉「」『』〖〗【】〔〕～~·・•@#\$%^&*+=\-＋＝±×÷\^￥€£¢°′″‹›«»¡¿‽⁇⁈⁉〰﹏﹎﹍＿①②③④⑤⑥⑦⑧⑨⑩※＊／＼｜‖\s]+/g, ' ');
-    }
-    // 始终合并多余空格
-    s = s.replace(/\s+/g, ' ').trim();
-    return s;
-  }
   var isCorrect = normalizeText(userAns) === normalizeText(q.answer);
   if (isCorrect) {
     if (showFb) { input.className = 'correct'; fb.textContent = '正确！'; fb.className = 'q-feedback correct'; }
@@ -2639,6 +2646,17 @@ function showPage(id) {
 
 function backToImport() {
   document.getElementById('headerSub').textContent = '导入数据，选择模式，开始练习';
+  // 重置练习状态，防止 history 污染
+  state.questions = [];
+  state.currentIdx = 0;
+  state.wrongRecords = [];
+  state.everWrong = new Set();
+  state.totalWrongCount = 0;
+  state.locked = false;
+  state.isEarlyEnd = false;
+  state.isExamMode = false;
+  state._typeStats = null;
+  state._reviewSelected = null;
   showPage('pageImport');
 }
 
