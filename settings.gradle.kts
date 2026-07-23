@@ -12,6 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-enableFeaturePreview("VERSION_CATALOGS")
 rootProject.name = "BetterEnglish"
 include(":app")
